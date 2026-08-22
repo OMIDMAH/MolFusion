@@ -45,7 +45,7 @@ START_ANGLE = 90.0          # first slice starts at 12 o'clock
 DIRECTION   = -1            # -1 = clockwise, +1 = counter-clockwise
 
 GAP_COLOR = "white"
-GAP_WIDTH = 2.6
+GAP_WIDTH = 1.2
 
 FONT_FAMILY = "DejaVu Sans"
 CAT_FONTSIZE = 13
@@ -120,16 +120,13 @@ def curved_text(fig, ax, ax_scale, s, r_center, mid_deg,
                 fontsize=fontsize, fontweight=weight, color=color, zorder=zorder)
 
 
-def radial_text(ax, s, r_outer, mid_deg,
+def radial_text(ax, s, r_center, mid_deg,
                 fontsize=DS_FONTSIZE, weight="bold", color="#111111", zorder=4):
-    """Straight label running along the radius, anchored at the ring's outer edge."""
+    """Straight label along the radius, centred inside its own wedge."""
     a = upright(mid_deg)
-    if -90 < a <= 90:                 # right half -> read outwards
-        rot, ha = a, "right"
-    else:                             # left half -> flip by 180 deg
-        rot, ha = a + 180, "left"
-    ax.text(r_outer * cos(radians(mid_deg)), r_outer * sin(radians(mid_deg)), s,
-            rotation=rot, rotation_mode="anchor", ha=ha, va="center",
+    rot = a if -90 < a <= 90 else a + 180      # flip on the left half
+    ax.text(r_center * cos(radians(mid_deg)), r_center * sin(radians(mid_deg)), s,
+            rotation=rot, rotation_mode="anchor", ha="center", va="center",
             fontsize=fontsize, fontweight=weight, color=color, zorder=zorder)
 
 
@@ -169,13 +166,13 @@ def build():
             ax.add_patch(Wedge((0, 0), INNER_R1, w0, w1, width=INNER_R1 - INNER_R0,
                                facecolor=color, edgecolor=GAP_COLOR,
                                linewidth=GAP_WIDTH, zorder=2))
-            radial_text(ax, ds, INNER_R1 - 0.035, (w0 + w1) / 2)
+            radial_text(ax, ds, (INNER_R0 + INNER_R1) / 2, (w0 + w1) / 2)
 
         theta += DIRECTION * span
 
     # ---------------- the white hole in the middle -------------------
     ax.add_patch(Circle((0, 0), HOLE_RADIUS, facecolor="white",
-                        edgecolor="#E6E1F0", linewidth=1.4, zorder=3))
+                        edgecolor="#E6E1F0", linewidth=1.0, zorder=3))
     return fig
 
 
