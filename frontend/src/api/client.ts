@@ -1,6 +1,7 @@
 import { API_BASE_URL } from "../config";
 import type {
   AgentMetadata,
+  AgentValueType,
   ComputeResponse,
   FeatureVector,
   HealthResponse,
@@ -114,6 +115,15 @@ function expectArray(value: unknown, field: string): unknown[] {
   return value;
 }
 
+function expectValueType(value: unknown, field: string): AgentValueType {
+  if (value !== "binary" && value !== "continuous") {
+    throw new ApiError(
+      `Backend response is malformed: expected "binary" or "continuous" for "${field}", got ${JSON.stringify(value)}.`,
+    );
+  }
+  return value;
+}
+
 function parseAgentMetadata(value: unknown): AgentMetadata {
   if (!isRecord(value)) {
     throw new ApiError("Backend returned malformed agent metadata.");
@@ -130,6 +140,7 @@ function parseAgentMetadata(value: unknown): AgentMetadata {
     version: expectString(value.version, "version"),
     output_dim: expectNumber(value.output_dim, "output_dim"),
     requires_3d: expectBoolean(value.requires_3d, "requires_3d"),
+    value_type: expectValueType(value.value_type, "value_type"),
     feature_names: featureNames,
   };
 }

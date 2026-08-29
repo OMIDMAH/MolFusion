@@ -43,6 +43,7 @@ class AgentRegistry:
                 "version": agent.version,
                 "output_dim": agent.output_dim,
                 "requires_3d": agent.requires_3d,
+                "value_type": agent.value_type,
                 # Optional, per-feature names (e.g. descriptor names) for
                 # agents that expose them via a `descriptor_names` attribute.
                 # None for agents with no such metadata (e.g. fingerprints,

@@ -15,6 +15,7 @@ class MACCSKeysAgent(FeatureAgent):
     version = "1.0.0"
     output_dim = MACCS_NUM_BITS
     requires_3d = False
+    value_type = "binary"
 
     def compute(self, mol: Chem.Mol) -> np.ndarray:
         if mol is None:

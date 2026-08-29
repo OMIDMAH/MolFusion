@@ -46,7 +46,7 @@ def test_agents_returns_200(client):
     assert response.status_code == 200
 
 
-def test_agents_contains_exactly_the_four_production_agents(client):
+def test_agents_contains_exactly_the_five_production_agents(client):
     response = client.get("/agents")
     ids = {agent["id"] for agent in response.json()}
     assert ids == {
@@ -54,6 +54,7 @@ def test_agents_contains_exactly_the_four_production_agents(client):
         "maccs_keys_167",
         "rdkit_physchem_descriptors",
         "avalon_1024",
+        "erg_reduced_graph_315",
     }
 
 
@@ -64,6 +65,19 @@ def test_agents_dimensions(client):
     assert dims_by_id["maccs_keys_167"] == 167
     assert dims_by_id["rdkit_physchem_descriptors"] == 217
     assert dims_by_id["avalon_1024"] == 1024
+    assert dims_by_id["erg_reduced_graph_315"] == agent_registry.get(
+        "erg_reduced_graph_315"
+    ).output_dim
+
+
+def test_agents_value_type_distinguishes_binary_and_continuous(client):
+    response = client.get("/agents")
+    types_by_id = {agent["id"]: agent["value_type"] for agent in response.json()}
+    assert types_by_id["morgan_ecfp4_1024"] == "binary"
+    assert types_by_id["maccs_keys_167"] == "binary"
+    assert types_by_id["avalon_1024"] == "binary"
+    assert types_by_id["rdkit_physchem_descriptors"] == "continuous"
+    assert types_by_id["erg_reduced_graph_315"] == "continuous"
 
 
 def test_agents_descriptor_feature_names_are_exposed(client):
@@ -88,6 +102,7 @@ def test_agents_metadata_matches_live_registry(client):
         assert api_agent["version"] == meta["version"]
         assert api_agent["output_dim"] == meta["output_dim"]
         assert api_agent["requires_3d"] == meta["requires_3d"]
+        assert api_agent["value_type"] == meta["value_type"]
 
 
 # ---------------------------------------------------------------------------
@@ -139,17 +154,24 @@ ALL_AGENT_IDS = [
     "maccs_keys_167",
     "rdkit_physchem_descriptors",
     "avalon_1024",
+    "erg_reduced_graph_315",
 ]
 
+# Aspirin, not ethanol: ErG's default parameters legitimately produce an
+# all-zero vector for a molecule as small/simple as ethanol (see
+# tests/test_erg_agent.py), so a richer molecule is used wherever the test
+# needs to observe actual nonzero/fractional ErG values.
+ASPIRIN = "CC(=O)Oc1ccccc1C(=O)O"
 
-def test_compute_ethanol_with_all_agents_returns_four_feature_vectors(client):
+
+def test_compute_ethanol_with_all_agents_returns_five_feature_vectors(client):
     response = client.post(
         "/features/compute", json={"smiles": [ETHANOL], "agent_ids": ALL_AGENT_IDS}
     )
     assert response.status_code == 200
     result = response.json()["results"][0]
     assert result["valid"] is True
-    assert len(result["features"]) == 4
+    assert len(result["features"]) == 5
 
 
 def test_compute_dimensions_match_actual_outputs(client):
@@ -161,6 +183,9 @@ def test_compute_dimensions_match_actual_outputs(client):
     assert features["maccs_keys_167"]["dim"] == 167
     assert features["rdkit_physchem_descriptors"]["dim"] == 217
     assert features["avalon_1024"]["dim"] == 1024
+    assert features["erg_reduced_graph_315"]["dim"] == agent_registry.get(
+        "erg_reduced_graph_315"
+    ).output_dim
 
 
 def test_compute_values_length_equals_dim(client):
@@ -221,6 +246,51 @@ def test_compute_matches_direct_avalon_agent_computation(client):
 
     mol = Chem.MolFromSmiles(ETHANOL)
     agent = agent_registry.get("avalon_1024")
+    direct_values = [float(v) for v in agent.compute(mol).tolist()]
+
+    assert api_values == direct_values
+
+
+def test_compute_erg_alone_returns_expected_feature_vector(client):
+    response = client.post(
+        "/features/compute",
+        json={"smiles": [ASPIRIN], "agent_ids": ["erg_reduced_graph_315"]},
+    )
+    assert response.status_code == 200
+    result = response.json()["results"][0]
+    assert result["valid"] is True
+    assert len(result["features"]) == 1
+
+    feature = result["features"][0]
+    erg_agent = agent_registry.get("erg_reduced_graph_315")
+    assert feature["agent_id"] == "erg_reduced_graph_315"
+    assert feature["agent_version"] == erg_agent.version
+    assert feature["dim"] == erg_agent.output_dim
+    assert len(feature["values"]) == erg_agent.output_dim
+
+
+def test_compute_erg_values_are_continuous_not_binary(client):
+    """Guards against any accidental binarization/rounding in the API layer."""
+    response = client.post(
+        "/features/compute",
+        json={"smiles": [ASPIRIN], "agent_ids": ["erg_reduced_graph_315"]},
+    )
+    values = response.json()["results"][0]["features"][0]["values"]
+    assert any(v not in (0.0, 1.0) for v in values)
+
+
+def test_compute_matches_direct_erg_agent_computation(client):
+    """Cross-check the API output for aspirin against direct
+    ErgReducedGraphAgent.compute(), verifying fractional values survive the
+    HTTP/JSON round trip exactly (no rounding, truncation, or coercion)."""
+    response = client.post(
+        "/features/compute",
+        json={"smiles": [ASPIRIN], "agent_ids": ["erg_reduced_graph_315"]},
+    )
+    api_values = response.json()["results"][0]["features"][0]["values"]
+
+    mol = Chem.MolFromSmiles(ASPIRIN)
+    agent = agent_registry.get("erg_reduced_graph_315")
     direct_values = [float(v) for v in agent.compute(mol).tolist()]
 
     assert api_values == direct_values

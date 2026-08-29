@@ -51,6 +51,10 @@ export function AgentSelector({ agents, selectedIds, onToggle, loading, error }:
                   <dd>{agent.output_dim}</dd>
                 </div>
                 <div>
+                  <dt>Value type</dt>
+                  <dd>{agent.value_type}</dd>
+                </div>
+                <div>
                   <dt>Requires 3D</dt>
                   <dd>{agent.requires_3d ? "Yes" : "No"}</dd>
                 </div>

@@ -17,16 +17,27 @@ vi.mock("../api/client", async (importOriginal) => {
 
 const { getAgents, validateMolecules, computeFeatures } = await import("../api/client");
 
-const AGENTS: AgentMetadata[] = [
-  {
-    id: "morgan_ecfp4_1024",
-    name: "Morgan ECFP (radius=2, 1024 bits)",
-    version: "1.0.0",
-    output_dim: 1024,
-    requires_3d: false,
-    feature_names: null,
-  },
-];
+const MORGAN_AGENT: AgentMetadata = {
+  id: "morgan_ecfp4_1024",
+  name: "Morgan ECFP (radius=2, 1024 bits)",
+  version: "1.0.0",
+  output_dim: 1024,
+  requires_3d: false,
+  value_type: "binary",
+  feature_names: null,
+};
+
+const ERG_AGENT: AgentMetadata = {
+  id: "erg_reduced_graph_315",
+  name: "ErG Reduced-Graph Fingerprint",
+  version: "1.0.0",
+  output_dim: 315,
+  requires_3d: false,
+  value_type: "continuous",
+  feature_names: null,
+};
+
+const AGENTS: AgentMetadata[] = [MORGAN_AGENT];
 
 beforeEach(() => {
   vi.mocked(getAgents).mockReset();
@@ -116,6 +127,82 @@ describe("App", () => {
 
     const resultsPanel = await screen.findByTestId("results-panel");
     expect(resultsPanel).toHaveTextContent("1024");
+  });
+
+  it("discovers a continuous-valued agent (e.g. ErG) automatically and renders fractional results", async () => {
+    vi.mocked(getAgents).mockResolvedValue([MORGAN_AGENT, ERG_AGENT]);
+    vi.mocked(validateMolecules).mockResolvedValue({
+      results: [{ smiles: "CC(=O)Oc1ccccc1C(=O)O", valid: true, error: null }],
+    } satisfies ValidateResponse);
+    vi.mocked(computeFeatures).mockResolvedValue({
+      results: [
+        {
+          smiles: "CC(=O)Oc1ccccc1C(=O)O",
+          valid: true,
+          error: null,
+          features: [
+            {
+              agent_id: "erg_reduced_graph_315",
+              agent_version: "1.0.0",
+              values: [0, 0.3, 1.6, 0.9],
+              dim: 315,
+            },
+          ],
+        },
+      ],
+    } satisfies ComputeResponse);
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    // Appears automatically, with no hardcoded ErG name/id/dim anywhere in App.
+    expect(await screen.findByText("erg_reduced_graph_315")).toBeInTheDocument();
+
+    await addSmilesViaTextarea(user, "CC(=O)Oc1ccccc1C(=O)O");
+    await screen.findByText("Valid");
+
+    // Select ErG, then deselect Morgan-only default to isolate the request.
+    const ergCheckbox = screen.getByRole("checkbox", { name: /erg reduced-graph/i });
+    await user.click(ergCheckbox);
+    await user.click(screen.getByRole("button", { name: /^compute$/i }));
+
+    await waitFor(() =>
+      expect(computeFeatures).toHaveBeenCalledWith(
+        ["CC(=O)Oc1ccccc1C(=O)O"],
+        ["erg_reduced_graph_315"],
+      ),
+    );
+
+    const resultsPanel = await screen.findByTestId("results-panel");
+    expect(resultsPanel).toHaveTextContent("erg_reduced_graph_315");
+    expect(resultsPanel).toHaveTextContent("315");
+  });
+
+  it("omits a deselected agent from the compute request", async () => {
+    vi.mocked(getAgents).mockResolvedValue([MORGAN_AGENT, ERG_AGENT]);
+    vi.mocked(validateMolecules).mockResolvedValue({
+      results: [{ smiles: "CCO", valid: true, error: null }],
+    } satisfies ValidateResponse);
+    vi.mocked(computeFeatures).mockResolvedValue({
+      results: [{ smiles: "CCO", valid: true, error: null, features: [] }],
+    } satisfies ComputeResponse);
+
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByText("erg_reduced_graph_315");
+
+    await addSmilesViaTextarea(user, "CCO");
+    await screen.findByText("Valid");
+
+    // Select both, then deselect ErG: only Morgan should remain in the request.
+    await user.click(screen.getByRole("checkbox", { name: /morgan ecfp/i }));
+    await user.click(screen.getByRole("checkbox", { name: /erg reduced-graph/i }));
+    await user.click(screen.getByRole("checkbox", { name: /erg reduced-graph/i }));
+    await user.click(screen.getByRole("button", { name: /^compute$/i }));
+
+    await waitFor(() =>
+      expect(computeFeatures).toHaveBeenCalledWith(["CCO"], ["morgan_ecfp4_1024"]),
+    );
   });
 
   it("shows a clear error when the compute request fails", async () => {

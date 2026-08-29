@@ -38,6 +38,7 @@ class PhysicochemicalDescriptorAgent(FeatureAgent):
     version = "1.0.0"
     output_dim = len(DESCRIPTOR_NAMES)
     requires_3d = False
+    value_type = "continuous"
 
     descriptor_names = DESCRIPTOR_NAMES
 

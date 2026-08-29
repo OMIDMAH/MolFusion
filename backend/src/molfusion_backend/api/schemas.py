@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field, model_validator
 
 
@@ -13,6 +15,7 @@ class AgentMetadata(BaseModel):
     version: str
     output_dim: int
     requires_3d: bool
+    value_type: Literal["binary", "continuous"]
     feature_names: list[str] | None = None
 
 

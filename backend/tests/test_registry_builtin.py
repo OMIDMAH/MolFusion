@@ -1,6 +1,7 @@
 from molfusion_backend.agents import registry
 from molfusion_backend.agents.avalon import AvalonFingerprintAgent
 from molfusion_backend.agents.descriptors import PhysicochemicalDescriptorAgent
+from molfusion_backend.agents.erg import ErgReducedGraphAgent
 from molfusion_backend.agents.maccs import MACCSKeysAgent
 from molfusion_backend.agents.morgan import MorganFingerprintAgent
 
@@ -9,12 +10,14 @@ EXPECTED_IDS = {
     MACCSKeysAgent.id,
     PhysicochemicalDescriptorAgent.id,
     AvalonFingerprintAgent.id,
+    ErgReducedGraphAgent.id,
 }
 
 
 def test_production_registry_contains_exactly_the_expected_agents():
     listed_ids = {entry["id"] for entry in registry.list_agents()}
     assert listed_ids == EXPECTED_IDS
+    assert len(EXPECTED_IDS) == 5
 
 
 def test_ids_are_unique():
@@ -29,6 +32,9 @@ def test_metadata_dimensions_are_correct():
     assert metadata_by_id[MACCSKeysAgent.id]["output_dim"] == 167
     assert metadata_by_id[AvalonFingerprintAgent.id]["output_dim"] == 1024
     assert (
+        metadata_by_id[ErgReducedGraphAgent.id]["output_dim"] == ErgReducedGraphAgent.output_dim
+    )
+    assert (
         metadata_by_id[PhysicochemicalDescriptorAgent.id]["output_dim"]
         == PhysicochemicalDescriptorAgent.output_dim
     )
@@ -41,6 +47,7 @@ def test_agents_are_retrievable_by_id():
         registry.get(PhysicochemicalDescriptorAgent.id), PhysicochemicalDescriptorAgent
     )
     assert isinstance(registry.get(AvalonFingerprintAgent.id), AvalonFingerprintAgent)
+    assert isinstance(registry.get(ErgReducedGraphAgent.id), ErgReducedGraphAgent)
 
 
 def test_descriptor_agent_exposes_feature_names():
@@ -65,3 +72,32 @@ def test_avalon_agent_metadata():
     assert avalon["output_dim"] == 1024
     assert avalon["requires_3d"] is False
     assert avalon["version"]
+
+
+def test_erg_agent_metadata():
+    metadata_by_id = {entry["id"]: entry for entry in registry.list_agents()}
+    erg = metadata_by_id[ErgReducedGraphAgent.id]
+    assert erg["id"] == "erg_reduced_graph_315"
+    assert erg["output_dim"] == ErgReducedGraphAgent.output_dim
+    assert erg["output_dim"] > 0
+    assert erg["requires_3d"] is False
+    assert erg["value_type"] == "continuous"
+    assert erg["version"]
+    assert erg["feature_names"] is None
+
+
+def test_value_type_distinguishes_binary_and_continuous_agents():
+    metadata_by_id = {entry["id"]: entry for entry in registry.list_agents()}
+
+    for binary_agent_id in (
+        MorganFingerprintAgent.id,
+        MACCSKeysAgent.id,
+        AvalonFingerprintAgent.id,
+    ):
+        assert metadata_by_id[binary_agent_id]["value_type"] == "binary"
+
+    for continuous_agent_id in (
+        PhysicochemicalDescriptorAgent.id,
+        ErgReducedGraphAgent.id,
+    ):
+        assert metadata_by_id[continuous_agent_id]["value_type"] == "continuous"

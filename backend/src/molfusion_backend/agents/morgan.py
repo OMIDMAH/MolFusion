@@ -20,6 +20,7 @@ class MorganFingerprintAgent(FeatureAgent):
     version = "1.0.0"
     output_dim = MORGAN_FP_SIZE
     requires_3d = False
+    value_type = "binary"
 
     def __init__(self) -> None:
         self._generator = rdFingerprintGenerator.GetMorganGenerator(

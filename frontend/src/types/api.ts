@@ -2,12 +2,17 @@ export interface HealthResponse {
   status: string;
 }
 
+/** "binary": every value is 0 or 1 (bit-vector fingerprints).
+ * "continuous": real-valued (descriptors, ErG, ...). */
+export type AgentValueType = "binary" | "continuous";
+
 export interface AgentMetadata {
   id: string;
   name: string;
   version: string;
   output_dim: number;
   requires_3d: boolean;
+  value_type: AgentValueType;
   /** Per-feature names (e.g. RDKit descriptor names), when the agent exposes them. */
   feature_names: string[] | null;
 }

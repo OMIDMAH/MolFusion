@@ -8,6 +8,7 @@ const MORGAN_AGENT: AgentMetadata = {
   version: "1.0.0",
   output_dim: 1024,
   requires_3d: false,
+  value_type: "binary",
   feature_names: null,
 };
 
@@ -17,6 +18,7 @@ const MACCS_AGENT: AgentMetadata = {
   version: "1.0.0",
   output_dim: 167,
   requires_3d: false,
+  value_type: "binary",
   feature_names: null,
 };
 
@@ -26,7 +28,18 @@ const DESCRIPTOR_AGENT: AgentMetadata = {
   version: "1.0.0",
   output_dim: 3,
   requires_3d: false,
+  value_type: "continuous",
   feature_names: ["MolWt", "MolLogP", "TPSA"],
+};
+
+const ERG_AGENT: AgentMetadata = {
+  id: "erg_reduced_graph_315",
+  name: "ErG Reduced-Graph Fingerprint",
+  version: "1.0.0",
+  output_dim: 4,
+  requires_3d: false,
+  value_type: "continuous",
+  feature_names: null,
 };
 
 describe("parseSmilesCsv", () => {
@@ -192,6 +205,31 @@ describe("buildResultsCsv", () => {
     const csv = buildResultsCsv(results, [MORGAN_AGENT]);
     const [, row] = csv.split("\r\n");
     expect(row).toBe("CCO,true,,morgan_ecfp4_1024,1.0.0,2,,0;1");
+  });
+
+  it("preserves continuous fractional values (e.g. ErG) exactly, without rounding or binarizing", () => {
+    const values = [0, 0.3, 1.6, 0.9];
+    const results: MoleculeResult[] = [
+      {
+        smiles: "CC(=O)Oc1ccccc1C(=O)O",
+        valid: true,
+        error: null,
+        features: [
+          { agent_id: "erg_reduced_graph_315", agent_version: "1.0.0", values, dim: 4 },
+        ],
+      },
+    ];
+    const csv = buildResultsCsv(results, [ERG_AGENT]);
+    const [, row] = csv.split("\r\n");
+    expect(row).toBe(
+      "CC(=O)Oc1ccccc1C(=O)O,true,,erg_reduced_graph_315,1.0.0,4,,0;0.3;1.6;0.9",
+    );
+
+    // Round-trip: splitting the values field back apart must reproduce the
+    // original numbers exactly (no lossy formatting rule was applied).
+    const valuesField = row.split(",").pop() ?? "";
+    const parsedBack = valuesField.split(";").map(Number);
+    expect(parsedBack).toEqual(values);
   });
 
   it("never recomputes or reorders values — echoes them verbatim from the API response", () => {
