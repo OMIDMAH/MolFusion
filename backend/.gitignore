@@ -10,3 +10,10 @@ build/
 # metadata schemas are code, not artifacts, and stay tracked.
 /artifacts/*
 !/artifacts/README.md
+
+# Generated reference corpora and the ChEMBL source data they are built
+# from (Phase 5F-B). Both are external build inputs/outputs -- a ChEMBL
+# SQLite release is multi-GB and a built corpus is hundreds of MB -- so
+# neither belongs in version control. Only the builder code, its tests,
+# and docs/reproducibility.md are tracked.
+/corpus_data/

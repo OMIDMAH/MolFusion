@@ -1,11 +1,11 @@
 # Reproducibility: artifact and representation contracts
 
 This document covers the pieces that must be frozen *before* any fitted
-representation exists: the generic artifact infrastructure (Phase 5E) and
-the SMILES normalization/tokenization contracts (Phase 5F-A). No fitted or
-pretrained representation (TF-IDF, Group SELFIES, ChemBERTa, GNN/VAE
-checkpoints, etc.) is implemented yet -- these are the layers those will
-build on.
+representation exists: the generic artifact infrastructure (Phase 5E), the
+SMILES normalization/tokenization contracts (Phase 5F-A), and the ChEMBL 37
+reference corpus (Phase 5F-B). No fitted or pretrained representation
+(TF-IDF, Group SELFIES, ChemBERTa, GNN/VAE checkpoints, etc.) is
+implemented yet -- these are the layers those will build on.
 
 ## What "artifact" means here
 
@@ -181,3 +181,193 @@ assumed from an older tokenizer regex).
 Unrecognized input raises `ValueError` naming the offending offset; the
 lexer never skips a character or returns a shortened sequence. `""`
 tokenizes to `()` -- again a successful empty result, not a failure.
+
+## Reference corpus: ChEMBL 37
+
+Introduced in Phase 5F-B. The reference corpus is the frozen, unsupervised
+set of molecules that a future fitted text representation (TF-IDF first)
+will be fitted on. Phase 5F-B builds it and nothing else: no vectorizer is
+fitted, no vocabulary or n-gram range is chosen, and no fitting parameter
+appears anywhere in the output.
+
+### Source
+
+The official EMBL-EBI bulk release, used as a concrete versioned release
+rather than an ambiguous `latest` pointer:
+
+```
+https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/releases/chembl_37/chembl_37_sqlite.tar.gz
+```
+
+The SQLite distribution is preferred over the ChEMBL web API: millions of
+paginated requests would be neither deterministic nor reproducible.
+Third-party repackaged copies of ChEMBL are never used. EBI publishes a
+`checksums.txt` next to the archive; pass its digest to
+`--expected-archive-sha256` and the build refuses to run unless the bytes
+match.
+
+Source data is an external build dependency, not a repository artifact.
+The archive, the decompressed database, and the built corpus are all
+ignored by `backend/.gitignore` (`/corpus_data/`) and never committed.
+
+### Building
+
+```
+python -m molfusion_backend.corpus \
+    --source-db  E:\chembl_source\chembl_37.db \
+    --output-dir E:\chembl_source\corpus \
+    --source-archive E:\chembl_source\chembl_37_sqlite.tar.gz \
+    --expected-archive-sha256 <digest from the official checksums.txt>
+```
+
+Downloading and building are separate concerns: the builder never touches
+the network, so a rebuild against an existing official database is fully
+offline. It streams the source table row by row and retains only the
+canonical SMILES strings -- never a DataFrame of ChEMBL, and never a
+population of RDKit `Mol` objects or token tuples.
+
+Existing finalized output is not overwritten unless `--force` is given,
+and both files are written to a staging directory and moved into place
+only after the whole build succeeds, so a build that fails midway can
+never leave a mixture of old and new payloads.
+
+### Pipeline
+
+```
+ChEMBL SQLite -> compound_structures -> MolFusion canonicalization
+-> lossless tokenizer validation -> drop unusable records
+-> deduplicate on canonical SMILES -> lexicographic sort
+-> logical corpus bytes -> SHA-256 -> build report
+```
+
+**Extraction.** One query against the structural table only:
+
+```sql
+SELECT s.molregno, d.chembl_id, s.canonical_smiles
+FROM compound_structures AS s
+LEFT JOIN molecule_dictionary AS d ON d.molregno = s.molregno
+ORDER BY s.molregno
+```
+
+`molecule_dictionary` is joined solely so a diagnostic can name a ChEMBL
+accession instead of an internal `molregno`; a source without that table
+still produces the identical corpus. The `ORDER BY` does not make the
+corpus deterministic -- the final sort does that -- it only makes
+scan-order diagnostics reproducible.
+
+**Normalization.** Every record goes through the Phase 5F-A production
+helpers (`parse_smiles` + `canonical_smiles_from_mol`, which together are
+exactly `canonicalize_smiles`). The builder contains no RDKit
+normalization logic of its own. No MW, LogP, Rule-of-Five, or any other
+property filter is applied.
+
+**Exclusions**, each counted in its own category so no record can vanish
+silently: `null_smiles`, `empty_smiles` (empty or whitespace-only),
+`rdkit_parse_failures`, `zero_atom_molecules`. Phase 5F-A deliberately
+allows `"" -> ""` at the helper level; the corpus does not inherit that,
+and an empty structure is never emitted as a document.
+
+**Tokenizer validation.** Every corpus document must satisfy
+`"".join(tokenize_smiles(s)) == s`. The input here is our own normalizer's
+output, so a violation is a contract breach between 5F-A's two halves, not
+input noise: the build **aborts** and names the offending SMILES.
+`--allow-tokenizer-failures` downgrades that to an excluded, counted
+record for a deliberately documented exception, and the report always
+records that it was used, so a lenient build can never be mistaken for a
+clean one. This is validated with an explicit check, never a bare
+`assert`, which `python -O` would strip.
+
+Deduplication keys on the exact canonical string, so validating each
+distinct canonical SMILES once is equivalent to validating every record
+that produced it.
+
+**Deduplication** happens only *after* canonicalization, keyed on the
+canonical isomeric SMILES -- never on the raw ChEMBL string, `molregno`,
+ChEMBL ID, InChIKey, or a non-isomeric form. Distinct stereoisomers stay
+distinct because the canonical form distinguishes them.
+
+**Ordering** is `sorted(unique_canonical_smiles)`: Python's Unicode
+code-point ordering, which is locale-independent. The corpus bytes are
+identical for any source row order, any output path, and any host locale.
+
+### Logical serialization contract
+
+Frozen as `utf8_lf_sorted_unique_final_newline_v1`:
+
+| Property | Value |
+| --- | --- |
+| Encoding | UTF-8, no BOM |
+| Newline | LF only |
+| Layout | one canonical SMILES per line, no header |
+| Contents | unique entries, lexicographically sorted |
+| Final newline | yes |
+
+For N molecules the logical bytes are exactly:
+
+```python
+("\n".join(sorted_unique_smiles) + "\n").encode("utf-8")
+```
+
+and the empty corpus is `b""` -- zero lines means zero terminators, not a
+lone newline. Every write goes through raw binary I/O, so a Windows build
+produces the same bytes as a Linux one; the code never opens the corpus in
+text mode. A record containing a line break is rejected rather than
+silently split into two documents.
+
+### `fit_corpus_sha256`
+
+> SHA-256 of the exact normalized logical corpus bytes that will later be
+> supplied to fitting.
+
+It is therefore independent of SQLite physical layout, gzip/tar metadata,
+source row ordering, Windows vs Linux newline defaults, download time, and
+file modification time. It is computed over the corpus in the same
+streaming pass that writes it, so it is necessarily the digest of the
+bytes that landed on disk.
+
+**Three different checksums exist and must never be conflated:**
+
+| Field | Identifies |
+| --- | --- |
+| `source.assets.archive.sha256` | the exact downloaded archive bytes |
+| `source.assets.database.sha256` | the decompressed SQLite database |
+| `fit_corpus.sha256` | the logical corpus -- the scientific identity |
+
+The first two are provenance: they say which bytes a build consumed. Only
+the third identifies the corpus itself. An archive repack or a SQLite
+`VACUUM` changes the first two without changing the third, and that is
+correct.
+
+### Build report
+
+`corpus_build_report.json` records the contract IDs (normalization,
+tokenizer, serialization), full source provenance including checksum
+verification status, every filtering and deduplication count, the fit
+corpus digest/size/document count, corpus statistics, and the Python,
+RDKit, SQLite and MolFusion git versions that produced it.
+
+Exactly one field is volatile: `build.built_at`. Everything else is a
+function of the source database and the frozen contracts, so two builds of
+the same source agree everywhere else -- which is what makes comparing
+`deterministic_report_view(report)` a meaningful determinism check. The
+timestamp never enters the corpus hash.
+
+Statistics are corpus *shape* only -- document count, SMILES length and
+token count (min/max/mean/median), and how many entries carry disconnected
+components or stereochemistry. Vocabulary, document-frequency, n-gram and
+TF-IDF analysis are deliberately absent; they are Phase 5F-C.
+
+### Leakage policy
+
+The corpus is an external, unsupervised molecular reference corpus, built
+independently of every downstream supervised task. No target, assay,
+activity measurement, potency value, ADMET endpoint, publication, maximum
+phase, or benchmark-membership flag is read -- the builder opens the
+structural table and nothing else, and the report asserts
+`source.uses_downstream_labels: false`. No train/validation/test
+assignment, TDC label, or MolFusion model result is consulted.
+
+Unlabeled molecules may of course overlap between ChEMBL and a future
+benchmark. That is an unsupervised-pretraining exposure question to be
+documented and audited separately; no downstream-data exclusion logic
+belongs in this phase.

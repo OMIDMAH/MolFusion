@@ -2,8 +2,9 @@
 
 - [`reproducibility.md`](reproducibility.md) — artifact infrastructure:
   directory convention, metadata schema, checksum verification,
-  `agent_version` vs `artifact_version`; plus the SMILES normalization and
-  tokenization contracts every text-fitted representation depends on
+  `agent_version` vs `artifact_version`; the SMILES normalization and
+  tokenization contracts every text-fitted representation depends on; and
+  the ChEMBL 37 reference corpus builder and its `fit_corpus_sha256`
 
 Planned documents (not yet written):
 
