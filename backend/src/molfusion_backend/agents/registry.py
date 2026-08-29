@@ -44,6 +44,7 @@ class AgentRegistry:
                 "output_dim": agent.output_dim,
                 "requires_3d": agent.requires_3d,
                 "value_type": agent.value_type,
+                "output_structure": agent.output_structure,
                 # Optional, per-feature names (e.g. descriptor/fragment
                 # names) for agents that expose them via a `feature_names`
                 # attribute. None for agents with no such metadata (e.g.

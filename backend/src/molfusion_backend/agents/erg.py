@@ -62,6 +62,7 @@ class ErgReducedGraphAgent(FeatureAgent):
     output_dim = ERG_OUTPUT_DIM
     requires_3d = False
     value_type = "continuous"
+    output_structure = "vector"
 
     def compute(self, mol: Chem.Mol) -> np.ndarray:
         if mol is None:

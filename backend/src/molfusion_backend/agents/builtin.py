@@ -5,6 +5,7 @@ from molfusion_backend.agents.fragments import FragmentDescriptorAgent
 from molfusion_backend.agents.maccs import MACCSKeysAgent
 from molfusion_backend.agents.morgan import MorganFingerprintAgent
 from molfusion_backend.agents.registry import registry
+from molfusion_backend.agents.selfies_agent import SelfiesSequenceAgent
 
 
 def register_builtin_agents() -> None:
@@ -19,3 +20,4 @@ def register_builtin_agents() -> None:
     registry.register(AvalonFingerprintAgent())
     registry.register(ErgReducedGraphAgent())
     registry.register(FragmentDescriptorAgent())
+    registry.register(SelfiesSequenceAgent())

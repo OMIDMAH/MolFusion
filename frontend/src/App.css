@@ -123,3 +123,24 @@
   color: var(--danger);
   background: var(--danger-bg);
 }
+
+.sequence-result {
+  margin-top: 10px;
+}
+
+.sequence-result p {
+  margin: 0 0 4px;
+}
+
+.sequence-tokens {
+  font-family: var(--mono);
+  font-size: 13px;
+  max-height: 160px;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 8px;
+}

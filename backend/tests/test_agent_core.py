@@ -15,6 +15,7 @@ class DummyAgent(FeatureAgent):
     output_dim = 4
     requires_3d = False
     value_type = "continuous"
+    output_structure = "vector"
 
     def compute(self, mol: Chem.Mol) -> np.ndarray:
         return np.zeros(self.output_dim, dtype=float)
@@ -63,6 +64,7 @@ def test_list_agents_returns_registered_metadata(registry, dummy_agent):
             "output_dim": 4,
             "requires_3d": False,
             "value_type": "continuous",
+            "output_structure": "vector",
             "feature_names": None,
         }
     ]

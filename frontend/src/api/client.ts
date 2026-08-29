@@ -1,13 +1,16 @@
 import { API_BASE_URL } from "../config";
 import type {
   AgentMetadata,
+  AgentOutputStructure,
   AgentValueType,
   ComputeResponse,
-  FeatureVector,
+  FeatureOutput,
   HealthResponse,
   MoleculeResult,
+  SequenceFeatureOutput,
   ValidateResponse,
   ValidationResult,
+  VectorFeatureOutput,
 } from "../types/api";
 
 /** Raised for any failure talking to the backend: network, HTTP, or shape errors. */
@@ -94,6 +97,13 @@ function expectNumber(value: unknown, field: string): number {
   return value;
 }
 
+function expectNullableNumber(value: unknown, field: string): number | null {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  return expectNumber(value, field);
+}
+
 function expectBoolean(value: unknown, field: string): boolean {
   if (typeof value !== "boolean") {
     throw new ApiError(`Backend response is malformed: expected boolean for "${field}".`);
@@ -115,7 +125,12 @@ function expectArray(value: unknown, field: string): unknown[] {
   return value;
 }
 
-const VALID_AGENT_VALUE_TYPES: readonly AgentValueType[] = ["binary", "count", "continuous"];
+const VALID_AGENT_VALUE_TYPES: readonly AgentValueType[] = [
+  "binary",
+  "count",
+  "continuous",
+  "categorical",
+];
 
 function expectValueType(value: unknown, field: string): AgentValueType {
   if (!VALID_AGENT_VALUE_TYPES.includes(value as AgentValueType)) {
@@ -124,6 +139,17 @@ function expectValueType(value: unknown, field: string): AgentValueType {
     );
   }
   return value as AgentValueType;
+}
+
+const VALID_OUTPUT_STRUCTURES: readonly AgentOutputStructure[] = ["vector", "sequence"];
+
+function expectOutputStructure(value: unknown, field: string): AgentOutputStructure {
+  if (!VALID_OUTPUT_STRUCTURES.includes(value as AgentOutputStructure)) {
+    throw new ApiError(
+      `Backend response is malformed: expected one of ${JSON.stringify(VALID_OUTPUT_STRUCTURES)} for "${field}", got ${JSON.stringify(value)}.`,
+    );
+  }
+  return value as AgentOutputStructure;
 }
 
 function parseAgentMetadata(value: unknown): AgentMetadata {
@@ -140,9 +166,10 @@ function parseAgentMetadata(value: unknown): AgentMetadata {
     id: expectString(value.id, "id"),
     name: expectString(value.name, "name"),
     version: expectString(value.version, "version"),
-    output_dim: expectNumber(value.output_dim, "output_dim"),
+    output_dim: expectNullableNumber(value.output_dim, "output_dim"),
     requires_3d: expectBoolean(value.requires_3d, "requires_3d"),
     value_type: expectValueType(value.value_type, "value_type"),
+    output_structure: expectOutputStructure(value.output_structure, "output_structure"),
     feature_names: featureNames,
   };
 }
@@ -158,19 +185,44 @@ function parseValidationResult(value: unknown): ValidationResult {
   };
 }
 
-function parseFeatureVector(value: unknown): FeatureVector {
-  if (!isRecord(value)) {
-    throw new ApiError("Backend returned malformed feature vector.");
-  }
+function parseVectorFeatureOutput(value: Record<string, unknown>): VectorFeatureOutput {
   const values = expectArray(value.values, "values").map((entry, index) =>
     expectNumber(entry, `values[${index}]`),
   );
   return {
+    output_structure: "vector",
     agent_id: expectString(value.agent_id, "agent_id"),
     agent_version: expectString(value.agent_version, "agent_version"),
     values,
     dim: expectNumber(value.dim, "dim"),
   };
+}
+
+function parseSequenceFeatureOutput(value: Record<string, unknown>): SequenceFeatureOutput {
+  const tokens = expectArray(value.tokens, "tokens").map((entry, index) =>
+    expectString(entry, `tokens[${index}]`),
+  );
+  return {
+    output_structure: "sequence",
+    agent_id: expectString(value.agent_id, "agent_id"),
+    agent_version: expectString(value.agent_version, "agent_version"),
+    tokens,
+    length: expectNumber(value.length, "length"),
+  };
+}
+
+/** Dispatches generically on the feature's own `output_structure` --
+ * never on agent_id -- so a future output_structure value fails loudly
+ * here instead of being silently mishandled. */
+function parseFeatureOutput(value: unknown): FeatureOutput {
+  if (!isRecord(value)) {
+    throw new ApiError("Backend returned a malformed feature output.");
+  }
+  const outputStructure = expectOutputStructure(value.output_structure, "output_structure");
+  if (outputStructure === "vector") {
+    return parseVectorFeatureOutput(value);
+  }
+  return parseSequenceFeatureOutput(value);
 }
 
 function parseMoleculeResult(value: unknown): MoleculeResult {
@@ -181,7 +233,7 @@ function parseMoleculeResult(value: unknown): MoleculeResult {
     smiles: expectString(value.smiles, "smiles"),
     valid: expectBoolean(value.valid, "valid"),
     error: expectNullableString(value.error, "error"),
-    features: expectArray(value.features, "features").map(parseFeatureVector),
+    features: expectArray(value.features, "features").map(parseFeatureOutput),
   };
 }
 

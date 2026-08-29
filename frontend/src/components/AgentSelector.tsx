@@ -48,7 +48,11 @@ export function AgentSelector({ agents, selectedIds, onToggle, loading, error }:
                 </div>
                 <div>
                   <dt>Output dim</dt>
-                  <dd>{agent.output_dim}</dd>
+                  <dd>{agent.output_dim === null ? "Variable" : agent.output_dim}</dd>
+                </div>
+                <div>
+                  <dt>Output structure</dt>
+                  <dd>{agent.output_structure}</dd>
                 </div>
                 <div>
                   <dt>Value type</dt>

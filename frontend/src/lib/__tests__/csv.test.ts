@@ -9,6 +9,7 @@ const MORGAN_AGENT: AgentMetadata = {
   output_dim: 1024,
   requires_3d: false,
   value_type: "binary",
+  output_structure: "vector",
   feature_names: null,
 };
 
@@ -19,6 +20,7 @@ const MACCS_AGENT: AgentMetadata = {
   output_dim: 167,
   requires_3d: false,
   value_type: "binary",
+  output_structure: "vector",
   feature_names: null,
 };
 
@@ -29,6 +31,7 @@ const DESCRIPTOR_AGENT: AgentMetadata = {
   output_dim: 3,
   requires_3d: false,
   value_type: "continuous",
+  output_structure: "vector",
   feature_names: ["MolWt", "MolLogP", "TPSA"],
 };
 
@@ -39,6 +42,7 @@ const ERG_AGENT: AgentMetadata = {
   output_dim: 4,
   requires_3d: false,
   value_type: "continuous",
+  output_structure: "vector",
   feature_names: null,
 };
 
@@ -49,8 +53,98 @@ const FRAGMENT_AGENT: AgentMetadata = {
   output_dim: 4,
   requires_3d: false,
   value_type: "count",
+  output_structure: "vector",
   feature_names: ["fr_Al_COO", "fr_Ar_COO", "fr_benzene", "fr_ester"],
 };
+
+const SELFIES_AGENT: AgentMetadata = {
+  id: "selfies_sequence",
+  name: "SELFIES Sequence",
+  version: "1.0.0",
+  output_dim: null,
+  requires_3d: false,
+  value_type: "categorical",
+  output_structure: "sequence",
+  feature_names: null,
+};
+
+const HEADER_ROW =
+  "smiles,valid,error,agent_id,agent_version,output_structure,value_type,dim,feature_names,values,sequence_length,sequence_tokens,sequence_string";
+
+/** Mirrors csv.ts's own escaping rule, so expected rows built here go
+ * through the same quoting logic as the code under test. */
+function escapeForTest(value: string): string {
+  if (/[",\r\n]/.test(value)) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
+
+function vectorRow(fields: {
+  smiles: string;
+  valid: boolean;
+  error?: string;
+  agentId: string;
+  agentVersion: string;
+  valueType: string;
+  dim: number;
+  featureNames?: string;
+  values: string;
+}): string {
+  return [
+    fields.smiles,
+    String(fields.valid),
+    fields.error ?? "",
+    fields.agentId,
+    fields.agentVersion,
+    "vector",
+    fields.valueType,
+    String(fields.dim),
+    fields.featureNames ?? "",
+    fields.values,
+    "",
+    "",
+    "",
+  ]
+    .map(escapeForTest)
+    .join(",");
+}
+
+function sequenceRow(fields: {
+  smiles: string;
+  valid: boolean;
+  error?: string;
+  agentId: string;
+  agentVersion: string;
+  valueType: string;
+  length: number;
+  tokensJson: string;
+  sequenceString: string;
+}): string {
+  return [
+    fields.smiles,
+    String(fields.valid),
+    fields.error ?? "",
+    fields.agentId,
+    fields.agentVersion,
+    "sequence",
+    fields.valueType,
+    "",
+    "",
+    "",
+    String(fields.length),
+    fields.tokensJson,
+    fields.sequenceString,
+  ]
+    .map(escapeForTest)
+    .join(",");
+}
+
+function noFeatureRow(smiles: string, valid: boolean, error = ""): string {
+  return [smiles, String(valid), error, "", "", "", "", "", "", "", "", "", ""]
+    .map(escapeForTest)
+    .join(",");
+}
 
 describe("parseSmilesCsv", () => {
   it("extracts the smiles column case-insensitively and preserves row order", () => {
@@ -80,14 +174,21 @@ describe("parseSmilesCsv", () => {
   });
 });
 
-describe("buildResultsCsv", () => {
+describe("buildResultsCsv header", () => {
+  it("has the generic header covering both vector and sequence columns", () => {
+    const csv = buildResultsCsv([], []);
+    expect(csv.split("\r\n")[0]).toBe(HEADER_ROW);
+  });
+});
+
+describe("buildResultsCsv — vector outputs", () => {
   it("quotes fields containing commas", () => {
     const results: MoleculeResult[] = [
       { smiles: "CCO, ethanol", valid: true, error: null, features: [] },
     ];
     const csv = buildResultsCsv(results, []);
     const [, row] = csv.split("\r\n");
-    expect(row).toBe('"CCO, ethanol",true,,,,,,');
+    expect(row).toBe(noFeatureRow("CCO, ethanol", true));
   });
 
   it("quotes fields containing double quotes and doubles them", () => {
@@ -101,9 +202,7 @@ describe("buildResultsCsv", () => {
     ];
     const csv = buildResultsCsv(results, []);
     const lines = csv.split("\r\n");
-    expect(lines[0]).toBe(
-      "smiles,valid,error,agent_id,agent_version,dim,feature_names,values",
-    );
+    expect(lines[0]).toBe(HEADER_ROW);
     expect(lines[1]).toContain('"parse error: unexpected ""X"", stop"');
   });
 
@@ -121,7 +220,7 @@ describe("buildResultsCsv", () => {
     const results: MoleculeResult[] = [{ smiles: "CCO", valid: true, error: null, features: [] }];
     const csv = buildResultsCsv(results, []);
     const [, row] = csv.split("\r\n");
-    expect(row).toBe("CCO,true,,,,,,");
+    expect(row).toBe(noFeatureRow("CCO", true));
   });
 
   it("preserves smiles, agent_id, agent_version, and dim for a valid molecule", () => {
@@ -131,13 +230,29 @@ describe("buildResultsCsv", () => {
         valid: true,
         error: null,
         features: [
-          { agent_id: "maccs_keys_167", agent_version: "1.0.0", values: [0, 1, 0], dim: 3 },
+          {
+            output_structure: "vector",
+            agent_id: "maccs_keys_167",
+            agent_version: "1.0.0",
+            values: [0, 1, 0],
+            dim: 3,
+          },
         ],
       },
     ];
     const csv = buildResultsCsv(results, [MACCS_AGENT]);
     const [, row] = csv.split("\r\n");
-    expect(row).toBe("CCO,true,,maccs_keys_167,1.0.0,3,,0;1;0");
+    expect(row).toBe(
+      vectorRow({
+        smiles: "CCO",
+        valid: true,
+        agentId: "maccs_keys_167",
+        agentVersion: "1.0.0",
+        valueType: "binary",
+        dim: 3,
+        values: "0;1;0",
+      }),
+    );
   });
 
   it("produces one row per feature vector across multiple agents", () => {
@@ -147,16 +262,48 @@ describe("buildResultsCsv", () => {
         valid: true,
         error: null,
         features: [
-          { agent_id: "morgan_ecfp4_1024", agent_version: "1.0.0", values: [0, 0, 1], dim: 3 },
-          { agent_id: "maccs_keys_167", agent_version: "1.0.0", values: [1, 0], dim: 2 },
+          {
+            output_structure: "vector",
+            agent_id: "morgan_ecfp4_1024",
+            agent_version: "1.0.0",
+            values: [0, 0, 1],
+            dim: 3,
+          },
+          {
+            output_structure: "vector",
+            agent_id: "maccs_keys_167",
+            agent_version: "1.0.0",
+            values: [1, 0],
+            dim: 2,
+          },
         ],
       },
     ];
     const csv = buildResultsCsv(results, [MORGAN_AGENT, MACCS_AGENT]);
     const lines = csv.split("\r\n");
     expect(lines).toHaveLength(3); // header + 2 feature rows
-    expect(lines[1]).toBe("CCO,true,,morgan_ecfp4_1024,1.0.0,3,,0;0;1");
-    expect(lines[2]).toBe("CCO,true,,maccs_keys_167,1.0.0,2,,1;0");
+    expect(lines[1]).toBe(
+      vectorRow({
+        smiles: "CCO",
+        valid: true,
+        agentId: "morgan_ecfp4_1024",
+        agentVersion: "1.0.0",
+        valueType: "binary",
+        dim: 3,
+        values: "0;0;1",
+      }),
+    );
+    expect(lines[2]).toBe(
+      vectorRow({
+        smiles: "CCO",
+        valid: true,
+        agentId: "maccs_keys_167",
+        agentVersion: "1.0.0",
+        valueType: "binary",
+        dim: 2,
+        values: "1;0",
+      }),
+    );
   });
 
   it("produces rows for multiple molecules, invalid ones included, in input order", () => {
@@ -166,7 +313,13 @@ describe("buildResultsCsv", () => {
         valid: true,
         error: null,
         features: [
-          { agent_id: "maccs_keys_167", agent_version: "1.0.0", values: [1, 0], dim: 2 },
+          {
+            output_structure: "vector",
+            agent_id: "maccs_keys_167",
+            agent_version: "1.0.0",
+            values: [1, 0],
+            dim: 2,
+          },
         ],
       },
       { smiles: "INVALID", valid: false, error: "could not be parsed", features: [] },
@@ -175,10 +328,10 @@ describe("buildResultsCsv", () => {
     const lines = csv.split("\r\n");
     expect(lines).toHaveLength(3);
     expect(lines[1]).toContain("CCO,true");
-    expect(lines[2]).toBe("INVALID,false,could not be parsed,,,,,");
+    expect(lines[2]).toBe(noFeatureRow("INVALID", false, "could not be parsed"));
   });
 
-  it("preserves descriptor feature names, aligned with values, when the agent exposes them", () => {
+  it("preserves descriptor feature names and value_type, aligned with values", () => {
     const results: MoleculeResult[] = [
       {
         smiles: "CCO",
@@ -186,6 +339,7 @@ describe("buildResultsCsv", () => {
         error: null,
         features: [
           {
+            output_structure: "vector",
             agent_id: "rdkit_physchem_descriptors",
             agent_version: "1.0.0",
             values: [46.069, -0.0014, 20.23],
@@ -197,7 +351,16 @@ describe("buildResultsCsv", () => {
     const csv = buildResultsCsv(results, [DESCRIPTOR_AGENT]);
     const [, row] = csv.split("\r\n");
     expect(row).toBe(
-      "CCO,true,,rdkit_physchem_descriptors,1.0.0,3,MolWt;MolLogP;TPSA,46.069;-0.0014;20.23",
+      vectorRow({
+        smiles: "CCO",
+        valid: true,
+        agentId: "rdkit_physchem_descriptors",
+        agentVersion: "1.0.0",
+        valueType: "continuous",
+        dim: 3,
+        featureNames: "MolWt;MolLogP;TPSA",
+        values: "46.069;-0.0014;20.23",
+      }),
     );
   });
 
@@ -208,13 +371,29 @@ describe("buildResultsCsv", () => {
         valid: true,
         error: null,
         features: [
-          { agent_id: "morgan_ecfp4_1024", agent_version: "1.0.0", values: [0, 1], dim: 2 },
+          {
+            output_structure: "vector",
+            agent_id: "morgan_ecfp4_1024",
+            agent_version: "1.0.0",
+            values: [0, 1],
+            dim: 2,
+          },
         ],
       },
     ];
     const csv = buildResultsCsv(results, [MORGAN_AGENT]);
     const [, row] = csv.split("\r\n");
-    expect(row).toBe("CCO,true,,morgan_ecfp4_1024,1.0.0,2,,0;1");
+    expect(row).toBe(
+      vectorRow({
+        smiles: "CCO",
+        valid: true,
+        agentId: "morgan_ecfp4_1024",
+        agentVersion: "1.0.0",
+        valueType: "binary",
+        dim: 2,
+        values: "0;1",
+      }),
+    );
   });
 
   it("preserves continuous fractional values (e.g. ErG) exactly, without rounding or binarizing", () => {
@@ -225,19 +404,32 @@ describe("buildResultsCsv", () => {
         valid: true,
         error: null,
         features: [
-          { agent_id: "erg_reduced_graph_315", agent_version: "1.0.0", values, dim: 4 },
+          {
+            output_structure: "vector",
+            agent_id: "erg_reduced_graph_315",
+            agent_version: "1.0.0",
+            values,
+            dim: 4,
+          },
         ],
       },
     ];
     const csv = buildResultsCsv(results, [ERG_AGENT]);
     const [, row] = csv.split("\r\n");
     expect(row).toBe(
-      "CC(=O)Oc1ccccc1C(=O)O,true,,erg_reduced_graph_315,1.0.0,4,,0;0.3;1.6;0.9",
+      vectorRow({
+        smiles: "CC(=O)Oc1ccccc1C(=O)O",
+        valid: true,
+        agentId: "erg_reduced_graph_315",
+        agentVersion: "1.0.0",
+        valueType: "continuous",
+        dim: 4,
+        values: "0;0.3;1.6;0.9",
+      }),
     );
 
-    // Round-trip: splitting the values field back apart must reproduce the
-    // original numbers exactly (no lossy formatting rule was applied).
-    const valuesField = row.split(",").pop() ?? "";
+    // Round-trip: the values field must reproduce the original numbers exactly.
+    const valuesField = row.split(",")[9];
     const parsedBack = valuesField.split(";").map(Number);
     expect(parsedBack).toEqual(values);
   });
@@ -251,6 +443,7 @@ describe("buildResultsCsv", () => {
         error: null,
         features: [
           {
+            output_structure: "vector",
             agent_id: "rdkit_fragment_descriptors",
             agent_version: "1.0.0",
             values,
@@ -262,44 +455,18 @@ describe("buildResultsCsv", () => {
     const csv = buildResultsCsv(results, [FRAGMENT_AGENT]);
     const [, row] = csv.split("\r\n");
     expect(row).toBe(
-      "CC(=O)Oc1ccccc1C(=O)O,true,,rdkit_fragment_descriptors,1.0.0,4,fr_Al_COO;fr_Ar_COO;fr_benzene;fr_ester,0;1;2;3",
-    );
-    expect(csv).not.toContain("true;false");
-  });
-
-  it("lets binary, count, and continuous agents coexist in the same multi-agent CSV export", () => {
-    const results: MoleculeResult[] = [
-      {
+      vectorRow({
         smiles: "CC(=O)Oc1ccccc1C(=O)O",
         valid: true,
-        error: null,
-        features: [
-          { agent_id: "morgan_ecfp4_1024", agent_version: "1.0.0", values: [0, 1], dim: 2 },
-          {
-            agent_id: "rdkit_fragment_descriptors",
-            agent_version: "1.0.0",
-            values: [0, 1, 2, 3],
-            dim: 4,
-          },
-          {
-            agent_id: "rdkit_physchem_descriptors",
-            agent_version: "1.0.0",
-            values: [180.159, 1.31, 63.6],
-            dim: 3,
-          },
-        ],
-      },
-    ];
-    const csv = buildResultsCsv(results, [MORGAN_AGENT, FRAGMENT_AGENT, DESCRIPTOR_AGENT]);
-    const lines = csv.split("\r\n");
-    expect(lines).toHaveLength(4); // header + 3 feature rows, no fragment-specific special-casing
-    expect(lines[1]).toBe("CC(=O)Oc1ccccc1C(=O)O,true,,morgan_ecfp4_1024,1.0.0,2,,0;1");
-    expect(lines[2]).toBe(
-      "CC(=O)Oc1ccccc1C(=O)O,true,,rdkit_fragment_descriptors,1.0.0,4,fr_Al_COO;fr_Ar_COO;fr_benzene;fr_ester,0;1;2;3",
+        agentId: "rdkit_fragment_descriptors",
+        agentVersion: "1.0.0",
+        valueType: "count",
+        dim: 4,
+        featureNames: "fr_Al_COO;fr_Ar_COO;fr_benzene;fr_ester",
+        values: "0;1;2;3",
+      }),
     );
-    expect(lines[3]).toBe(
-      "CC(=O)Oc1ccccc1C(=O)O,true,,rdkit_physchem_descriptors,1.0.0,3,MolWt;MolLogP;TPSA,180.159;1.31;63.6",
-    );
+    expect(csv).not.toContain("true;false");
   });
 
   it("never recomputes or reorders values — echoes them verbatim from the API response", () => {
@@ -309,11 +476,284 @@ describe("buildResultsCsv", () => {
         smiles: "c1ccccc1",
         valid: true,
         error: null,
-        features: [{ agent_id: "x", agent_version: "9.9.9", values, dim: values.length }],
+        features: [
+          {
+            output_structure: "vector",
+            agent_id: "x",
+            agent_version: "9.9.9",
+            values,
+            dim: values.length,
+          },
+        ],
       },
     ];
     const csv = buildResultsCsv(results, []);
     const [, row] = csv.split("\r\n");
-    expect(row.endsWith(values.join(";"))).toBe(true);
+    expect(row).toBe(
+      vectorRow({
+        smiles: "c1ccccc1",
+        valid: true,
+        agentId: "x",
+        agentVersion: "9.9.9",
+        valueType: "",
+        dim: values.length,
+        values: values.join(";"),
+      }),
+    );
+  });
+});
+
+describe("buildResultsCsv — sequence outputs (SELFIES)", () => {
+  it("preserves a token sequence as a lossless JSON array, plus a convenience concatenated string", () => {
+    const tokens = ["[C]", "[C]", "[O]"];
+    const results: MoleculeResult[] = [
+      {
+        smiles: "CCO",
+        valid: true,
+        error: null,
+        features: [
+          {
+            output_structure: "sequence",
+            agent_id: "selfies_sequence",
+            agent_version: "1.0.0",
+            tokens,
+            length: 3,
+          },
+        ],
+      },
+    ];
+    const csv = buildResultsCsv(results, [SELFIES_AGENT]);
+    const lines = csv.split("\r\n");
+    expect(lines).toHaveLength(2);
+    expect(lines[1]).toBe(
+      sequenceRow({
+        smiles: "CCO",
+        valid: true,
+        agentId: "selfies_sequence",
+        agentVersion: "1.0.0",
+        valueType: "categorical",
+        length: 3,
+        tokensJson: JSON.stringify(tokens),
+        sequenceString: "[C][C][O]",
+      }),
+    );
+  });
+
+  it("does not create per-token feature_0..feature_N columns", () => {
+    const results: MoleculeResult[] = [
+      {
+        smiles: "CCO",
+        valid: true,
+        error: null,
+        features: [
+          {
+            output_structure: "sequence",
+            agent_id: "selfies_sequence",
+            agent_version: "1.0.0",
+            tokens: ["[C]", "[C]", "[O]"],
+            length: 3,
+          },
+        ],
+      },
+    ];
+    const csv = buildResultsCsv(results, [SELFIES_AGENT]);
+    expect(csv).not.toMatch(/feature_\d/);
+  });
+
+  it("correctly escapes tokens containing brackets and the JSON array's own quotes/commas", () => {
+    const tokens = ["[C@H1]", "[Branch1]", "[=Branch2]"];
+    const results: MoleculeResult[] = [
+      {
+        smiles: "C[C@H](O)Cl",
+        valid: true,
+        error: null,
+        features: [
+          {
+            output_structure: "sequence",
+            agent_id: "selfies_sequence",
+            agent_version: "1.0.0",
+            tokens,
+            length: tokens.length,
+          },
+        ],
+      },
+    ];
+    const csv = buildResultsCsv(results, [SELFIES_AGENT]);
+    const [, row] = csv.split("\r\n");
+
+    // JSON.stringify(tokens) contains commas and double quotes, so the CSV
+    // field must be wrapped in quotes with the inner quotes doubled.
+    const expectedJson = JSON.stringify(tokens);
+    const expectedEscaped = `"${expectedJson.replace(/"/g, '""')}"`;
+    expect(row).toContain(expectedEscaped);
+  });
+
+  it("round-trips the token list from the exported sequence_tokens field via JSON.parse", () => {
+    const tokens = ["[C]", "[=C]", "[Ring1]", "[Branch1]", "[C@H1]"];
+    const results: MoleculeResult[] = [
+      {
+        smiles: "c1ccccc1",
+        valid: true,
+        error: null,
+        features: [
+          {
+            output_structure: "sequence",
+            agent_id: "selfies_sequence",
+            agent_version: "1.0.0",
+            tokens,
+            length: tokens.length,
+          },
+        ],
+      },
+    ];
+    const csv = buildResultsCsv(results, [SELFIES_AGENT]);
+
+    // The quoted sequence_tokens field is the only quoted field on this
+    // line; extract it and reverse the CSV quoting to recover raw JSON.
+    const [, row] = csv.split("\r\n");
+    const match = row.match(/"((?:[^"]|"")*)"/);
+    expect(match).not.toBeNull();
+    const unescaped = (match as RegExpMatchArray)[1].replace(/""/g, '"');
+    const recovered = JSON.parse(unescaped);
+
+    expect(recovered).toEqual(tokens);
+  });
+
+  it("produces rows for multiple molecules' sequence outputs, in input order", () => {
+    const results: MoleculeResult[] = [
+      {
+        smiles: "CCO",
+        valid: true,
+        error: null,
+        features: [
+          {
+            output_structure: "sequence",
+            agent_id: "selfies_sequence",
+            agent_version: "1.0.0",
+            tokens: ["[C]", "[C]", "[O]"],
+            length: 3,
+          },
+        ],
+      },
+      {
+        smiles: "c1ccccc1",
+        valid: true,
+        error: null,
+        features: [
+          {
+            output_structure: "sequence",
+            agent_id: "selfies_sequence",
+            agent_version: "1.0.0",
+            tokens: ["[C]", "[=C]", "[C]", "[=C]", "[C]", "[=C]", "[Ring1]", "[=Branch1]"],
+            length: 8,
+          },
+        ],
+      },
+    ];
+    const csv = buildResultsCsv(results, [SELFIES_AGENT]);
+    const lines = csv.split("\r\n");
+    expect(lines).toHaveLength(3);
+    expect(lines[1]).toContain("CCO,true");
+    expect(lines[1]).toContain(",3,");
+    expect(lines[2]).toContain("c1ccccc1,true");
+    expect(lines[2]).toContain(",8,");
+  });
+});
+
+describe("buildResultsCsv — mixed vector and sequence outputs", () => {
+  it("lets binary, count, continuous, and categorical/sequence agents coexist in the same export", () => {
+    const results: MoleculeResult[] = [
+      {
+        smiles: "CC(=O)Oc1ccccc1C(=O)O",
+        valid: true,
+        error: null,
+        features: [
+          {
+            output_structure: "vector",
+            agent_id: "morgan_ecfp4_1024",
+            agent_version: "1.0.0",
+            values: [0, 1],
+            dim: 2,
+          },
+          {
+            output_structure: "vector",
+            agent_id: "rdkit_fragment_descriptors",
+            agent_version: "1.0.0",
+            values: [0, 1, 2, 3],
+            dim: 4,
+          },
+          {
+            output_structure: "vector",
+            agent_id: "rdkit_physchem_descriptors",
+            agent_version: "1.0.0",
+            values: [180.159, 1.31, 63.6],
+            dim: 3,
+          },
+          {
+            output_structure: "sequence",
+            agent_id: "selfies_sequence",
+            agent_version: "1.0.0",
+            tokens: ["[C]", "[C]"],
+            length: 2,
+          },
+        ],
+      },
+    ];
+    const csv = buildResultsCsv(results, [
+      MORGAN_AGENT,
+      FRAGMENT_AGENT,
+      DESCRIPTOR_AGENT,
+      SELFIES_AGENT,
+    ]);
+    const lines = csv.split("\r\n");
+    expect(lines).toHaveLength(5); // header + 4 feature rows, no agent-specific special-casing
+
+    expect(lines[1]).toBe(
+      vectorRow({
+        smiles: "CC(=O)Oc1ccccc1C(=O)O",
+        valid: true,
+        agentId: "morgan_ecfp4_1024",
+        agentVersion: "1.0.0",
+        valueType: "binary",
+        dim: 2,
+        values: "0;1",
+      }),
+    );
+    expect(lines[2]).toBe(
+      vectorRow({
+        smiles: "CC(=O)Oc1ccccc1C(=O)O",
+        valid: true,
+        agentId: "rdkit_fragment_descriptors",
+        agentVersion: "1.0.0",
+        valueType: "count",
+        dim: 4,
+        featureNames: "fr_Al_COO;fr_Ar_COO;fr_benzene;fr_ester",
+        values: "0;1;2;3",
+      }),
+    );
+    expect(lines[3]).toBe(
+      vectorRow({
+        smiles: "CC(=O)Oc1ccccc1C(=O)O",
+        valid: true,
+        agentId: "rdkit_physchem_descriptors",
+        agentVersion: "1.0.0",
+        valueType: "continuous",
+        dim: 3,
+        featureNames: "MolWt;MolLogP;TPSA",
+        values: "180.159;1.31;63.6",
+      }),
+    );
+    expect(lines[4]).toBe(
+      sequenceRow({
+        smiles: "CC(=O)Oc1ccccc1C(=O)O",
+        valid: true,
+        agentId: "selfies_sequence",
+        agentVersion: "1.0.0",
+        valueType: "categorical",
+        length: 2,
+        tokensJson: JSON.stringify(["[C]", "[C]"]),
+        sequenceString: "[C][C]",
+      }),
+    );
   });
 });

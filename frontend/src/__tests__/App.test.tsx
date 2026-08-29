@@ -24,6 +24,7 @@ const MORGAN_AGENT: AgentMetadata = {
   output_dim: 1024,
   requires_3d: false,
   value_type: "binary",
+  output_structure: "vector",
   feature_names: null,
 };
 
@@ -34,6 +35,7 @@ const ERG_AGENT: AgentMetadata = {
   output_dim: 315,
   requires_3d: false,
   value_type: "continuous",
+  output_structure: "vector",
   feature_names: null,
 };
 
@@ -44,7 +46,19 @@ const FRAGMENT_AGENT: AgentMetadata = {
   output_dim: 4,
   requires_3d: false,
   value_type: "count",
+  output_structure: "vector",
   feature_names: ["fr_Al_COO", "fr_Ar_COO", "fr_benzene", "fr_ester"],
+};
+
+const SELFIES_AGENT: AgentMetadata = {
+  id: "selfies_sequence",
+  name: "SELFIES Sequence",
+  version: "1.0.0",
+  output_dim: null,
+  requires_3d: false,
+  value_type: "categorical",
+  output_structure: "sequence",
+  feature_names: null,
 };
 
 const AGENTS: AgentMetadata[] = [MORGAN_AGENT];
@@ -112,6 +126,7 @@ describe("App", () => {
           error: null,
           features: [
             {
+              output_structure: "vector",
               agent_id: "morgan_ecfp4_1024",
               agent_version: "1.0.0",
               values: new Array(1024).fill(0),
@@ -152,6 +167,7 @@ describe("App", () => {
           error: null,
           features: [
             {
+              output_structure: "vector",
               agent_id: "erg_reduced_graph_315",
               agent_version: "1.0.0",
               values: [0, 0.3, 1.6, 0.9],
@@ -201,6 +217,7 @@ describe("App", () => {
           error: null,
           features: [
             {
+              output_structure: "vector",
               agent_id: "rdkit_fragment_descriptors",
               agent_version: "1.0.0",
               values: [0, 1, 2, 3],
@@ -239,6 +256,95 @@ describe("App", () => {
     // Count values must render as numbers, never coerced to booleans.
     expect(resultsPanel).not.toHaveTextContent("true");
     expect(resultsPanel).not.toHaveTextContent("false");
+  });
+
+  it("discovers a sequence-valued agent (e.g. SELFIES) automatically and renders its token sequence, not as numeric features", async () => {
+    vi.mocked(getAgents).mockResolvedValue([MORGAN_AGENT, SELFIES_AGENT]);
+    vi.mocked(validateMolecules).mockResolvedValue({
+      results: [{ smiles: "CCO", valid: true, error: null }],
+    } satisfies ValidateResponse);
+    vi.mocked(computeFeatures).mockResolvedValue({
+      results: [
+        {
+          smiles: "CCO",
+          valid: true,
+          error: null,
+          features: [
+            {
+              output_structure: "sequence",
+              agent_id: "selfies_sequence",
+              agent_version: "1.0.0",
+              tokens: ["[C]", "[C]", "[O]"],
+              length: 3,
+            },
+          ],
+        },
+      ],
+    } satisfies ComputeResponse);
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    // Appears automatically, with no hardcoded SELFIES name/id/dim anywhere in App.
+    expect(await screen.findByText("selfies_sequence")).toBeInTheDocument();
+
+    await addSmilesViaTextarea(user, "CCO");
+    await screen.findByText("Valid");
+
+    const selfiesCheckbox = screen.getByRole("checkbox", { name: /selfies sequence/i });
+    await user.click(selfiesCheckbox);
+    await user.click(screen.getByRole("button", { name: /^compute$/i }));
+
+    await waitFor(() =>
+      expect(computeFeatures).toHaveBeenCalledWith(["CCO"], ["selfies_sequence"]),
+    );
+
+    const resultsPanel = await screen.findByTestId("results-panel");
+    expect(resultsPanel).toHaveTextContent("selfies_sequence");
+    expect(resultsPanel).toHaveTextContent("3 tokens");
+    expect(resultsPanel).toHaveTextContent("[C][C][O]");
+  });
+
+  it("shows a valid molecule's badge AND its representation-computation error together (valid=true, error populated, features=[])", async () => {
+    // Generic regression, not SELFIES-specific: the backend distinguishes
+    // "RDKit rejected this SMILES" (valid=false) from "the molecule is
+    // fine but a requested representation could not be computed for it"
+    // (valid=true, error populated, features=[]). The UI must not hide
+    // that error just because valid=true.
+    vi.mocked(getAgents).mockResolvedValue([MORGAN_AGENT, SELFIES_AGENT]);
+    vi.mocked(validateMolecules).mockResolvedValue({
+      results: [{ smiles: "Cl[I](Cl)Cl", valid: true, error: null }],
+    } satisfies ValidateResponse);
+    vi.mocked(computeFeatures).mockResolvedValue({
+      results: [
+        {
+          smiles: "Cl[I](Cl)Cl",
+          valid: true,
+          error: "selfies_sequence: failed to encode molecule as SELFIES: 'Cl[I](Cl)Cl'",
+          features: [],
+        },
+      ],
+    } satisfies ComputeResponse);
+
+    const user = userEvent.setup();
+    render(<App />);
+    await addSmilesViaTextarea(user, "Cl[I](Cl)Cl");
+    await screen.findByText("Valid");
+
+    const selfiesCheckbox = screen.getByRole("checkbox", { name: /selfies sequence/i });
+    await user.click(selfiesCheckbox);
+    await user.click(screen.getByRole("button", { name: /^compute$/i }));
+
+    await waitFor(() => expect(computeFeatures).toHaveBeenCalled());
+
+    const resultsPanel = await screen.findByTestId("results-panel");
+    // The "Valid" badge is still shown for this molecule...
+    expect(resultsPanel).toHaveTextContent("Valid");
+    // ...but the computation-failure error must still be visible, not
+    // silently dropped because valid=true.
+    expect(resultsPanel).toHaveTextContent("failed to encode molecule as SELFIES");
+    // No fabricated feature content is rendered for the failed agent.
+    expect(resultsPanel).not.toHaveTextContent("tokens");
   });
 
   it("omits a deselected agent from the compute request", async () => {

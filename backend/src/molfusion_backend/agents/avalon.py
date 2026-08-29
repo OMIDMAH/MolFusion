@@ -28,6 +28,7 @@ class AvalonFingerprintAgent(FeatureAgent):
     output_dim = AVALON_FP_SIZE
     requires_3d = False
     value_type = "binary"
+    output_structure = "vector"
 
     def compute(self, mol: Chem.Mol) -> np.ndarray:
         if mol is None:

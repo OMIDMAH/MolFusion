@@ -108,23 +108,42 @@ function escapeCsvField(value: string): string {
   return value;
 }
 
+// A single generic row shape covers both "vector" and "sequence" outputs:
+// vector-only columns (dim/feature_names/values) are left empty on a
+// sequence row, and sequence-only columns (sequence_length/sequence_tokens/
+// sequence_string) are left empty on a vector row -- the same pattern
+// already used for feature_names being empty on agents that don't expose
+// it. This avoids ever creating per-token feature_0..feature_N columns.
 const EXPORT_HEADER = [
   "smiles",
   "valid",
   "error",
   "agent_id",
   "agent_version",
+  "output_structure",
+  "value_type",
   "dim",
   "feature_names",
   "values",
+  "sequence_length",
+  "sequence_tokens",
+  "sequence_string",
 ];
 
+const EMPTY_FEATURE_COLUMNS = ["", "", "", "", "", "", "", "", "", ""];
+
 /** Build a CSV export directly from a /features/compute API response.
- * One row per (molecule, feature vector); invalid molecules get a single
+ * One row per (molecule, feature output); invalid molecules get a single
  * row with empty agent columns. `agents` supplies each agent's
- * `feature_names` (from GET /agents) so the export can label values by
- * name where the backend exposes them — nothing here is recomputed,
- * reordered, or fabricated. */
+ * `feature_names`/`value_type` (from GET /agents) so the export can label
+ * values by name and type where the backend exposes them — nothing here is
+ * recomputed, reordered, or fabricated.
+ *
+ * Sequence outputs (e.g. SELFIES) are preserved losslessly as a JSON array
+ * in `sequence_tokens` (round-trippable via JSON.parse), never split into
+ * per-token columns, never padded/truncated, and never converted to
+ * numbers. `sequence_string` is a convenience concatenation
+ * (tokens.join("")) included alongside the tokens, not instead of them. */
 export function buildResultsCsv(results: MoleculeResult[], agents: AgentMetadata[]): string {
   const agentsById = new Map(agents.map((agent) => [agent.id, agent]));
   const lines = [EXPORT_HEADER.map(escapeCsvField).join(",")];
@@ -132,7 +151,7 @@ export function buildResultsCsv(results: MoleculeResult[], agents: AgentMetadata
   for (const result of results) {
     if (result.features.length === 0) {
       lines.push(
-        [result.smiles, String(result.valid), result.error ?? "", "", "", "", "", ""]
+        [result.smiles, String(result.valid), result.error ?? "", ...EMPTY_FEATURE_COLUMNS]
           .map(escapeCsvField)
           .join(","),
       );
@@ -140,7 +159,32 @@ export function buildResultsCsv(results: MoleculeResult[], agents: AgentMetadata
     }
 
     for (const feature of result.features) {
-      const featureNames = agentsById.get(feature.agent_id)?.feature_names;
+      const valueType = agentsById.get(feature.agent_id)?.value_type ?? "";
+
+      if (feature.output_structure === "vector") {
+        const featureNames = agentsById.get(feature.agent_id)?.feature_names;
+        lines.push(
+          [
+            result.smiles,
+            String(result.valid),
+            result.error ?? "",
+            feature.agent_id,
+            feature.agent_version,
+            feature.output_structure,
+            valueType,
+            String(feature.dim),
+            featureNames ? featureNames.join(";") : "",
+            feature.values.join(";"),
+            "",
+            "",
+            "",
+          ]
+            .map(escapeCsvField)
+            .join(","),
+        );
+        continue;
+      }
+
       lines.push(
         [
           result.smiles,
@@ -148,9 +192,14 @@ export function buildResultsCsv(results: MoleculeResult[], agents: AgentMetadata
           result.error ?? "",
           feature.agent_id,
           feature.agent_version,
-          String(feature.dim),
-          featureNames ? featureNames.join(";") : "",
-          feature.values.join(";"),
+          feature.output_structure,
+          valueType,
+          "",
+          "",
+          "",
+          String(feature.length),
+          JSON.stringify(feature.tokens),
+          feature.tokens.join(""),
         ]
           .map(escapeCsvField)
           .join(","),

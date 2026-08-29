@@ -135,6 +135,7 @@ class FragmentDescriptorAgent(FeatureAgent):
     output_dim = len(FRAGMENT_NAMES)
     requires_3d = False
     value_type = "count"
+    output_structure = "vector"
 
     feature_names = FRAGMENT_NAMES
 

@@ -5,21 +5,24 @@ from molfusion_backend.agents.erg import ErgReducedGraphAgent
 from molfusion_backend.agents.fragments import FragmentDescriptorAgent
 from molfusion_backend.agents.maccs import MACCSKeysAgent
 from molfusion_backend.agents.morgan import MorganFingerprintAgent
+from molfusion_backend.agents.selfies_agent import SelfiesSequenceAgent
 
-EXPECTED_IDS = {
-    MorganFingerprintAgent.id,
-    MACCSKeysAgent.id,
-    PhysicochemicalDescriptorAgent.id,
-    AvalonFingerprintAgent.id,
-    ErgReducedGraphAgent.id,
-    FragmentDescriptorAgent.id,
-}
+VECTOR_AGENT_CLASSES = (
+    MorganFingerprintAgent,
+    MACCSKeysAgent,
+    PhysicochemicalDescriptorAgent,
+    AvalonFingerprintAgent,
+    ErgReducedGraphAgent,
+    FragmentDescriptorAgent,
+)
+
+EXPECTED_IDS = {cls.id for cls in VECTOR_AGENT_CLASSES} | {SelfiesSequenceAgent.id}
 
 
 def test_production_registry_contains_exactly_the_expected_agents():
     listed_ids = {entry["id"] for entry in registry.list_agents()}
     assert listed_ids == EXPECTED_IDS
-    assert len(EXPECTED_IDS) == 6
+    assert len(EXPECTED_IDS) == 7
 
 
 def test_ids_are_unique():
@@ -44,6 +47,7 @@ def test_metadata_dimensions_are_correct():
         metadata_by_id[PhysicochemicalDescriptorAgent.id]["output_dim"]
         == PhysicochemicalDescriptorAgent.output_dim
     )
+    assert metadata_by_id[SelfiesSequenceAgent.id]["output_dim"] is None
 
 
 def test_agents_are_retrievable_by_id():
@@ -55,6 +59,7 @@ def test_agents_are_retrievable_by_id():
     assert isinstance(registry.get(AvalonFingerprintAgent.id), AvalonFingerprintAgent)
     assert isinstance(registry.get(ErgReducedGraphAgent.id), ErgReducedGraphAgent)
     assert isinstance(registry.get(FragmentDescriptorAgent.id), FragmentDescriptorAgent)
+    assert isinstance(registry.get(SelfiesSequenceAgent.id), SelfiesSequenceAgent)
 
 
 def test_descriptor_agent_exposes_feature_names():
@@ -78,6 +83,11 @@ def test_fingerprint_agents_have_no_feature_names():
     assert metadata_by_id[MorganFingerprintAgent.id]["feature_names"] is None
     assert metadata_by_id[MACCSKeysAgent.id]["feature_names"] is None
     assert metadata_by_id[AvalonFingerprintAgent.id]["feature_names"] is None
+
+
+def test_selfies_agent_has_no_feature_names():
+    metadata_by_id = {entry["id"]: entry for entry in registry.list_agents()}
+    assert metadata_by_id[SelfiesSequenceAgent.id]["feature_names"] is None
 
 
 def test_avalon_agent_metadata():
@@ -114,7 +124,19 @@ def test_fragment_agent_metadata():
     assert len(fragments["feature_names"]) == fragments["output_dim"]
 
 
-def test_value_type_distinguishes_binary_count_and_continuous_agents():
+def test_selfies_agent_metadata():
+    metadata_by_id = {entry["id"]: entry for entry in registry.list_agents()}
+    selfies_meta = metadata_by_id[SelfiesSequenceAgent.id]
+    assert selfies_meta["id"] == "selfies_sequence"
+    assert selfies_meta["version"] == "1.0.0"
+    assert selfies_meta["output_dim"] is None
+    assert selfies_meta["requires_3d"] is False
+    assert selfies_meta["value_type"] == "categorical"
+    assert selfies_meta["output_structure"] == "sequence"
+    assert selfies_meta["feature_names"] is None
+
+
+def test_value_type_distinguishes_binary_count_continuous_and_categorical_agents():
     metadata_by_id = {entry["id"]: entry for entry in registry.list_agents()}
 
     for binary_agent_id in (
@@ -131,3 +153,15 @@ def test_value_type_distinguishes_binary_count_and_continuous_agents():
         assert metadata_by_id[continuous_agent_id]["value_type"] == "continuous"
 
     assert metadata_by_id[FragmentDescriptorAgent.id]["value_type"] == "count"
+    assert metadata_by_id[SelfiesSequenceAgent.id]["value_type"] == "categorical"
+
+
+def test_output_structure_is_vector_for_all_pre_selfies_agents():
+    metadata_by_id = {entry["id"]: entry for entry in registry.list_agents()}
+    for cls in VECTOR_AGENT_CLASSES:
+        assert metadata_by_id[cls.id]["output_structure"] == "vector"
+
+
+def test_output_structure_is_sequence_for_selfies():
+    metadata_by_id = {entry["id"]: entry for entry in registry.list_agents()}
+    assert metadata_by_id[SelfiesSequenceAgent.id]["output_structure"] == "sequence"
