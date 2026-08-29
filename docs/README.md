@@ -2,7 +2,8 @@
 
 - [`reproducibility.md`](reproducibility.md) — artifact infrastructure:
   directory convention, metadata schema, checksum verification,
-  `agent_version` vs `artifact_version`
+  `agent_version` vs `artifact_version`; plus the SMILES normalization and
+  tokenization contracts every text-fitted representation depends on
 
 Planned documents (not yet written):
 

@@ -6,6 +6,7 @@ import selfies as sf
 from rdkit import Chem
 
 from molfusion_backend.agents.base import FeatureAgent
+from molfusion_backend.chemistry import canonical_smiles_from_mol
 
 # SELFIES exposes semantic constraints as *mutable global module state*
 # (selfies.set_semantic_constraints() / selfies.get_semantic_constraints()),
@@ -91,7 +92,11 @@ class SelfiesSequenceAgent(FeatureAgent):
                 f"{self.id}: compute() received mol=None; a valid RDKit Mol is required."
             )
 
-        canonical_smiles = Chem.MolToSmiles(mol, canonical=True, isomericSmiles=True)
+        # Shared with every other consumer of canonical isomeric SMILES via
+        # molfusion_backend.chemistry, so a single normalization contract
+        # governs them all -- identical output to the previous inline
+        # Chem.MolToSmiles(mol, canonical=True, isomericSmiles=True) call.
+        canonical_smiles = canonical_smiles_from_mol(mol)
 
         with _pinned_selfies_constraints():
             try:

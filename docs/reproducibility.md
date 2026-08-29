@@ -1,9 +1,11 @@
-# Reproducibility: artifact infrastructure
+# Reproducibility: artifact and representation contracts
 
-Introduced in Phase 5E. This document covers **generic artifact
-infrastructure** only. No fitted or pretrained representation (TF-IDF,
-Group SELFIES, ChemBERTa, GNN/VAE checkpoints, etc.) is implemented yet --
-this is the loading/validation layer those will build on.
+This document covers the pieces that must be frozen *before* any fitted
+representation exists: the generic artifact infrastructure (Phase 5E) and
+the SMILES normalization/tokenization contracts (Phase 5F-A). No fitted or
+pretrained representation (TF-IDF, Group SELFIES, ChemBERTa, GNN/VAE
+checkpoints, etc.) is implemented yet -- these are the layers those will
+build on.
 
 ## What "artifact" means here
 
@@ -105,3 +107,77 @@ The loader is deliberately representation-agnostic: it validates and
 resolves paths, but does not know how to deserialize a `.joblib`,
 `.pt`, or any other payload format. Turning `payload_paths` into a
 usable object (e.g. `joblib.load(...)`) is each consumer's job.
+
+## SMILES normalization and tokenization contracts
+
+Introduced in Phase 5F-A. Any future representation fitted on a corpus of
+SMILES text (TF-IDF first) depends on two deterministic string-level
+contracts *before* any fitting happens, because they decide corpus
+deduplication, the corpus checksum, the vocabulary, document frequencies,
+and runtime transformation alike. Like `agent_version` and
+`artifact_version`, they are versioned independently of each other and of
+the agent code, and each carries its own identifier for an artifact's
+`metadata.json` to record:
+
+| Contract | Identifier | Implementation |
+| --- | --- | --- |
+| Normalization | `rdkit_canonical_isomeric_smiles_v1` | `molfusion_backend.chemistry` |
+| Tokenization | `rdkit_smiles_lexer_v1` | `molfusion_backend.smiles_tokenizer` |
+
+They are two separate steps and are never fused; the tokenizer does not
+canonicalize its input:
+
+```python
+canonical = canonicalize_smiles(raw_smiles)
+tokens = tokenize_smiles(canonical)
+```
+
+### Normalization: `rdkit_canonical_isomeric_smiles_v1`
+
+`chemistry.canonicalize_smiles(smiles)` parses with RDKit and writes
+canonical isomeric SMILES (`canonical=True`, `isomericSmiles=True`,
+`kekuleSmiles=False`); `chemistry.canonical_smiles_from_mol(mol)` is the
+same serialization for an already-parsed `Mol`, and is what the SELFIES
+agent uses, so one contract governs every consumer.
+
+This is **serialization, not molecular standardization**. Deliberately
+absent, and not to be added under this identifier:
+
+- no salt stripping or largest-fragment selection
+- no neutralization or charge normalization
+- no tautomer canonicalization
+- no stereochemistry removal
+- no benchmark-specific preprocessing
+
+Stereochemistry, isotopes, formal charges, disconnected components and
+explicit bracket expressions all survive verbatim; aromatic rings are
+written in aromatic (not Kekule) form, so each molecule has exactly one
+serialization. Equivalent spellings (`CCO`, `OCC`) collapse to one string;
+opposite stereoisomers do not. Unparseable input raises `ValueError`.
+`""` is valid input and canonicalizes to `""` -- a successful empty
+result, distinct from a parse failure.
+
+### Tokenization: `rdkit_smiles_lexer_v1`
+
+`smiles_tokenizer.tokenize_smiles(smiles)` returns a `tuple[str, ...]`. It
+is purely lexical -- no RDKit parse, no vocabulary, no integer IDs, no
+padding, no embeddings -- and **lossless**:
+
+```python
+"".join(tokenize_smiles(s)) == s
+```
+
+Tokens are consecutive non-overlapping matches covering the whole string,
+so nothing can be dropped or rewritten. Case is never folded (`C` and `c`
+are different atoms). Bracket atoms stay indivisible (`[NH4+]`, `[C@@H]`,
+`[13CH3]`, `[nH]`, `[Co@OH24]`), and `Cl`/`Br` are single tokens.
+Recognized: organic-subset and aromatic atoms, `*`, branches, `.`, every
+bond symbol the pinned RDKit emits (`- = # $ : / \ ~` plus the dative
+`->` / `<-`), and ring closures in all three forms RDKit writes -- `1`,
+`%12`, and the extended `%(100)` form it switches to past 99
+simultaneously-open rings (verified against the installed RDKit, not
+assumed from an older tokenizer regex).
+
+Unrecognized input raises `ValueError` naming the offending offset; the
+lexer never skips a character or returns a shortened sequence. `""`
+tokenizes to `()` -- again a successful empty result, not a failure.
