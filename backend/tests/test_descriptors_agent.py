@@ -32,21 +32,21 @@ def test_output_dimension_equals_actual_descriptor_count(agent):
 def test_ethanol_molecular_weight(agent):
     mol = Chem.MolFromSmiles(ETHANOL)
     result = agent.compute(mol)
-    mol_wt = result[agent.descriptor_names.index("MolWt")]
+    mol_wt = result[agent.feature_names.index("MolWt")]
     assert mol_wt == pytest.approx(46.069, abs=0.01)
 
 
 def test_benzene_molecular_weight(agent):
     mol = Chem.MolFromSmiles(BENZENE)
     result = agent.compute(mol)
-    mol_wt = result[agent.descriptor_names.index("MolWt")]
+    mol_wt = result[agent.feature_names.index("MolWt")]
     assert mol_wt == pytest.approx(78.114, abs=0.01)
 
 
 def test_benzene_has_zero_rotatable_bonds(agent):
     mol = Chem.MolFromSmiles(BENZENE)
     result = agent.compute(mol)
-    rotatable = result[agent.descriptor_names.index("NumRotatableBonds")]
+    rotatable = result[agent.feature_names.index("NumRotatableBonds")]
     assert rotatable == 0
 
 
@@ -73,7 +73,7 @@ def test_matches_direct_rdkit_reference_api(agent):
     mol = Chem.MolFromSmiles(ETHANOL)
     reference = Descriptors.CalcMolDescriptors(mol, missingVal=float("nan"), silent=True)
     reference_arr = np.array(
-        [reference[name] for name in agent.descriptor_names], dtype=np.float64
+        [reference[name] for name in agent.feature_names], dtype=np.float64
     )
     agent_arr = agent.compute(mol)
     np.testing.assert_array_equal(agent_arr, reference_arr)

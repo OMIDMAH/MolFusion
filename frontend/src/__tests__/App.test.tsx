@@ -37,6 +37,16 @@ const ERG_AGENT: AgentMetadata = {
   feature_names: null,
 };
 
+const FRAGMENT_AGENT: AgentMetadata = {
+  id: "rdkit_fragment_descriptors",
+  name: "RDKit Fragment Descriptors",
+  version: "1.0.0",
+  output_dim: 4,
+  requires_3d: false,
+  value_type: "count",
+  feature_names: ["fr_Al_COO", "fr_Ar_COO", "fr_benzene", "fr_ester"],
+};
+
 const AGENTS: AgentMetadata[] = [MORGAN_AGENT];
 
 beforeEach(() => {
@@ -176,6 +186,59 @@ describe("App", () => {
     const resultsPanel = await screen.findByTestId("results-panel");
     expect(resultsPanel).toHaveTextContent("erg_reduced_graph_315");
     expect(resultsPanel).toHaveTextContent("315");
+  });
+
+  it("discovers a count-valued agent (e.g. fragment descriptors) automatically and preserves integer counts, not booleans", async () => {
+    vi.mocked(getAgents).mockResolvedValue([MORGAN_AGENT, FRAGMENT_AGENT]);
+    vi.mocked(validateMolecules).mockResolvedValue({
+      results: [{ smiles: "CC(=O)Oc1ccccc1C(=O)O", valid: true, error: null }],
+    } satisfies ValidateResponse);
+    vi.mocked(computeFeatures).mockResolvedValue({
+      results: [
+        {
+          smiles: "CC(=O)Oc1ccccc1C(=O)O",
+          valid: true,
+          error: null,
+          features: [
+            {
+              agent_id: "rdkit_fragment_descriptors",
+              agent_version: "1.0.0",
+              values: [0, 1, 2, 3],
+              dim: 4,
+            },
+          ],
+        },
+      ],
+    } satisfies ComputeResponse);
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    // Appears automatically, with no hardcoded fragment name/id/dim anywhere in App.
+    expect(await screen.findByText("rdkit_fragment_descriptors")).toBeInTheDocument();
+
+    await addSmilesViaTextarea(user, "CC(=O)Oc1ccccc1C(=O)O");
+    await screen.findByText("Valid");
+
+    const fragmentCheckbox = screen.getByRole("checkbox", {
+      name: /rdkit fragment descriptors/i,
+    });
+    await user.click(fragmentCheckbox);
+    await user.click(screen.getByRole("button", { name: /^compute$/i }));
+
+    await waitFor(() =>
+      expect(computeFeatures).toHaveBeenCalledWith(
+        ["CC(=O)Oc1ccccc1C(=O)O"],
+        ["rdkit_fragment_descriptors"],
+      ),
+    );
+
+    const resultsPanel = await screen.findByTestId("results-panel");
+    expect(resultsPanel).toHaveTextContent("rdkit_fragment_descriptors");
+    expect(resultsPanel).toHaveTextContent("4");
+    // Count values must render as numbers, never coerced to booleans.
+    expect(resultsPanel).not.toHaveTextContent("true");
+    expect(resultsPanel).not.toHaveTextContent("false");
   });
 
   it("omits a deselected agent from the compute request", async () => {

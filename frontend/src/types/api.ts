@@ -3,8 +3,9 @@ export interface HealthResponse {
 }
 
 /** "binary": every value is 0 or 1 (bit-vector fingerprints).
- * "continuous": real-valued (descriptors, ErG, ...). */
-export type AgentValueType = "binary" | "continuous";
+ * "count": non-negative integer counts (RDKit fragment descriptors).
+ * "continuous": real-valued (physicochemical descriptors, ErG, ...). */
+export type AgentValueType = "binary" | "count" | "continuous";
 
 export interface AgentMetadata {
   id: string;

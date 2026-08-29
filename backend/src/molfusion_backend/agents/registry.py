@@ -44,11 +44,12 @@ class AgentRegistry:
                 "output_dim": agent.output_dim,
                 "requires_3d": agent.requires_3d,
                 "value_type": agent.value_type,
-                # Optional, per-feature names (e.g. descriptor names) for
-                # agents that expose them via a `descriptor_names` attribute.
-                # None for agents with no such metadata (e.g. fingerprints,
-                # where individual bit positions are not named).
-                "feature_names": getattr(agent, "descriptor_names", None),
+                # Optional, per-feature names (e.g. descriptor/fragment
+                # names) for agents that expose them via a `feature_names`
+                # attribute. None for agents with no such metadata (e.g.
+                # fingerprints, where individual bit positions are not
+                # named).
+                "feature_names": getattr(agent, "feature_names", None),
             }
             for agent in self._agents.values()
         ]

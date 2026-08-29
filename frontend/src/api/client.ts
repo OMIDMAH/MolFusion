@@ -115,13 +115,15 @@ function expectArray(value: unknown, field: string): unknown[] {
   return value;
 }
 
+const VALID_AGENT_VALUE_TYPES: readonly AgentValueType[] = ["binary", "count", "continuous"];
+
 function expectValueType(value: unknown, field: string): AgentValueType {
-  if (value !== "binary" && value !== "continuous") {
+  if (!VALID_AGENT_VALUE_TYPES.includes(value as AgentValueType)) {
     throw new ApiError(
-      `Backend response is malformed: expected "binary" or "continuous" for "${field}", got ${JSON.stringify(value)}.`,
+      `Backend response is malformed: expected one of ${JSON.stringify(VALID_AGENT_VALUE_TYPES)} for "${field}", got ${JSON.stringify(value)}.`,
     );
   }
-  return value;
+  return value as AgentValueType;
 }
 
 function parseAgentMetadata(value: unknown): AgentMetadata {

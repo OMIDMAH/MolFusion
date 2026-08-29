@@ -42,6 +42,16 @@ const ERG_AGENT: AgentMetadata = {
   feature_names: null,
 };
 
+const FRAGMENT_AGENT: AgentMetadata = {
+  id: "rdkit_fragment_descriptors",
+  name: "RDKit Fragment Descriptors",
+  version: "1.0.0",
+  output_dim: 4,
+  requires_3d: false,
+  value_type: "count",
+  feature_names: ["fr_Al_COO", "fr_Ar_COO", "fr_benzene", "fr_ester"],
+};
+
 describe("parseSmilesCsv", () => {
   it("extracts the smiles column case-insensitively and preserves row order", () => {
     const csv = "name,SMILES\nethanol,CCO\nbenzene,c1ccccc1\n";
@@ -230,6 +240,66 @@ describe("buildResultsCsv", () => {
     const valuesField = row.split(",").pop() ?? "";
     const parsedBack = valuesField.split(";").map(Number);
     expect(parsedBack).toEqual(values);
+  });
+
+  it("preserves count values (e.g. fragment descriptors) exactly, not as booleans", () => {
+    const values = [0, 1, 2, 3];
+    const results: MoleculeResult[] = [
+      {
+        smiles: "CC(=O)Oc1ccccc1C(=O)O",
+        valid: true,
+        error: null,
+        features: [
+          {
+            agent_id: "rdkit_fragment_descriptors",
+            agent_version: "1.0.0",
+            values,
+            dim: 4,
+          },
+        ],
+      },
+    ];
+    const csv = buildResultsCsv(results, [FRAGMENT_AGENT]);
+    const [, row] = csv.split("\r\n");
+    expect(row).toBe(
+      "CC(=O)Oc1ccccc1C(=O)O,true,,rdkit_fragment_descriptors,1.0.0,4,fr_Al_COO;fr_Ar_COO;fr_benzene;fr_ester,0;1;2;3",
+    );
+    expect(csv).not.toContain("true;false");
+  });
+
+  it("lets binary, count, and continuous agents coexist in the same multi-agent CSV export", () => {
+    const results: MoleculeResult[] = [
+      {
+        smiles: "CC(=O)Oc1ccccc1C(=O)O",
+        valid: true,
+        error: null,
+        features: [
+          { agent_id: "morgan_ecfp4_1024", agent_version: "1.0.0", values: [0, 1], dim: 2 },
+          {
+            agent_id: "rdkit_fragment_descriptors",
+            agent_version: "1.0.0",
+            values: [0, 1, 2, 3],
+            dim: 4,
+          },
+          {
+            agent_id: "rdkit_physchem_descriptors",
+            agent_version: "1.0.0",
+            values: [180.159, 1.31, 63.6],
+            dim: 3,
+          },
+        ],
+      },
+    ];
+    const csv = buildResultsCsv(results, [MORGAN_AGENT, FRAGMENT_AGENT, DESCRIPTOR_AGENT]);
+    const lines = csv.split("\r\n");
+    expect(lines).toHaveLength(4); // header + 3 feature rows, no fragment-specific special-casing
+    expect(lines[1]).toBe("CC(=O)Oc1ccccc1C(=O)O,true,,morgan_ecfp4_1024,1.0.0,2,,0;1");
+    expect(lines[2]).toBe(
+      "CC(=O)Oc1ccccc1C(=O)O,true,,rdkit_fragment_descriptors,1.0.0,4,fr_Al_COO;fr_Ar_COO;fr_benzene;fr_ester,0;1;2;3",
+    );
+    expect(lines[3]).toBe(
+      "CC(=O)Oc1ccccc1C(=O)O,true,,rdkit_physchem_descriptors,1.0.0,3,MolWt;MolLogP;TPSA,180.159;1.31;63.6",
+    );
   });
 
   it("never recomputes or reorders values — echoes them verbatim from the API response", () => {

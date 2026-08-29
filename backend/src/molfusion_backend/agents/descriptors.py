@@ -40,7 +40,7 @@ class PhysicochemicalDescriptorAgent(FeatureAgent):
     requires_3d = False
     value_type = "continuous"
 
-    descriptor_names = DESCRIPTOR_NAMES
+    feature_names = DESCRIPTOR_NAMES
 
     def compute(self, mol: Chem.Mol) -> np.ndarray:
         if mol is None:
@@ -51,5 +51,5 @@ class PhysicochemicalDescriptorAgent(FeatureAgent):
         values = Descriptors.CalcMolDescriptors(
             mol, missingVal=MISSING_DESCRIPTOR_VALUE, silent=True
         )
-        ordered = [values[name] for name in self.descriptor_names]
+        ordered = [values[name] for name in self.feature_names]
         return np.array(ordered, dtype=np.float64)

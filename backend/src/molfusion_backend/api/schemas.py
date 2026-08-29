@@ -15,7 +15,7 @@ class AgentMetadata(BaseModel):
     version: str
     output_dim: int
     requires_3d: bool
-    value_type: Literal["binary", "continuous"]
+    value_type: Literal["binary", "count", "continuous"]
     feature_names: list[str] | None = None
 
 

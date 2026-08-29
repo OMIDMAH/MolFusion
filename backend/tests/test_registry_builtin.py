@@ -2,6 +2,7 @@ from molfusion_backend.agents import registry
 from molfusion_backend.agents.avalon import AvalonFingerprintAgent
 from molfusion_backend.agents.descriptors import PhysicochemicalDescriptorAgent
 from molfusion_backend.agents.erg import ErgReducedGraphAgent
+from molfusion_backend.agents.fragments import FragmentDescriptorAgent
 from molfusion_backend.agents.maccs import MACCSKeysAgent
 from molfusion_backend.agents.morgan import MorganFingerprintAgent
 
@@ -11,13 +12,14 @@ EXPECTED_IDS = {
     PhysicochemicalDescriptorAgent.id,
     AvalonFingerprintAgent.id,
     ErgReducedGraphAgent.id,
+    FragmentDescriptorAgent.id,
 }
 
 
 def test_production_registry_contains_exactly_the_expected_agents():
     listed_ids = {entry["id"] for entry in registry.list_agents()}
     assert listed_ids == EXPECTED_IDS
-    assert len(EXPECTED_IDS) == 5
+    assert len(EXPECTED_IDS) == 6
 
 
 def test_ids_are_unique():
@@ -35,6 +37,10 @@ def test_metadata_dimensions_are_correct():
         metadata_by_id[ErgReducedGraphAgent.id]["output_dim"] == ErgReducedGraphAgent.output_dim
     )
     assert (
+        metadata_by_id[FragmentDescriptorAgent.id]["output_dim"]
+        == FragmentDescriptorAgent.output_dim
+    )
+    assert (
         metadata_by_id[PhysicochemicalDescriptorAgent.id]["output_dim"]
         == PhysicochemicalDescriptorAgent.output_dim
     )
@@ -48,6 +54,7 @@ def test_agents_are_retrievable_by_id():
     )
     assert isinstance(registry.get(AvalonFingerprintAgent.id), AvalonFingerprintAgent)
     assert isinstance(registry.get(ErgReducedGraphAgent.id), ErgReducedGraphAgent)
+    assert isinstance(registry.get(FragmentDescriptorAgent.id), FragmentDescriptorAgent)
 
 
 def test_descriptor_agent_exposes_feature_names():
@@ -56,6 +63,14 @@ def test_descriptor_agent_exposes_feature_names():
     assert feature_names is not None
     assert len(feature_names) == PhysicochemicalDescriptorAgent.output_dim
     assert "MolWt" in feature_names
+
+
+def test_fragment_agent_exposes_feature_names():
+    metadata_by_id = {entry["id"]: entry for entry in registry.list_agents()}
+    feature_names = metadata_by_id[FragmentDescriptorAgent.id]["feature_names"]
+    assert feature_names is not None
+    assert len(feature_names) == FragmentDescriptorAgent.output_dim
+    assert "fr_benzene" in feature_names
 
 
 def test_fingerprint_agents_have_no_feature_names():
@@ -86,7 +101,20 @@ def test_erg_agent_metadata():
     assert erg["feature_names"] is None
 
 
-def test_value_type_distinguishes_binary_and_continuous_agents():
+def test_fragment_agent_metadata():
+    metadata_by_id = {entry["id"]: entry for entry in registry.list_agents()}
+    fragments = metadata_by_id[FragmentDescriptorAgent.id]
+    assert fragments["id"] == "rdkit_fragment_descriptors"
+    assert fragments["output_dim"] == FragmentDescriptorAgent.output_dim
+    assert fragments["output_dim"] > 0
+    assert fragments["requires_3d"] is False
+    assert fragments["value_type"] == "count"
+    assert fragments["version"]
+    assert fragments["feature_names"] is not None
+    assert len(fragments["feature_names"]) == fragments["output_dim"]
+
+
+def test_value_type_distinguishes_binary_count_and_continuous_agents():
     metadata_by_id = {entry["id"]: entry for entry in registry.list_agents()}
 
     for binary_agent_id in (
@@ -101,3 +129,5 @@ def test_value_type_distinguishes_binary_and_continuous_agents():
         ErgReducedGraphAgent.id,
     ):
         assert metadata_by_id[continuous_agent_id]["value_type"] == "continuous"
+
+    assert metadata_by_id[FragmentDescriptorAgent.id]["value_type"] == "count"
