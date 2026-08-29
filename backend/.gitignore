@@ -4,3 +4,9 @@ __pycache__/
 dist/
 build/
 *.egg-info/
+
+# Fitted/pretrained artifact payloads are never committed (see
+# artifacts/README.md and docs/reproducibility.md). Directory docs and
+# metadata schemas are code, not artifacts, and stay tracked.
+/artifacts/*
+!/artifacts/README.md

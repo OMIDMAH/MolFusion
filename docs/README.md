@@ -1,9 +1,12 @@
 # MolFusion v2 Documentation
 
-Placeholder. Planned documents (not yet written):
+- [`reproducibility.md`](reproducibility.md) — artifact infrastructure:
+  directory convention, metadata schema, checksum verification,
+  `agent_version` vs `artifact_version`
+
+Planned documents (not yet written):
 
 - `architecture.md` — backend/frontend split, data flow
 - `agents.md` — feature-agent registry: implemented vs. planned, with
   references for each algorithm
 - `api.md` — generated from the FastAPI OpenAPI schema
-- `reproducibility.md` — versioning, seeding, lockfile policy
