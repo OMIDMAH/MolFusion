@@ -1,0 +1,28 @@
+[project]
+name = "molfusion-backend"
+version = "0.1.0"
+description = "MolFusion v2 backend: RDKit-based molecular feature extraction API"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+# Dependencies intentionally left empty for Phase 0.
+# rdkit, fastapi, uvicorn, pydantic, pytest, etc. are added explicitly
+# (via `uv add`) in a later phase, after individual approval.
+dependencies = [
+    "fastapi>=0.141.1",
+    "pydantic>=2.13.4",
+    "rdkit>=2026.3.5",
+    "uvicorn>=0.52.4",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/molfusion_backend"]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.1.1",
+]
