@@ -46,10 +46,15 @@ def test_agents_returns_200(client):
     assert response.status_code == 200
 
 
-def test_agents_contains_exactly_the_three_production_agents(client):
+def test_agents_contains_exactly_the_four_production_agents(client):
     response = client.get("/agents")
     ids = {agent["id"] for agent in response.json()}
-    assert ids == {"morgan_ecfp4_1024", "maccs_keys_167", "rdkit_physchem_descriptors"}
+    assert ids == {
+        "morgan_ecfp4_1024",
+        "maccs_keys_167",
+        "rdkit_physchem_descriptors",
+        "avalon_1024",
+    }
 
 
 def test_agents_dimensions(client):
@@ -58,6 +63,7 @@ def test_agents_dimensions(client):
     assert dims_by_id["morgan_ecfp4_1024"] == 1024
     assert dims_by_id["maccs_keys_167"] == 167
     assert dims_by_id["rdkit_physchem_descriptors"] == 217
+    assert dims_by_id["avalon_1024"] == 1024
 
 
 def test_agents_descriptor_feature_names_are_exposed(client):
@@ -128,17 +134,22 @@ def test_validate_empty_smiles_list_is_rejected(client):
 # ---------------------------------------------------------------------------
 
 
-ALL_AGENT_IDS = ["morgan_ecfp4_1024", "maccs_keys_167", "rdkit_physchem_descriptors"]
+ALL_AGENT_IDS = [
+    "morgan_ecfp4_1024",
+    "maccs_keys_167",
+    "rdkit_physchem_descriptors",
+    "avalon_1024",
+]
 
 
-def test_compute_ethanol_with_all_agents_returns_three_feature_vectors(client):
+def test_compute_ethanol_with_all_agents_returns_four_feature_vectors(client):
     response = client.post(
         "/features/compute", json={"smiles": [ETHANOL], "agent_ids": ALL_AGENT_IDS}
     )
     assert response.status_code == 200
     result = response.json()["results"][0]
     assert result["valid"] is True
-    assert len(result["features"]) == 3
+    assert len(result["features"]) == 4
 
 
 def test_compute_dimensions_match_actual_outputs(client):
@@ -149,6 +160,7 @@ def test_compute_dimensions_match_actual_outputs(client):
     assert features["morgan_ecfp4_1024"]["dim"] == 1024
     assert features["maccs_keys_167"]["dim"] == 167
     assert features["rdkit_physchem_descriptors"]["dim"] == 217
+    assert features["avalon_1024"]["dim"] == 1024
 
 
 def test_compute_values_length_equals_dim(client):
@@ -181,6 +193,37 @@ def test_compute_maccs_output_is_binary(client):
     )
     values = response.json()["results"][0]["features"][0]["values"]
     assert set(values).issubset({0.0, 1.0})
+
+
+def test_compute_avalon_alone_returns_expected_feature_vector(client):
+    response = client.post(
+        "/features/compute", json={"smiles": [ETHANOL], "agent_ids": ["avalon_1024"]}
+    )
+    assert response.status_code == 200
+    result = response.json()["results"][0]
+    assert result["valid"] is True
+    assert len(result["features"]) == 1
+
+    feature = result["features"][0]
+    assert feature["agent_id"] == "avalon_1024"
+    assert feature["agent_version"] == agent_registry.get("avalon_1024").version
+    assert feature["dim"] == 1024
+    assert len(feature["values"]) == 1024
+    assert set(feature["values"]).issubset({0.0, 1.0})
+
+
+def test_compute_matches_direct_avalon_agent_computation(client):
+    """Cross-check the API output for ethanol against direct AvalonFingerprintAgent.compute()."""
+    response = client.post(
+        "/features/compute", json={"smiles": [ETHANOL], "agent_ids": ["avalon_1024"]}
+    )
+    api_values = response.json()["results"][0]["features"][0]["values"]
+
+    mol = Chem.MolFromSmiles(ETHANOL)
+    agent = agent_registry.get("avalon_1024")
+    direct_values = [float(v) for v in agent.compute(mol).tolist()]
+
+    assert api_values == direct_values
 
 
 def test_compute_descriptor_output_contains_ethanol_molecular_weight(client):

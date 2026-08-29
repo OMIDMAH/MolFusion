@@ -1,4 +1,5 @@
 from molfusion_backend.agents import registry
+from molfusion_backend.agents.avalon import AvalonFingerprintAgent
 from molfusion_backend.agents.descriptors import PhysicochemicalDescriptorAgent
 from molfusion_backend.agents.maccs import MACCSKeysAgent
 from molfusion_backend.agents.morgan import MorganFingerprintAgent
@@ -7,12 +8,13 @@ EXPECTED_IDS = {
     MorganFingerprintAgent.id,
     MACCSKeysAgent.id,
     PhysicochemicalDescriptorAgent.id,
+    AvalonFingerprintAgent.id,
 }
 
 
-def test_all_three_agents_appear_in_list_agents():
+def test_production_registry_contains_exactly_the_expected_agents():
     listed_ids = {entry["id"] for entry in registry.list_agents()}
-    assert EXPECTED_IDS.issubset(listed_ids)
+    assert listed_ids == EXPECTED_IDS
 
 
 def test_ids_are_unique():
@@ -25,6 +27,7 @@ def test_metadata_dimensions_are_correct():
 
     assert metadata_by_id[MorganFingerprintAgent.id]["output_dim"] == 1024
     assert metadata_by_id[MACCSKeysAgent.id]["output_dim"] == 167
+    assert metadata_by_id[AvalonFingerprintAgent.id]["output_dim"] == 1024
     assert (
         metadata_by_id[PhysicochemicalDescriptorAgent.id]["output_dim"]
         == PhysicochemicalDescriptorAgent.output_dim
@@ -37,6 +40,7 @@ def test_agents_are_retrievable_by_id():
     assert isinstance(
         registry.get(PhysicochemicalDescriptorAgent.id), PhysicochemicalDescriptorAgent
     )
+    assert isinstance(registry.get(AvalonFingerprintAgent.id), AvalonFingerprintAgent)
 
 
 def test_descriptor_agent_exposes_feature_names():
@@ -51,3 +55,13 @@ def test_fingerprint_agents_have_no_feature_names():
     metadata_by_id = {entry["id"]: entry for entry in registry.list_agents()}
     assert metadata_by_id[MorganFingerprintAgent.id]["feature_names"] is None
     assert metadata_by_id[MACCSKeysAgent.id]["feature_names"] is None
+    assert metadata_by_id[AvalonFingerprintAgent.id]["feature_names"] is None
+
+
+def test_avalon_agent_metadata():
+    metadata_by_id = {entry["id"]: entry for entry in registry.list_agents()}
+    avalon = metadata_by_id[AvalonFingerprintAgent.id]
+    assert avalon["id"] == "avalon_1024"
+    assert avalon["output_dim"] == 1024
+    assert avalon["requires_3d"] is False
+    assert avalon["version"]

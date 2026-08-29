@@ -1,3 +1,4 @@
+from molfusion_backend.agents.avalon import AvalonFingerprintAgent
 from molfusion_backend.agents.descriptors import PhysicochemicalDescriptorAgent
 from molfusion_backend.agents.maccs import MACCSKeysAgent
 from molfusion_backend.agents.morgan import MorganFingerprintAgent
@@ -13,3 +14,4 @@ def register_builtin_agents() -> None:
     registry.register(MorganFingerprintAgent())
     registry.register(MACCSKeysAgent())
     registry.register(PhysicochemicalDescriptorAgent())
+    registry.register(AvalonFingerprintAgent())
