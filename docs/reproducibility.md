@@ -721,3 +721,204 @@ Five fields are volatile -- the start timestamp, three timings, and
 whether the cache was used -- and `deterministic_study_view()` strips
 them. Two runs over the same corpus are otherwise identical, including
 byte-for-byte identical CSV tables.
+
+## The SMILES TF-IDF artifact (Phase 5F-D)
+
+Phase 5F-D materializes what the two preceding phases decided. Three
+concerns, three phases, deliberately not mixed:
+
+| Phase | Decides | Recorded in |
+| --- | --- | --- |
+| 5F-C | **which** token n-grams are features | [`tfidf-vocabulary-decision.md`](tfidf-vocabulary-decision.md) |
+| 5F-C.1 | **how** a retained feature becomes a number | [`tfidf-weighting-decision.md`](tfidf-weighting-decision.md) |
+| 5F-D | **how** both are packaged as an immutable artifact | this section |
+
+```
+python -m molfusion_backend.tfidf build \
+    --corpus backend/corpus_data/chembl37/canonical_smiles.smi
+
+python -m molfusion_backend.tfidf audit
+python -m molfusion_backend.tfidf verify-rebuild \
+    --corpus backend/corpus_data/chembl37/canonical_smiles.smi \
+    --scratch-root <throwaway directory>
+```
+
+The artifact is a **frozen representation, not a feature agent**. Phase
+5F-D deliberately stops before the agent, the registry entry, the API and
+the frontend.
+
+### Identity
+
+```
+artifact_type     smiles_tfidf
+artifact_id       chembl37_token_ngrams_1_3
+artifact_version  1.0.0
+```
+
+The id names the corpus and the n-gram range because those are what
+distinguish one fitted vocabulary from another; everything else --
+`min_df`, the cap, the formulas, the dtypes -- lives in
+`tfidf_config.json`, where it can be read rather than decoded from a
+filename.
+
+### Payloads
+
+```
+backend/artifacts/smiles_tfidf/chembl37_token_ngrams_1_3/1.0.0/
+  metadata.json        generic artifact metadata + payload checksums
+  vocabulary.json      4,096 features, lossless token arrays
+  idf.npy              float64, shape (4096,), index-aligned
+  tfidf_config.json    the semantic contract
+  build_report.json    reproducibility record + selection boundary evidence
+```
+
+Generated payloads are ignored by git (`backend/.gitignore`,
+`/artifacts/*`). Only the builder, the loader, the tests and this
+documentation are committed -- an artifact is rebuilt from the corpus and
+a commit, never restored from version control.
+
+### Reconstructing it from scratch
+
+Everything needed is recorded, and the procedure is fully specified:
+
+1. Obtain ChEMBL 37 from the URL in `build_report.json` and build the
+   reference corpus (Phase 5F-B). Verify `fit_corpus_sha256` is
+   `b2c4b81160df05c95f8421582bb4b1c95fdf5964a4edaff24a7c1ddd43e2a5de`.
+2. Check out the MolFusion commit named in `build_report.json`.
+3. Tokenize every document with `tokenizer_id = rdkit_smiles_lexer_v1` and
+   generate token n-grams of orders 1, 2 and 3.
+4. Count **document** frequency (a term occurring twenty times in one
+   molecule counts once).
+5. Discard terms with `DF < min_df`.
+6. Sort survivors by `(-document_frequency, ngram_tuple)` and keep the
+   first `max_features`.
+7. Sort the selected terms by ascending token tuple; that order assigns
+   vector indices `0 … dimension-1`.
+8. `idf[i] = ln((1 + N) / (1 + df[i])) + 1` with `N = fit_document_count`,
+   in float64.
+
+Steps 5 and 6 are in that order for a reason: pruning before ranking is
+what makes `min_df` a guarantee rather than a suggestion the cap could
+override.
+
+### Selection is separate from indexing
+
+Selection ranks by document frequency; indexing does not. The vector index
+of a term is its position in the **lexicographic** ordering of the
+selected token tuples.
+
+This is an interface decision, not an aesthetic one. Under ranking order,
+two terms swapping document frequency by a single molecule would swap
+columns on a re-fit, so two artifact versions could not be compared
+column-by-column even where the term set was unchanged. Under lexicographic
+order the layout depends only on *which* terms are present. Each entry
+keeps its `selection_rank` alongside its `index`, so the ranking that
+chose a feature remains auditable after the ordering that positioned it.
+
+### The vocabulary payload
+
+```json
+{
+  "index": 123,
+  "tokens": ["C", "(", "="],
+  "order": 3,
+  "document_frequency": 1048576,
+  "selection_rank": 907
+}
+```
+
+Tokens are a **JSON array, never a joined string**. `("Cl","C")` and
+`("C","lC")` both concatenate to `"ClC"`, so a joined key cannot
+distinguish two genuinely different features, and a separator character
+only relocates the problem to any token containing it. `order` is
+redundant with `len(tokens)` and stored anyway so the file is
+self-checking: a loader can reject a record that disagrees with itself
+rather than silently indexing a corrupted vocabulary.
+
+Feature names for a future agent derive directly from the token arrays
+and stay lossless for the same reason.
+
+Every payload is written as UTF-8 with LF newlines, literal field order,
+and an explicit final newline, through raw binary I/O -- so two builds of
+the same corpus produce identical bytes and therefore identical
+checksums.
+
+### The checksum graph is a DAG
+
+The brief's cycle warning is handled by ordering, not by special cases:
+
+```
+vocabulary.json ─┐
+idf.npy ─────────┼─► hashed ─► build_report.json ─► hashed ─► metadata.json
+tfidf_config.json┘                                                (not hashed)
+```
+
+`build_report.json` records the digests of the three scientific payloads.
+`metadata.json` records all four, including the build report's. Nothing
+contains its own digest, and `metadata.json` is validated by schema and
+identity rather than by checksum.
+
+### Immutability and rebuilds
+
+A build refuses to run if its destination version already exists. There is
+no `--force`: an audited artifact version is immutable, and overwriting it
+would destroy the only copy of the bytes that were audited.
+
+To confirm a rebuild still reproduces an artifact, `verify-rebuild` builds
+into a throwaway root and compares payload digests, reading the audited
+artifact and never writing to it. Any change to the corpus, normalization,
+tokenizer, n-gram policy, `min_df`, cap, ranking, index ordering, TF
+formula, IDF formula, normalization or dtype semantics requires a **new
+artifact version or identity** -- never an overwrite of `1.0.0`.
+
+Builds are atomic. Payloads are written into a staging directory beside
+the destination, validated there by re-reading them from disk, and only
+then moved into place with a single rename. A build that fails at any
+point leaves no artifact directory at all rather than one containing three
+of four payloads.
+
+### Two validation layers
+
+```
+load_artifact()          generic: resolves the path, validates
+                         metadata.json, verifies every payload checksum
+      |
+load_tfidf_artifact()    representation-specific: parses the vocabulary,
+                         loads the IDF, validates the config against the
+                         frozen contract, checks all three agree
+```
+
+The generic layer stays representation-agnostic -- it knows nothing about
+NumPy or TF-IDF and simply hands back verified paths. This matters because
+checksums answer "are these the bytes that were built?" but cannot answer
+"do these bytes mean what the artifact claims?". A payload written with
+the wrong IDF formula has a perfectly valid checksum, so the TF-IDF layer
+re-derives every IDF value from the recorded document frequencies rather
+than trusting it.
+
+Failures are specific -- `TfidfVocabularyError`, `TfidfIdfError`,
+`TfidfConfigError`, `TfidfCorpusIdentityError`, `TfidfArtifactExistsError`
+-- and all subclass the generic `ArtifactError`, so existing handling keeps
+working without the generic package learning what an IDF vector is.
+
+### Runtime semantics
+
+```
+tokens -> n-grams (orders 1-3) -> counts over the frozen vocabulary
+       -> tf = 1 + ln(count)   -> * idf   -> L2 normalize -> float32
+```
+
+**Out of vocabulary** contributes nothing: no `UNK` dimension, no
+vocabulary growth, no refit, no exception. Vocabulary OOV is normal
+runtime behaviour, and is distinct from tokenization failure, which
+remains an error under the Phase 5F-A contract.
+
+**A molecule with no retained term** yields
+`np.zeros(dimension, dtype=float32)`. That is a valid result, not a
+representation failure, and L2 normalization leaves it exactly zero rather
+than producing `NaN`.
+
+The transformation is MolFusion-owned NumPy. sklearn is a **dev-only**
+dependency used solely as an independent reference in tests; it never
+selects the vocabulary, never tokenizes, never chooses feature order, and
+is never imported by production code.

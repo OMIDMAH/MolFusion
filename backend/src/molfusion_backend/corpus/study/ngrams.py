@@ -24,12 +24,11 @@ after the fact: TF restricted to short molecules can be re-derived from
 band sums without a second pass over the corpus.
 """
 
-from collections import Counter
-from collections.abc import Iterator, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
-Ngram = tuple[str, ...]
+from molfusion_backend.tfidf.ngrams import Ngram, document_ngram_counts, iter_ngrams
 
 NGRAM_ORDERS = (1, 2, 3)
 
@@ -52,33 +51,6 @@ SUBSET_COUNT = 2
 _DF_OFFSET = 0
 _TF_OFFSET = SUBSET_COUNT * BAND_COUNT
 _RECORD_SIZE = 2 * SUBSET_COUNT * BAND_COUNT
-
-
-def iter_ngrams(tokens: Sequence[str], order: int) -> Iterator[Ngram]:
-    """Yield every contiguous token n-gram of `order`, left to right.
-
-    A molecule shorter than `order` tokens yields nothing at all -- it has
-    no n-gram of that size, and padding it to produce one would invent
-    features the molecule does not contain.
-    """
-    if order < 1:
-        raise ValueError(f"n-gram order must be >= 1, got {order}")
-    for start in range(len(tokens) - order + 1):
-        yield tuple(tokens[start : start + order])
-
-
-def document_ngram_counts(tokens: Sequence[str], order: int) -> dict[Ngram, int]:
-    """Within-document occurrence counts, keyed by token tuple.
-
-    The number of keys is the document's distinct-n-gram count (its DF
-    contribution) and the values sum to its occurrence count (its TF
-    contribution), so one pass yields both.
-    """
-    if order < 1:
-        raise ValueError(f"n-gram order must be >= 1, got {order}")
-    if order == 1:
-        return dict(Counter((token,) for token in tokens))
-    return dict(Counter(zip(*(tokens[offset:] for offset in range(order)))))
 
 
 def token_count_band(token_count: int) -> int:

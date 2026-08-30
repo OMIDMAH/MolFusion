@@ -9,6 +9,7 @@ requires-python = ">=3.11,<3.12"
 # (via `uv add`) in a later phase, after individual approval.
 dependencies = [
     "fastapi>=0.141.1",
+    "numpy>=2.0",
     "pydantic>=2.13.4",
     "rdkit>=2026.3.5",
     "selfies==2.2.0",
@@ -26,4 +27,5 @@ packages = ["src/molfusion_backend"]
 dev = [
     "httpx>=0.28.1",
     "pytest>=9.1.1",
+    "scikit-learn>=1.5",
 ]

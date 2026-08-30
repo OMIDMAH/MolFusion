@@ -20,6 +20,11 @@
   and the zero-vector and out-of-vocabulary semantics. Recommendation
   only — Phase 5F-D packages it
 
+The frozen SMILES TF-IDF artifact itself (Phase 5F-D — identity, payload
+schemas, the checksum DAG, immutability and rebuild rules, and the two
+validation layers) is documented in the final section of
+[`reproducibility.md`](reproducibility.md).
+
 Planned documents (not yet written):
 
 - `architecture.md` — backend/frontend split, data flow
