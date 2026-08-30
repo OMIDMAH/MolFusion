@@ -433,6 +433,7 @@ def _validate_staged(
     vocabulary = vocabulary_module.parse_vocabulary(payload)
     vocabulary_module.validate_vocabulary(vocabulary, dimension=dimension, min_df=min_df)
 
+    idf_module.validate_idf_payload(staging / contract.IDF_FILENAME, dimension=dimension)
     idf_values = idf_module.load_idf(staging / contract.IDF_FILENAME)
     idf_module.validate_idf(
         idf_values,

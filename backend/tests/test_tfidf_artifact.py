@@ -536,3 +536,37 @@ def test_metadata_owns_the_checksum_of_every_payload_including_the_report(corpus
     }
     for filename, digest in owned.items():
         assert sha256_file(directory / filename) == digest
+
+
+def test_idf_npy_is_byte_identical_across_two_independent_builds(corpus, tmp_path):
+    """The requirement stated end to end: two separate builds, two separate
+    roots, and an idf.npy that agrees byte for byte -- not merely an array
+    that decodes to the same numbers."""
+    from molfusion_backend.tfidf.idf import inspect_idf_payload
+
+    first = tmp_path / "one"
+    second = tmp_path / "two"
+    build(corpus, first)
+    build(corpus, second)
+
+    left = artifact_dir(first) / contract.IDF_FILENAME
+    right = artifact_dir(second) / contract.IDF_FILENAME
+
+    assert left.read_bytes() == right.read_bytes()
+    assert sha256_file(left) == sha256_file(right)
+    assert inspect_idf_payload(left) == inspect_idf_payload(right)
+
+
+def test_a_built_idf_payload_carries_only_structure_in_its_header(corpus, tmp_path):
+    from molfusion_backend.tfidf.idf import inspect_idf_payload
+
+    root = tmp_path / "artifacts"
+    report = build(corpus, root)
+    facts = inspect_idf_payload(artifact_dir(root) / contract.IDF_FILENAME)
+
+    assert facts["version"] == (1, 0)
+    assert facts["descr"] == "<f8"
+    assert facts["fortran_order"] is False
+    assert facts["header_fields"] == ["descr", "fortran_order", "shape"]
+    assert facts["header_bytes"] + facts["data_bytes"] == facts["total_bytes"]
+    assert facts["data_bytes"] == report["vocabulary"]["selected_dimension"] * 8

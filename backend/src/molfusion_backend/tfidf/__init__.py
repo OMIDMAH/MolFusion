@@ -48,7 +48,16 @@ from molfusion_backend.tfidf.errors import (
     TfidfIdfError,
     TfidfVocabularyError,
 )
-from molfusion_backend.tfidf.idf import compute_idf, idf_bytes, load_idf, validate_idf
+from molfusion_backend.tfidf.idf import (
+    IDF_NPY_DESCR,
+    IDF_NPY_VERSION,
+    compute_idf,
+    idf_bytes,
+    inspect_idf_payload,
+    load_idf,
+    validate_idf,
+    validate_idf_payload,
+)
 from molfusion_backend.tfidf.loader import TfidfArtifact, load_tfidf_artifact
 from molfusion_backend.tfidf.ngrams import (
     Ngram,
@@ -93,6 +102,8 @@ __all__ = [
     "FROZEN_NORM",
     "FROZEN_TF_MODE",
     "IDF_DTYPE",
+    "IDF_NPY_DESCR",
+    "IDF_NPY_VERSION",
     "IDF_FILENAME",
     "INDEX_ORDER",
     "MAX_FEATURES",
@@ -124,6 +135,7 @@ __all__ = [
     "document_ngram_counts_over_orders",
     "frozen_config",
     "idf_bytes",
+    "inspect_idf_payload",
     "idf_formula",
     "inverse_document_frequency",
     "iter_ngrams",
@@ -137,6 +149,7 @@ __all__ = [
     "tf_formula",
     "tfidf",
     "validate_idf",
+    "validate_idf_payload",
     "validate_vocabulary",
     "verify_corpus_identity",
     "vocabulary_bytes",

@@ -9,7 +9,9 @@ written out as decimal literals. `test_tfidf_sklearn_parity.py` adds an
 independent third-party check on top.
 """
 
+import hashlib
 import math
+from io import BytesIO
 
 import numpy as np
 import pytest
@@ -17,11 +19,15 @@ import pytest
 from molfusion_backend.tfidf import weighting
 from molfusion_backend.tfidf.errors import TfidfIdfError
 from molfusion_backend.tfidf.idf import (
+    IDF_NPY_DESCR,
+    IDF_NPY_VERSION,
     IDF_RECOMPUTE_TOLERANCE,
     compute_idf,
     idf_bytes,
+    inspect_idf_payload,
     load_idf,
     validate_idf,
+    validate_idf_payload,
 )
 from molfusion_backend.tfidf.transform import TfidfTransformer, zero_vector
 
@@ -93,7 +99,8 @@ def test_idf_is_strictly_decreasing_in_document_frequency():
 
 def test_idf_dtype_is_float64():
     assert compute_idf([5, 10], 100).dtype == np.float64
-    assert weighting.IDF_DTYPE is np.float64
+    assert weighting.IDF_DTYPE == np.dtype("<f8")
+    assert weighting.IDF_DTYPE == np.float64  # same dtype on a little-endian host
     assert weighting.FROZEN_IDF_DTYPE == "float64"
 
 
@@ -320,3 +327,129 @@ def test_transformer_rejects_an_index_map_of_the_wrong_size():
         TfidfTransformer(
             index_map={("A",): 0, ("B",): 1}, idf=compute_idf([5], 100), dimension=1
         )
+
+
+# ---------------------------------------------------------------------------
+# the serialization path is pinned, and carries nothing but numbers
+# ---------------------------------------------------------------------------
+
+
+def test_the_npy_serialization_path_is_pinned_not_inferred():
+    """Format version, byte order and memory order are all stated, so a
+    NumPy upgrade cannot silently change the payload bytes."""
+    assert IDF_NPY_VERSION == (1, 0)
+    assert IDF_NPY_DESCR == "<f8"
+    assert weighting.IDF_DTYPE == np.dtype(IDF_NPY_DESCR)
+
+
+def test_the_payload_header_is_exactly_the_three_structural_fields(tmp_path):
+    path = tmp_path / "idf.npy"
+    path.write_bytes(idf_bytes(compute_idf([5, 133, 900], 1_000_000)))
+
+    facts = inspect_idf_payload(path)
+    assert facts["version"] == (1, 0)
+    assert facts["descr"] == "<f8"
+    assert facts["fortran_order"] is False
+    assert facts["shape"] == (3,)
+    assert facts["header_fields"] == ["descr", "fortran_order", "shape"]
+
+
+def test_the_payload_is_header_plus_raw_doubles_and_nothing_else(tmp_path):
+    """Every byte is accounted for, so there is no room for a timestamp, a
+    path, a username, or a library version to hide."""
+    path = tmp_path / "idf.npy"
+    path.write_bytes(idf_bytes(compute_idf([5, 133, 900], 1_000_000)))
+
+    facts = inspect_idf_payload(path)
+    assert facts["data_bytes"] == 3 * 8
+    assert facts["header_bytes"] + facts["data_bytes"] == facts["total_bytes"]
+
+
+def test_the_byte_order_is_little_endian_regardless_of_the_native_alias(tmp_path):
+    """Serializing the platform-native `float64` would stamp the build
+    host's endianness into the header. The pinned dtype does not."""
+    native = np.array([1.5, 2.5], dtype=np.float64)
+    path = tmp_path / "idf.npy"
+    path.write_bytes(idf_bytes(native))
+    assert inspect_idf_payload(path)["descr"] == "<f8"
+
+
+def test_an_object_array_is_refused(tmp_path):
+    """No pickle, no object dtype -- an artifact payload must never be able
+    to execute anything on load."""
+    with pytest.raises(TfidfIdfError, match="object-dtype"):
+        idf_bytes(np.array([{"a": 1}, 2.0], dtype=object))
+
+
+def test_a_non_one_dimensional_array_is_refused():
+    with pytest.raises(TfidfIdfError, match="1-D"):
+        idf_bytes(np.zeros((2, 2), dtype=np.float64))
+
+
+def test_the_payload_contains_no_recognisable_environment_strings(tmp_path):
+    """A blunt but direct check of the requirement: none of the obvious
+    machine-specific tokens appear anywhere in the file."""
+    path = tmp_path / "idf.npy"
+    path.write_bytes(idf_bytes(compute_idf([5, 133, 900], 1_000_000)))
+    raw = path.read_bytes().lower()
+
+    for token in (b"numpy version", b"http", b"/users/", b"c:\\", b".py",
+                  b"20", b"utc", b"molfusion", b"pickle"):
+        # "20" would appear in a timestamp such as 2026-…; the header is
+        # pure structure, so even that must be absent from it.
+        assert token not in raw[: inspect_idf_payload(path)["header_bytes"]]
+
+
+def test_payload_validation_accepts_a_well_formed_file(tmp_path):
+    path = tmp_path / "idf.npy"
+    path.write_bytes(idf_bytes(compute_idf([5, 133, 900], 1_000_000)))
+    validate_idf_payload(path, dimension=3)
+
+
+def test_payload_validation_rejects_a_big_endian_payload(tmp_path):
+    """The failure a big-endian build host would produce, simulated."""
+    path = tmp_path / "idf.npy"
+    values = compute_idf([5, 133, 900], 1_000_000).astype(">f8")
+    buffer = BytesIO()
+    np.lib.format.write_array(buffer, values, version=(1, 0), allow_pickle=False)
+    path.write_bytes(buffer.getvalue())
+
+    assert inspect_idf_payload(path)["descr"] == ">f8"
+    with pytest.raises(TfidfIdfError, match="little-endian"):
+        validate_idf_payload(path, dimension=3)
+
+
+def test_payload_validation_rejects_a_promoted_format_version(tmp_path):
+    path = tmp_path / "idf.npy"
+    values = compute_idf([5, 133, 900], 1_000_000)
+    buffer = BytesIO()
+    np.lib.format.write_array(buffer, values, version=(2, 0), allow_pickle=False)
+    path.write_bytes(buffer.getvalue())
+
+    with pytest.raises(TfidfIdfError, match="format version"):
+        validate_idf_payload(path, dimension=3)
+
+
+def test_payload_validation_rejects_a_wrong_declared_shape(tmp_path):
+    path = tmp_path / "idf.npy"
+    path.write_bytes(idf_bytes(compute_idf([5, 133, 900], 1_000_000)))
+    with pytest.raises(TfidfIdfError, match="shape"):
+        validate_idf_payload(path, dimension=4)
+
+
+def test_two_independent_serializations_are_byte_identical(tmp_path):
+    """Same numbers, two separate arrays, two separate files."""
+    first_values = compute_idf([5, 133, 2_882_503], 2_897_639)
+    second_values = compute_idf([5, 133, 2_882_503], 2_897_639)
+    assert first_values is not second_values
+
+    first = tmp_path / "one.npy"
+    second = tmp_path / "two.npy"
+    first.write_bytes(idf_bytes(first_values))
+    second.write_bytes(idf_bytes(second_values))
+
+    assert first.read_bytes() == second.read_bytes()
+    assert (
+        hashlib.sha256(first.read_bytes()).hexdigest()
+        == hashlib.sha256(second.read_bytes()).hexdigest()
+    )

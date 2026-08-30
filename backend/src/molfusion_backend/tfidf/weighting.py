@@ -42,7 +42,17 @@ FROZEN_IDF_MODE = IDF_SMOOTHED
 FROZEN_NORM = NORM_L2
 FROZEN_IDF_DTYPE = "float64"
 FROZEN_RUNTIME_DTYPE = "float32"
-IDF_DTYPE = np.float64
+
+# Explicitly little-endian, not the platform-native alias. `np.float64`
+# resolves to native byte order, so serializing it would stamp the
+# building machine's endianness into the payload header ("<f8" here,
+# ">f8" on a big-endian host) and two correct builds on different
+# architectures would disagree byte for byte. Pinning the order makes
+# the payload a property of the data alone. On a little-endian host
+# this is the same dtype and the same bytes.
+IDF_DTYPE = np.dtype("<f8")
+# Runtime output is returned in memory and never serialized, so it uses
+# the native alias.
 RUNTIME_DTYPE = np.float32
 
 

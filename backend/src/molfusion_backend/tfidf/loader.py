@@ -114,7 +114,9 @@ def load_tfidf_artifact(
         orders=range(config.ngram_min, config.ngram_max + 1),
     )
 
-    idf_values = idf_module.load_idf(_payload_path(descriptor, contract.IDF_FILENAME))
+    idf_path = _payload_path(descriptor, contract.IDF_FILENAME)
+    idf_module.validate_idf_payload(idf_path, dimension=vocabulary.dimension)
+    idf_values = idf_module.load_idf(idf_path)
     idf_module.validate_idf(
         idf_values,
         dimension=vocabulary.dimension,
