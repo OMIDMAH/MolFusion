@@ -11,6 +11,7 @@ from molfusion_backend.corpus.builder import (
 )
 from molfusion_backend.corpus.errors import (
     CorpusBuildError,
+    CorpusIdentityError,
     CorpusOutputExistsError,
     CorpusSourceError,
     TokenizerContractViolation,
@@ -25,6 +26,7 @@ from molfusion_backend.corpus.serialization import (
     iter_corpus_lines,
     write_corpus,
 )
+from molfusion_backend.corpus.provenance import git_commit
 from molfusion_backend.corpus.statistics import CorpusStatisticsAccumulator, RecordCounts
 
 __all__ = [
@@ -35,6 +37,7 @@ __all__ = [
     "CORPUS_NEWLINE",
     "CORPUS_SERIALIZATION_ID",
     "CorpusBuildError",
+    "CorpusIdentityError",
     "CorpusOutputExistsError",
     "CorpusSourceError",
     "CorpusStatisticsAccumulator",
@@ -47,6 +50,7 @@ __all__ = [
     "corpus_bytes",
     "corpus_sha256",
     "describe_source_asset",
+    "git_commit",
     "deterministic_report_view",
     "iter_corpus_lines",
     "silence_rdkit_parse_logging",

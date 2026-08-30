@@ -3,8 +3,16 @@
 - [`reproducibility.md`](reproducibility.md) — artifact infrastructure:
   directory convention, metadata schema, checksum verification,
   `agent_version` vs `artifact_version`; the SMILES normalization and
-  tokenization contracts every text-fitted representation depends on; and
-  the ChEMBL 37 reference corpus builder and its `fit_corpus_sha256`
+  tokenization contracts every text-fitted representation depends on;
+  the ChEMBL 37 reference corpus builder and its `fit_corpus_sha256`; and
+  the Phase 5F-C token n-gram vocabulary study -- corpus identity gate,
+  the deterministic hash holdout, DF/TF accounting, and the feature
+  ranking rule MolFusion freezes instead of delegating to a vectorizer
+- [`tfidf-vocabulary-decision.md`](tfidf-vocabulary-decision.md) — the
+  measured Phase 5F-C recommendation for the SMILES TF-IDF vocabulary:
+  n-gram range, `min_df`, dimension, DF-vs-TF ranking, and whether
+  unigrams need protecting, with the evidence for each. Recommendation
+  only — nothing is fitted or frozen until Phase 5F-D
 
 Planned documents (not yet written):
 

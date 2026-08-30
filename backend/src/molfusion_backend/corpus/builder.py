@@ -15,10 +15,8 @@ import os
 import platform
 import shutil
 import sqlite3
-import subprocess
 import uuid
 from collections.abc import Callable, Iterable
-from functools import lru_cache
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -39,6 +37,7 @@ from molfusion_backend.corpus.errors import (
     CorpusOutputExistsError,
     TokenizerContractViolation,
 )
+from molfusion_backend.corpus.provenance import git_commit
 from molfusion_backend.corpus.serialization import (
     CORPUS_ENCODING,
     CORPUS_HAS_FINAL_NEWLINE,
@@ -127,32 +126,6 @@ def describe_source_asset(
         size_bytes=path.stat().st_size,
         expected_sha256=expected_sha256,
     )
-
-
-@lru_cache(maxsize=1)
-def _git_commit(repo_marker: Path) -> str | None:
-    """Current MolFusion commit, or None outside a working git checkout.
-
-    Best-effort provenance: a build from an exported tarball is still a
-    valid build, it just cannot name a commit. Cached because the answer
-    cannot change within a process and spawning git per build measurably
-    slows a test suite that builds many small corpora.
-    """
-    try:
-        completed = subprocess.run(
-            ["git", "rev-parse", "HEAD"],
-            cwd=repo_marker,
-            capture_output=True,
-            text=True,
-            timeout=15,
-            check=False,
-        )
-    except (OSError, subprocess.SubprocessError):
-        return None
-
-    if completed.returncode != 0:
-        return None
-    return completed.stdout.strip() or None
 
 
 def _validate_tokenization(canonical: str, record: chembl.SourceRecord) -> int:
@@ -473,7 +446,7 @@ def _build_report(
                 "python": platform.python_version(),
                 "rdkit": rdkit.__version__,
                 "sqlite": sqlite3.sqlite_version,
-                "molfusion_git_commit": _git_commit(Path(__file__).resolve().parent),
+                "molfusion_git_commit": git_commit(Path(__file__).resolve().parent),
             },
         },
     }

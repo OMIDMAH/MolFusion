@@ -22,3 +22,14 @@ class TokenizerContractViolation(CorpusBuildError):
     vocabulary/document-frequency derived from this corpus would be
     suspect. The build aborts rather than quietly dropping the record.
     """
+
+
+class CorpusIdentityError(CorpusBuildError):
+    """Raised when a corpus on disk is not the frozen corpus a consumer was
+    defined against.
+
+    A study, a fit, or a vocabulary freeze is only meaningful relative to
+    an exact corpus. Running one against different bytes does not weaken
+    the result, it silently produces a result about something else, so the
+    digest check is a hard stop rather than a warning.
+    """

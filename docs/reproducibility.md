@@ -371,3 +371,202 @@ Unlabeled molecules may of course overlap between ChEMBL and a future
 benchmark. That is an unsupervised-pretraining exposure question to be
 documented and audited separately; no downstream-data exclusion logic
 belongs in this phase.
+
+## Vocabulary study: token n-grams (Phase 5F-C)
+
+Phase 5F-C measures what a SMILES TF-IDF vocabulary would look like if it
+were fitted on the frozen corpus, so that the n-gram range, pruning
+threshold, dimension and feature-ranking rule are chosen from evidence
+rather than convention. It is a **study**: it fits nothing, freezes
+nothing, and writes no production payload. Phase 5F-D does that, after the
+policy this phase recommends has been reviewed.
+
+```
+python -m molfusion_backend.corpus.study \
+    --corpus     backend/corpus_data/chembl37/canonical_smiles.smi \
+    --output-dir backend/corpus_data/chembl37/studies/ngram_vocabulary
+```
+
+The corpus is immutable input. The study opens it read-only, twice, and
+never re-canonicalizes, re-sorts, re-deduplicates, rewrites its build
+report, or reopens the ChEMBL SQLite release.
+
+### Corpus identity gate
+
+The first operation is a SHA-256 of the corpus, compared against the
+frozen `fit_corpus_sha256`. A mismatch raises `CorpusIdentityError` and
+aborts before a single molecule is read. This is a hard stop rather than a
+warning: a study run against different bytes is not a weaker result, it is
+a result about something else wearing the same label. The expected
+document count is checked the same way after the counting pass.
+
+### N-grams are token tuples, never concatenated strings
+
+An n-gram is a tuple of Phase 5F-A tokens. Concatenation is genuinely
+lossy for this tokenizer, because a multi-character token can be re-split
+at a different boundary:
+
+```
+("Cl", "C")  and  ("C", "lC")   both concatenate to "ClC"
+```
+
+A string-keyed counter merges those into one feature and corrupts every
+count derived from it. Tuple keys make the collision impossible, and the
+human-readable study outputs serialize each n-gram as a JSON array
+(`["Cl", "C"]`) so the property survives the round trip to CSV.
+
+### DF and TF are tracked separately
+
+| | Meaning |
+| --- | --- |
+| `DF` | molecules containing the n-gram **at least once** |
+| `TF` | **total occurrences** across all molecules |
+
+A molecule whose SMILES contains `C` twenty times contributes `DF += 1`
+and `TF += 20`. The two are never interchangeable, and which of them
+should drive feature selection is one of the questions this phase exists
+to answer, so both are carried through every table.
+
+Counts are additionally split by study subset and by molecule token-count
+band (`(0,32]`, `(32,64]`, `(64,128]`, `(128,256]`, `(256,512]`,
+`(512,inf)`). The bands are what make the long-molecule question
+answerable after the fact: TF restricted to short molecules is a sum of
+band slots, so "would this ranking change if unusually long molecules were
+dropped?" needs no second pass over the corpus. No molecule is ever
+excluded or length-filtered; the bands only record where its counts came
+from.
+
+### The study split
+
+An analysis-only holdout, defined so that membership is a pure function of
+the molecule:
+
+```python
+digest = hashlib.sha256(smiles.encode("utf-8")).digest()
+bucket = int.from_bytes(digest, byteorder="big", signed=False) % 20
+holdout = (bucket == 0)          # ~5%; buckets 1-19 are the fit subset
+```
+
+Every step is pinned -- UTF-8 encoding, SHA-256, the whole 32-byte digest,
+big-endian, unsigned, modulo 20 -- under
+
+```
+STUDY_SPLIT_ID = "sha256_utf8_digest_bigendian_unsigned_mod20_bucket0_holdout_v1"
+```
+
+because a byte-order or signedness change would silently reshuffle the
+split while still looking deterministic.
+
+Deliberately **not** a positional split: the corpus is lexicographically
+sorted, so a contiguous slice is a slice of chemical space rather than a
+sample of it, and bucket membership would change if the corpus were ever
+re-sorted. Deliberately **not** `random`: that would make the split depend
+on a seed and a Python version rather than on the data. Under the hash
+rule, adding, removing or reordering other molecules cannot move a given
+molecule.
+
+This is an analysis split and nothing else. It is not a downstream
+train/test split, it never touches a TDC dataset or an ADMET label, and
+the Phase 5F-D production artifact will still be fitted on all 2,897,639
+reference molecules.
+
+### Deterministic feature ranking
+
+MolFusion ranks its own features rather than delegating to a vectorizer's
+`max_features`:
+
+```
+sort key:  (-frequency, ngram_token_tuple)
+```
+
+The tie-break is the token tuple itself, compared element by element, so
+the order is **total** -- no two distinct n-grams can tie, and no ranking
+position is ever resolved by insertion order, hash seed, sort stability or
+locale. A rule stated this way can be re-applied years later from the
+recorded counts alone; a rule that lives inside a third-party library's
+sort is reproducible only for as long as that library's internals are, and
+its tie behaviour is not part of its public contract.
+
+One structural consequence is used throughout. Under descending-DF
+ranking, `{DF >= min_df}` is exactly a **prefix** of the ranking, so every
+`min_df` threshold is also a dimension cap and vice versa. Candidate
+vocabularies for a given ranking are therefore nested, which is both a
+scientific simplification and what keeps the holdout sweep affordable: one
+dictionary lookup per n-gram per molecule answers every candidate
+dimension at once.
+
+Thresholds are absolute molecule counts, never percentages -- an absolute
+threshold can be audited against this fixed corpus by inspection, whereas
+a percentage silently changes meaning if the corpus size does.
+
+### What is measured
+
+Per n-gram order (1, 2, 3): distinct vocabulary size, total occurrences,
+DF and TF summaries, and a cumulative rarity histogram
+(`DF <= 1, 2, 5, 10, 25, 50`) with fractions. Per `min_df` threshold
+(1, 2, 5, 10, 25, 50, 100, 250, 500, 1000): unigram, bigram and trigram
+vocabulary sizes and the combined `(1,1)`, `(1,2)`, `(1,3)`, `(2,3)`
+sizes. Per candidate policy, ranking and dimension: holdout occurrence
+coverage, holdout unique-n-gram coverage, the per-molecule OOV
+distribution, all-zero molecule count, retained-feature counts and the
+resulting sparsity, and whether every unigram survived the cut.
+
+Percentiles are **nearest-rank** (`p` is the `ceil(p/100 * n)`-th smallest
+observed value, never interpolated), stated explicitly because "the 95th
+percentile" is not a single definition.
+
+Two coverage notions are reported and must not be conflated: aggregate
+occurrence coverage pools all holdout occurrences, while the mean
+per-molecule OOV fraction weights every molecule equally. Pooling flatters
+long molecules; averaging does not.
+
+### Exact counts, and why they fit in memory
+
+The counters are exact Python dictionaries, not sketches. That is a
+measured choice, not an assumption: canonical SMILES have a token alphabet
+of a few hundred symbols, so the distinct n-gram vocabulary is thousands
+of entries rather than millions, and the counting pass over the full
+corpus peaks well under 100 MB. The study report records its own
+`run.peak_memory_bytes` and pass timings so the claim is re-checkable on
+any machine. Nothing is retained per molecule: the corpus is streamed, and
+each document's token tuple and n-gram counts are consumed and dropped.
+
+### Study outputs
+
+Written to an ignored location alongside the corpus:
+
+```
+backend/corpus_data/chembl37/studies/ngram_vocabulary/
+  study_report.json        every table, plus full provenance
+  df_thresholds.csv        vocabulary size per min_df, per order
+  vocabulary_coverage.csv  policy x min_df vocabulary sizes
+  holdout_coverage.csv     the candidate-configuration table
+  ranking_comparison.csv   DF vs TF top-K agreement
+  top_ngrams.csv           bounded diagnostic sample of each ranking
+```
+
+Generated study output is ignored by git for the same reason the corpus is
+(`/corpus_data/`); only the study code, its tests, and the measured
+conclusions in documentation are committed. The top-n-gram dump is bounded
+to a few hundred rows per order on purpose -- the point is to see what a
+ranking promotes, which a short table shows and a multi-million-row dump
+hides.
+
+`study_report.json` records the study schema version, the verified corpus
+digest, document count, the normalization/tokenizer/serialization contract
+IDs, the split definition and its counts, the n-gram and ranking
+definitions, every threshold swept, and the Python, RDKit and MolFusion
+git versions. Exactly five fields are volatile -- the start timestamp,
+three timings and peak memory -- and `deterministic_study_view()` strips
+them, so two runs over the same corpus are otherwise identical, including
+byte-for-byte identical CSV tables. No result depends on dict iteration
+order, set order, OS locale, filesystem ordering, or process completion
+order.
+
+### Leakage policy
+
+The study reads the frozen corpus and nothing else. No TDC dataset, ADMET
+endpoint, benchmark split, label, or MolFusion prediction output is
+opened; `corpus.uses_downstream_labels` is asserted `false` in the study
+report as it is in the build report. The unseen-molecule estimate comes
+entirely from the internal hash holdout described above.
