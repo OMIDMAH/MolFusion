@@ -13,6 +13,12 @@
   n-gram range, `min_df`, dimension, DF-vs-TF ranking, and whether
   unigrams need protecting, with the evidence for each. Recommendation
   only — nothing is fitted or frozen until Phase 5F-D
+- [`tfidf-weighting-decision.md`](tfidf-weighting-decision.md) — the
+  measured Phase 5F-C.1 recommendation for how a retained feature becomes
+  a number: term-frequency rule, exact IDF formula, normalization,
+  precision policy, vector index ordering, lossless vocabulary encoding,
+  and the zero-vector and out-of-vocabulary semantics. Recommendation
+  only — Phase 5F-D packages it
 
 Planned documents (not yet written):
 

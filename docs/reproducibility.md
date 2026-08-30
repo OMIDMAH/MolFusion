@@ -570,3 +570,154 @@ endpoint, benchmark split, label, or MolFusion prediction output is
 opened; `corpus.uses_downstream_labels` is asserted `false` in the study
 report as it is in the build report. The unseen-molecule estimate comes
 entirely from the internal hash holdout described above.
+
+## Weighting contract: how a retained feature becomes a number (Phase 5F-C.1)
+
+Three phases, three separate concerns, deliberately not mixed:
+
+| Phase | Decides |
+| --- | --- |
+| 5F-C | **which** token n-grams are features |
+| 5F-C.1 | **how** a retained feature becomes a number |
+| 5F-D | **how** the frozen vocabulary and IDF are packaged reproducibly |
+
+Phase 5F-C.1 is still a study: it measures and freezes arithmetic, and
+writes no vocabulary payload, IDF payload, artifact metadata, or feature
+agent.
+
+```
+python -m molfusion_backend.corpus.study.weighting \
+    --corpus     backend/corpus_data/chembl37/canonical_smiles.smi \
+    --output-dir backend/corpus_data/chembl37/studies/tfidf_weighting
+```
+
+Same guarantees as the 5F-C study: the corpus digest is verified before a
+molecule is read, the corpus is opened read-only, and nothing downstream
+of structure is consulted.
+
+### The contract is arithmetic, not a library flag
+
+Recording `smooth_idf=True` would not be a contract. It names a setting in
+a particular version of a particular library and says nothing about what
+the arithmetic is. Every formula is therefore written out, implemented
+directly in `study/weighting/weights.py`, and pinned by tests against
+values derived by hand, so any artifact number can be reproduced from the
+recorded document frequencies with a calculator.
+
+```
+tf(t,d)  = 1 + ln(count(t in d))    if count > 0
+         = 0                        if count = 0
+
+idf(t)   = ln((1 + N) / (1 + df(t))) + 1        smoothed
+idf(t)   = ln(N / df(t)) + 1                    unsmoothed
+
+x        = tf * idf
+result   = x / ||x||_2                          L2, zero-safe
+```
+
+Logarithms are natural throughout; the base is recorded, because a base
+change rescales every IDF by a constant, which is invisible after L2
+normalization but very visible to anyone checking a stored IDF by hand.
+
+Order of operations is fixed: **normalize last**. Normalizing before the
+IDF multiply would make the IDF weighting partly cosmetic.
+
+The trailing `+ 1` in both IDF forms is the standard floor that leaves a
+term appearing in every document at weight 1 rather than 0, so a
+universally present feature is damped rather than deleted.
+
+### Three vocabulary decisions, kept apart
+
+| Decision | Rule |
+| --- | --- |
+| selection | top 4,096 by `(-document_frequency, ngram_tuple)` after `min_df = 5` (frozen in 5F-C) |
+| ordering | vector index by **ascending lexicographic token tuple**, applied *after* selection |
+| encoding | each feature is a **JSON array of token strings** |
+
+Selection is a scientific choice about coverage. Ordering is an interface
+choice -- it decides what column 37 of every vector MolFusion ever emits
+means -- so it is stated rather than inherited from whatever order a dict
+happened to have. Encoding is a correctness choice, because the obvious
+encoding is lossy: `("Cl","C")` and `("C","lC")` both join to `"ClC"`, so
+a concatenated key cannot distinguish two different features, and a
+separator character only moves the problem to any token containing it.
+
+Selection is applied **before** the cap, which is what makes `min_df` a
+guarantee rather than a suggestion the cap could override. Each term
+retains its `selection_rank` alongside its `index`, so the ranking that
+chose a feature stays auditable after the ordering that positions it.
+
+### Zero vectors are a result, not a failure
+
+```
+valid molecule + successful tokenization + no retained vocabulary term
+    -> all-zero vector of the full dimension
+```
+
+This is a legitimate outcome and must not be reported as a representation
+failure. L2 normalization of a zero vector leaves it exactly zero: the
+implementation replaces a zero norm with 1 before dividing, because
+dividing by the norm would turn a well-defined zero vector into `NaN`,
+which then propagates silently through every downstream similarity, mean
+and model input.
+
+### Out-of-vocabulary is normal runtime behaviour
+
+An n-gram outside the frozen vocabulary **contributes nothing**. It does
+not expand the vocabulary, does not get an `UNK` dimension, does not
+trigger fitting, and does not raise. This is distinct from tokenization
+failure, which remains an error under the Phase 5F-A contract: a string
+MolFusion cannot tokenize is a contract violation, whereas a molecule made
+of unfamiliar motifs is just a molecule.
+
+### The diagnostic sample
+
+Numerical diagnostics use a deterministic, size-stratified sample rather
+than all 2,897,639 molecules -- they ask how magnitude tracks length and
+how two TF rules differ, which a few thousand molecules per stratum
+answers as well as millions would.
+
+```python
+bucket = int.from_bytes(sha256(smiles.encode("utf-8")).digest(), "big") % 10000
+sampled = bucket < acceptance_rate[stratum_of(token_count)]
+```
+
+Stratified because the corpus is extremely uneven: a uniform sample would
+be ~0.4% long molecules and the long-molecule question would be answered
+by noise. Acceptance rates are unequal by design, so every figure is
+reported **within** its stratum and never pooled into a corpus-level
+average that the sampling would have distorted.
+
+All document frequencies and IDF values still come from the **full frozen
+corpus**. The sample is only ever the set of molecules the vectors are
+computed *for*. This is not a train/test split and there is no second
+holdout: the unseen-molecule question was Phase 5F-C's, and answering it
+again here would add nothing.
+
+### Study outputs
+
+```
+backend/corpus_data/chembl37/studies/tfidf_weighting/
+  weighting_report.json    every table, plus full provenance
+  idf_comparison.csv       smoothed vs unsmoothed IDF, by df band
+  tf_concentration.csv     raw vs sublinear TF concentration, by stratum
+  norm_vs_length.csv       magnitude against molecule size, by stratum
+  precision.csv            float64 vs float32, by stratum
+  vocabulary_preview.csv   bounded diagnostic sample of the selected terms
+  corpus_pass_cache.json   cached counting pass, keyed by corpus digest
+```
+
+Ignored by git like every other generated corpus output. `vocabulary_preview.csv`
+is a bounded diagnostic and is deliberately too short to be mistaken for
+the production vocabulary payload, which Phase 5F-D writes.
+
+The corpus counting pass is cached because it is the only slow step and
+the vocabulary depends on full-corpus document frequency. The cache is
+keyed by corpus digest, tokenizer id, n-gram orders, `min_df`, dimension
+and sample rule, so a stale cache cannot be reused by accident; index
+ordering is always re-derived by code rather than read back from it.
+
+Five fields are volatile -- the start timestamp, three timings, and
+whether the cache was used -- and `deterministic_study_view()` strips
+them. Two runs over the same corpus are otherwise identical, including
+byte-for-byte identical CSV tables.

@@ -1,5 +1,12 @@
 # Decision record: SMILES TF-IDF vocabulary policy
 
+**Scope:** this record decides **which** token n-grams become features.
+How a retained feature becomes a *number* -- the term-frequency rule, the
+IDF formula, normalization, precision, and vector index ordering -- is a
+separate decision, recorded in
+[`tfidf-weighting-decision.md`](tfidf-weighting-decision.md) (Phase
+5F-C.1). Packaging both into a reproducible artifact is Phase 5F-D.
+
 **Status:** recommended, awaiting review. **Nothing is fitted or frozen.**
 No vectorizer, IDF vector, vocabulary payload, artifact, agent, or registry
 entry exists yet; Phase 5F-D creates those, and only after this policy is
