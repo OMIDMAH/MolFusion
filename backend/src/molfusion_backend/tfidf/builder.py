@@ -39,7 +39,7 @@ import rdkit
 
 from molfusion_backend.artifacts.checksum import sha256_file
 from molfusion_backend.chemistry import CANONICAL_SMILES_NORMALIZATION_ID
-from molfusion_backend.corpus.provenance import git_commit
+from molfusion_backend.corpus.provenance import git_commit, working_tree_is_clean
 from molfusion_backend.corpus.serialization import CORPUS_ENCODING, CORPUS_SERIALIZATION_ID
 from molfusion_backend.smiles_tokenizer import SMILES_TOKENIZER_ID, tokenize_smiles
 from molfusion_backend.tfidf import contract, idf as idf_module, vocabulary as vocabulary_module
@@ -348,6 +348,12 @@ def _build_report(**kw: Any) -> dict[str, Any]:
                 "numpy": np.__version__,
                 "sklearn": _sklearn_version(),
                 "molfusion_git_commit": git_commit(Path(__file__).resolve().parent),
+                # False means the named commit alone will not reproduce
+                # this artifact, because the tree carried uncommitted
+                # changes when it was built.
+                "molfusion_git_working_tree_clean": working_tree_is_clean(
+                    Path(__file__).resolve().parent
+                ),
             },
         },
     }

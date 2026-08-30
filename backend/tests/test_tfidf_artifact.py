@@ -483,3 +483,14 @@ def test_rebuild_and_compare_needs_something_to_compare_against(corpus, tmp_path
         builder.rebuild_and_compare(
             path, tmp_path / "empty", scratch_root=tmp_path / "scratch", progress_every=0
         )
+
+
+def test_build_report_records_whether_the_tree_was_clean(corpus, tmp_path):
+    """A commit alone is not provenance if the tree was dirty when the
+    artifact was built: the named revision would not reproduce it, and
+    nothing in the artifact would say so."""
+    report = build(corpus, tmp_path / "artifacts")
+    software = report["build"]["software"]
+    assert "molfusion_git_working_tree_clean" in software
+    assert software["molfusion_git_working_tree_clean"] in (True, False, None)
+    assert "molfusion_git_commit" in software
