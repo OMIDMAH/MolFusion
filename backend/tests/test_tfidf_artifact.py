@@ -494,3 +494,45 @@ def test_build_report_records_whether_the_tree_was_clean(corpus, tmp_path):
     assert "molfusion_git_working_tree_clean" in software
     assert software["molfusion_git_working_tree_clean"] in (True, False, None)
     assert "molfusion_git_commit" in software
+
+
+def test_the_build_report_never_records_the_metadata_digest(corpus, tmp_path):
+    """The second half of the acyclicity rule.
+
+    metadata.json owns the checksums of all four payloads, including the
+    build report's. If the build report also recorded metadata.json's
+    digest the two would depend on each other and neither could be written
+    second. The metadata digest is therefore never computed at all, and
+    the report does not mention the file anywhere -- checked over the whole
+    body rather than just the digest map, so a future field cannot
+    reintroduce the cycle somewhere else in the document.
+    """
+    root = tmp_path / "artifacts"
+    report = build(corpus, root)
+    directory = artifact_dir(root)
+
+    assert "metadata.json" not in report["payload_sha256"]
+    assert "build_report.json" not in report["payload_sha256"]
+
+    body = (directory / contract.BUILD_REPORT_FILENAME).read_text(encoding="utf-8")
+    assert "metadata.json" not in body
+    assert sha256_file(directory / "metadata.json") not in body
+    assert sha256_file(directory / contract.BUILD_REPORT_FILENAME) not in body
+
+
+def test_metadata_owns_the_checksum_of_every_payload_including_the_report(corpus, tmp_path):
+    """The first half: metadata is the single owner of payload integrity."""
+    root = tmp_path / "artifacts"
+    build(corpus, root)
+    directory = artifact_dir(root)
+    metadata = json.loads((directory / "metadata.json").read_text(encoding="utf-8"))
+    owned = {entry["filename"]: entry["sha256"] for entry in metadata["payload_files"]}
+
+    assert set(owned) == {
+        contract.VOCABULARY_FILENAME,
+        contract.IDF_FILENAME,
+        contract.CONFIG_FILENAME,
+        contract.BUILD_REPORT_FILENAME,
+    }
+    for filename, digest in owned.items():
+        assert sha256_file(directory / filename) == digest
