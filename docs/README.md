@@ -33,6 +33,13 @@ preflight contract: which agents exist, which can currently run, and
 why a systemic prerequisite failure is rejected once per request rather
 than reported once per molecule.
 
+- [`benchmark-protocol.md`](benchmark-protocol.md) — the frozen Phase 6A
+  scientific benchmark protocol: datasets and inclusion rules, the
+  fixed-vector and sequence tracks, scaffold splits and seeds, the shared
+  probes and tuning budget, metrics and cross-endpoint ranking, the
+  statistical plan, failure accounting, and the reproducibility metadata
+  every run must record. Protocol only — no benchmark has been executed
+
 Planned documents (not yet written):
 
 - `architecture.md` — backend/frontend split, data flow
