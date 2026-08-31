@@ -8,6 +8,7 @@ from molfusion_backend.api.schemas import (
     AgentMetadata,
     ComputeRequest,
     ComputeResponse,
+    FeatureComputationError,
     FeatureOutput,
     HealthResponse,
     MoleculeResult,
@@ -82,36 +83,45 @@ def compute_features(request: ComputeRequest) -> ComputeResponse:
             )
             continue
 
-        # Generic (not agent-specific) computation-failure handling: any
-        # FeatureAgent.compute() may raise ValueError to signal it could
-        # not produce a result for this specific molecule (e.g. SELFIES
-        # encoding failing under the pinned semantic constraints), even
-        # though RDKit itself parsed the SMILES successfully.
+        # Per-agent isolation: each selected agent is attempted
+        # independently, so one representation failing never discards
+        # another's successful output.
         #
-        # `valid` means molecular/SMILES validity, not "every requested
-        # representation succeeded" -- a molecule RDKit parsed fine stays
-        # valid=True even if one of its representations could not be
-        # computed. The failure is instead reported via `error` (populated)
-        # with features=[], distinguishing it from an RDKit parse failure
-        # (valid=False) by the value of `valid` alone.
+        # Only ValueError is caught, which is the documented way a
+        # FeatureAgent signals "I could not produce a result for this
+        # molecule" (SELFIES rejecting a hypervalent atom, the TF-IDF
+        # artifact being unloadable, a molecule outside an agent's
+        # applicability). Anything else -- a TypeError, an AttributeError,
+        # a KeyError -- is a bug rather than a representation outcome, and
+        # is deliberately left to propagate: silently reshaping programming
+        # errors into routine per-agent failures would make them invisible
+        # exactly where they most need to be seen.
         #
-        # This is intentionally all-or-nothing at the molecule level for
-        # this phase: if any requested agent fails, no features are
-        # returned for that molecule (not even from agents that would have
-        # succeeded), because MoleculeResult has no schema for per-agent
-        # partial success yet. Modeling partial success (succeeded
-        # features alongside a separate failure list) would need a future
-        # API revision to MoleculeResult -- not introduced here.
-        try:
-            features = [_compute_feature_output(agent, mol) for agent in agents]
-        except ValueError as exc:
-            results.append(
-                MoleculeResult(smiles=smiles, valid=True, error=str(exc), features=[])
-            )
-            continue
+        # `valid` remains molecular/SMILES validity alone. A molecule RDKit
+        # parsed successfully stays valid=True with error=None even when
+        # every one of its representations fails; the failures are reported
+        # per agent instead. Both lists follow the requested agent order,
+        # so output ordering never depends on which agent happened to fail.
+        features: list[FeatureOutput] = []
+        feature_errors: list[FeatureComputationError] = []
+        for agent in agents:
+            try:
+                features.append(_compute_feature_output(agent, mol))
+            except ValueError as exc:
+                feature_errors.append(
+                    FeatureComputationError(
+                        agent_id=agent.id, agent_version=agent.version, error=str(exc)
+                    )
+                )
 
         results.append(
-            MoleculeResult(smiles=smiles, valid=True, error=None, features=features)
+            MoleculeResult(
+                smiles=smiles,
+                valid=True,
+                error=None,
+                features=features,
+                feature_errors=feature_errors,
+            )
         )
 
     return ComputeResponse(results=results)

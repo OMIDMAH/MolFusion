@@ -69,7 +69,7 @@ const SELFIES_AGENT: AgentMetadata = {
 };
 
 const HEADER_ROW =
-  "smiles,valid,error,agent_id,agent_version,output_structure,value_type,dim,feature_names,values,sequence_length,sequence_tokens,sequence_string";
+  "smiles,valid,error,agent_id,agent_version,output_structure,value_type,dim,feature_names,values,sequence_length,sequence_tokens,sequence_string,feature_error";
 
 /** Mirrors csv.ts's own escaping rule, so expected rows built here go
  * through the same quoting logic as the code under test. */
@@ -105,6 +105,7 @@ function vectorRow(fields: {
     "",
     "",
     "",
+    "",
   ]
     .map(escapeForTest)
     .join(",");
@@ -135,13 +136,46 @@ function sequenceRow(fields: {
     String(fields.length),
     fields.tokensJson,
     fields.sequenceString,
+    "",
   ]
     .map(escapeForTest)
     .join(",");
 }
 
 function noFeatureRow(smiles: string, valid: boolean, error = ""): string {
-  return [smiles, String(valid), error, "", "", "", "", "", "", "", "", "", ""]
+  return [smiles, String(valid), error, "", "", "", "", "", "", "", "", "", "", ""]
+    .map(escapeForTest)
+    .join(",");
+}
+
+/** A row describing one agent that failed for this molecule: agent columns
+ * populated, every value column empty (nothing is fabricated), and the
+ * message in the dedicated `feature_error` column. */
+function featureErrorRow(fields: {
+  smiles: string;
+  valid: boolean;
+  error?: string;
+  agentId: string;
+  agentVersion: string;
+  valueType?: string;
+  featureError: string;
+}): string {
+  return [
+    fields.smiles,
+    String(fields.valid),
+    fields.error ?? "",
+    fields.agentId,
+    fields.agentVersion,
+    "",
+    fields.valueType ?? "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    fields.featureError,
+  ]
     .map(escapeForTest)
     .join(",");
 }
@@ -184,7 +218,7 @@ describe("buildResultsCsv header", () => {
 describe("buildResultsCsv — vector outputs", () => {
   it("quotes fields containing commas", () => {
     const results: MoleculeResult[] = [
-      { smiles: "CCO, ethanol", valid: true, error: null, features: [] },
+      { smiles: "CCO, ethanol", valid: true, error: null, feature_errors: [], features: [] },
     ];
     const csv = buildResultsCsv(results, []);
     const [, row] = csv.split("\r\n");
@@ -197,6 +231,7 @@ describe("buildResultsCsv — vector outputs", () => {
         smiles: "CCO",
         valid: false,
         error: 'parse error: unexpected "X", stop',
+        feature_errors: [],
         features: [],
       },
     ];
@@ -208,7 +243,7 @@ describe("buildResultsCsv — vector outputs", () => {
 
   it("quotes fields containing embedded newlines", () => {
     const results: MoleculeResult[] = [
-      { smiles: "CCO", valid: false, error: "line one\nline two", features: [] },
+      { smiles: "CCO", valid: false, error: "line one\nline two", feature_errors: [], features: [] },
     ];
     const csv = buildResultsCsv(results, []);
     // The embedded newline must stay inside a quoted field, not create a spurious row.
@@ -217,7 +252,7 @@ describe("buildResultsCsv — vector outputs", () => {
   });
 
   it("leaves empty strings (no error, no agent) unquoted and empty", () => {
-    const results: MoleculeResult[] = [{ smiles: "CCO", valid: true, error: null, features: [] }];
+    const results: MoleculeResult[] = [{ smiles: "CCO", valid: true, error: null, feature_errors: [], features: [] }];
     const csv = buildResultsCsv(results, []);
     const [, row] = csv.split("\r\n");
     expect(row).toBe(noFeatureRow("CCO", true));
@@ -229,6 +264,7 @@ describe("buildResultsCsv — vector outputs", () => {
         smiles: "CCO",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "vector",
@@ -261,6 +297,7 @@ describe("buildResultsCsv — vector outputs", () => {
         smiles: "CCO",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "vector",
@@ -312,6 +349,7 @@ describe("buildResultsCsv — vector outputs", () => {
         smiles: "CCO",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "vector",
@@ -322,7 +360,7 @@ describe("buildResultsCsv — vector outputs", () => {
           },
         ],
       },
-      { smiles: "INVALID", valid: false, error: "could not be parsed", features: [] },
+      { smiles: "INVALID", valid: false, error: "could not be parsed", feature_errors: [], features: [] },
     ];
     const csv = buildResultsCsv(results, [MACCS_AGENT]);
     const lines = csv.split("\r\n");
@@ -337,6 +375,7 @@ describe("buildResultsCsv — vector outputs", () => {
         smiles: "CCO",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "vector",
@@ -370,6 +409,7 @@ describe("buildResultsCsv — vector outputs", () => {
         smiles: "CCO",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "vector",
@@ -403,6 +443,7 @@ describe("buildResultsCsv — vector outputs", () => {
         smiles: "CC(=O)Oc1ccccc1C(=O)O",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "vector",
@@ -441,6 +482,7 @@ describe("buildResultsCsv — vector outputs", () => {
         smiles: "CC(=O)Oc1ccccc1C(=O)O",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "vector",
@@ -476,6 +518,7 @@ describe("buildResultsCsv — vector outputs", () => {
         smiles: "c1ccccc1",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "vector",
@@ -511,6 +554,7 @@ describe("buildResultsCsv — sequence outputs (SELFIES)", () => {
         smiles: "CCO",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "sequence",
@@ -545,6 +589,7 @@ describe("buildResultsCsv — sequence outputs (SELFIES)", () => {
         smiles: "CCO",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "sequence",
@@ -567,6 +612,7 @@ describe("buildResultsCsv — sequence outputs (SELFIES)", () => {
         smiles: "C[C@H](O)Cl",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "sequence",
@@ -595,6 +641,7 @@ describe("buildResultsCsv — sequence outputs (SELFIES)", () => {
         smiles: "c1ccccc1",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "sequence",
@@ -625,6 +672,7 @@ describe("buildResultsCsv — sequence outputs (SELFIES)", () => {
         smiles: "CCO",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "sequence",
@@ -639,6 +687,7 @@ describe("buildResultsCsv — sequence outputs (SELFIES)", () => {
         smiles: "c1ccccc1",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "sequence",
@@ -667,6 +716,7 @@ describe("buildResultsCsv — mixed vector and sequence outputs", () => {
         smiles: "CC(=O)Oc1ccccc1C(=O)O",
         valid: true,
         error: null,
+        feature_errors: [],
         features: [
           {
             output_structure: "vector",
@@ -755,5 +805,104 @@ describe("buildResultsCsv — mixed vector and sequence outputs", () => {
         sequenceString: "[C][C]",
       }),
     );
+  });
+});
+
+describe("buildResultsCsv — per-agent failures (Phase 5H)", () => {
+  const failingResult = (): MoleculeResult => ({
+    smiles: "Cl[I](Cl)Cl",
+    valid: true,
+    error: null,
+    features: [
+      {
+        output_structure: "vector",
+        agent_id: "morgan_ecfp4_1024",
+        agent_version: "1.0.0",
+        values: [1, 0, 1],
+        dim: 3,
+      },
+    ],
+    feature_errors: [
+      {
+        agent_id: "selfies_sequence",
+        agent_version: "1.0.0",
+        error: "selfies_sequence: failed to encode molecule as SELFIES",
+      },
+    ],
+  });
+
+  it("still exports the successful representation when another agent failed", () => {
+    const csv = buildResultsCsv([failingResult()], [MORGAN_AGENT]);
+    const lines = csv.split("\r\n");
+    expect(lines[1]).toBe(
+      vectorRow({
+        smiles: "Cl[I](Cl)Cl",
+        valid: true,
+        agentId: "morgan_ecfp4_1024",
+        agentVersion: "1.0.0",
+        valueType: "binary",
+        dim: 3,
+        values: "1;0;1",
+      }),
+    );
+  });
+
+  it("emits one row per failed agent, after the successful rows", () => {
+    const csv = buildResultsCsv([failingResult()], [MORGAN_AGENT]);
+    const lines = csv.split("\r\n");
+    expect(lines).toHaveLength(3);
+    expect(lines[2]).toBe(
+      featureErrorRow({
+        smiles: "Cl[I](Cl)Cl",
+        valid: true,
+        agentId: "selfies_sequence",
+        agentVersion: "1.0.0",
+        featureError: "selfies_sequence: failed to encode molecule as SELFIES",
+      }),
+    );
+  });
+
+  it("fabricates no values for a failed agent", () => {
+    const csv = buildResultsCsv([failingResult()], [MORGAN_AGENT]);
+    const errorRow = csv.split("\r\n")[2].split(",");
+    // dim, feature_names, values, sequence_* all empty.
+    expect(errorRow.slice(7, 13).every((field) => field === "")).toBe(true);
+  });
+
+  it("keeps the molecule-level error column empty for a per-agent failure", () => {
+    const csv = buildResultsCsv([failingResult()], [MORGAN_AGENT]);
+    for (const line of csv.split("\r\n").slice(1)) {
+      expect(line.split(",")[2]).toBe("");
+    }
+  });
+
+  it("exports a molecule whose agents all failed without a placeholder row", () => {
+    const allFailed: MoleculeResult = {
+      smiles: "Cl[I](Cl)Cl",
+      valid: true,
+      error: null,
+      features: [],
+      feature_errors: [
+        { agent_id: "a", agent_version: "1", error: "boom a" },
+        { agent_id: "b", agent_version: "2", error: "boom b" },
+      ],
+    };
+    const lines = buildResultsCsv([allFailed], []).split("\r\n");
+    expect(lines).toHaveLength(3);
+    expect(lines[1]).toContain("boom a");
+    expect(lines[2]).toContain("boom b");
+  });
+
+  it("still emits the single empty row for an invalid molecule", () => {
+    const invalid: MoleculeResult = {
+      smiles: "INVALID",
+      valid: false,
+      error: "could not be parsed",
+      features: [],
+      feature_errors: [],
+    };
+    const lines = buildResultsCsv([invalid], []).split("\r\n");
+    expect(lines).toHaveLength(2);
+    expect(lines[1]).toBe(noFeatureRow("INVALID", false, "could not be parsed"));
   });
 });

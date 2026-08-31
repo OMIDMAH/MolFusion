@@ -25,7 +25,10 @@ schemas, the checksum DAG, immutability and rebuild rules, and the two
 validation layers) and the production `smiles_tfidf_4096` FeatureAgent that
 consumes it (Phase 5G — runtime pipeline, artifact lifecycle, OOV and
 zero-vector semantics, feature-name format) are documented in the final
-sections of [`reproducibility.md`](reproducibility.md).
+sections of [`reproducibility.md`](reproducibility.md), which also records
+the Phase 5H per-agent error-isolation contract: how an unparseable
+molecule, a failed representation, and a legitimately empty result are kept
+distinguishable from one another.
 
 Planned documents (not yet written):
 

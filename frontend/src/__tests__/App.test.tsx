@@ -124,6 +124,7 @@ describe("App", () => {
           smiles: "CCO",
           valid: true,
           error: null,
+          feature_errors: [],
           features: [
             {
               output_structure: "vector",
@@ -165,6 +166,7 @@ describe("App", () => {
           smiles: "CC(=O)Oc1ccccc1C(=O)O",
           valid: true,
           error: null,
+          feature_errors: [],
           features: [
             {
               output_structure: "vector",
@@ -215,6 +217,7 @@ describe("App", () => {
           smiles: "CC(=O)Oc1ccccc1C(=O)O",
           valid: true,
           error: null,
+          feature_errors: [],
           features: [
             {
               output_structure: "vector",
@@ -269,6 +272,7 @@ describe("App", () => {
           smiles: "CCO",
           valid: true,
           error: null,
+          feature_errors: [],
           features: [
             {
               output_structure: "sequence",
@@ -321,6 +325,7 @@ describe("App", () => {
           smiles: "Cl[I](Cl)Cl",
           valid: true,
           error: "selfies_sequence: failed to encode molecule as SELFIES: 'Cl[I](Cl)Cl'",
+          feature_errors: [],
           features: [],
         },
       ],
@@ -353,7 +358,7 @@ describe("App", () => {
       results: [{ smiles: "CCO", valid: true, error: null }],
     } satisfies ValidateResponse);
     vi.mocked(computeFeatures).mockResolvedValue({
-      results: [{ smiles: "CCO", valid: true, error: null, features: [] }],
+      results: [{ smiles: "CCO", valid: true, error: null, feature_errors: [], features: [] }],
     } satisfies ComputeResponse);
 
     const user = userEvent.setup();

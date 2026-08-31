@@ -197,24 +197,76 @@ def test_production_artifact_is_only_read(tmp_path):
 
 
 @production_artifact
-def test_production_artifact_load_is_amortized_not_per_molecule():
-    """Guards against an implementation that reloads or rescans per call:
-    the first compute pays for the load, later ones must be far cheaper."""
+def test_the_artifact_is_loaded_once_no_matter_how_many_molecules(monkeypatch):
+    """The architectural claim, asserted directly by counting loads.
+
+    This replaces an earlier timing-ratio assertion. That version compared
+    per-molecule cost against measured load cost, which made it depend on
+    the OS page cache (a warm artifact loads far faster, shrinking the
+    budget) and on machine load. Counting calls proves the property the
+    test actually cares about -- the artifact is read once, not once per
+    molecule -- and cannot flake.
+    """
     from rdkit import Chem
+
+    from molfusion_backend.agents import smiles_tfidf as agent_module
+
+    calls = []
+    real_loader = agent_module.load_tfidf_artifact
+
+    def counting_loader(*args, **kwargs):
+        calls.append(1)
+        return real_loader(*args, **kwargs)
+
+    monkeypatch.setattr(agent_module, "load_tfidf_artifact", counting_loader)
 
     agent = SmilesTfidfAgent()
     molecules = [Chem.MolFromSmiles(smiles) for _, smiles in SMOKE_MOLECULES] * 8
+    for molecule in molecules:
+        agent.compute(molecule)
+    agent.feature_names  # also served from the cached state
 
-    started = time.perf_counter()
+    assert len(calls) == 1, f"artifact was loaded {len(calls)} times for {len(molecules)} molecules"
+
+
+@production_artifact
+def test_a_failing_sibling_agent_does_not_trigger_a_reload(monkeypatch):
+    """Phase 5H isolates failures per agent; that must not cause the TF-IDF
+    artifact to be re-read when some other agent raises."""
+    from rdkit import Chem
+
+    from molfusion_backend.agents import smiles_tfidf as agent_module
+
+    calls = []
+    real_loader = agent_module.load_tfidf_artifact
+
+    def counting_loader(*args, **kwargs):
+        calls.append(1)
+        return real_loader(*args, **kwargs)
+
+    monkeypatch.setattr(agent_module, "load_tfidf_artifact", counting_loader)
+
+    agent = SmilesTfidfAgent()
+    for smiles in ("CCO", "Cl[I](Cl)Cl", "c1ccccc1", "[Xe]"):
+        agent.compute(Chem.MolFromSmiles(smiles))
+
+    assert len(calls) == 1
+
+
+@production_artifact
+def test_per_molecule_transform_is_not_pathologically_slow():
+    """A loose upper bound, kept as a smoke check rather than a benchmark:
+    it catches an accidental full-vocabulary scan per n-gram without
+    asserting any machine-specific ratio."""
+    from rdkit import Chem
+
+    agent = SmilesTfidfAgent()
     agent.load()
-    load_seconds = time.perf_counter() - started
+    molecules = [Chem.MolFromSmiles(smiles) for _, smiles in SMOKE_MOLECULES] * 8
 
     started = time.perf_counter()
     for molecule in molecules:
         agent.compute(molecule)
     per_molecule = (time.perf_counter() - started) / len(molecules)
 
-    # Deliberately loose: this is a "did we accidentally reload the
-    # artifact every time" check, not a benchmark.
-    assert per_molecule < load_seconds / 4
-    assert per_molecule < 0.05
+    assert per_molecule < 0.5

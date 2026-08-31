@@ -128,9 +128,15 @@ const EXPORT_HEADER = [
   "sequence_length",
   "sequence_tokens",
   "sequence_string",
+  // Phase 5H. Populated only on a row describing an agent that failed for
+  // this molecule; kept separate from `error` so a molecule-level failure
+  // (unparseable SMILES) stays distinguishable from a representation-level
+  // one. Appended rather than inserted so existing positional readers of
+  // the earlier columns keep working.
+  "feature_error",
 ];
 
-const EMPTY_FEATURE_COLUMNS = ["", "", "", "", "", "", "", "", "", ""];
+const EMPTY_FEATURE_COLUMNS = ["", "", "", "", "", "", "", "", "", "", ""];
 
 /** Build a CSV export directly from a /features/compute API response.
  * One row per (molecule, feature output); invalid molecules get a single
@@ -149,7 +155,7 @@ export function buildResultsCsv(results: MoleculeResult[], agents: AgentMetadata
   const lines = [EXPORT_HEADER.map(escapeCsvField).join(",")];
 
   for (const result of results) {
-    if (result.features.length === 0) {
+    if (result.features.length === 0 && result.feature_errors.length === 0) {
       lines.push(
         [result.smiles, String(result.valid), result.error ?? "", ...EMPTY_FEATURE_COLUMNS]
           .map(escapeCsvField)
@@ -178,6 +184,7 @@ export function buildResultsCsv(results: MoleculeResult[], agents: AgentMetadata
             "",
             "",
             "",
+            "",
           ]
             .map(escapeCsvField)
             .join(","),
@@ -200,6 +207,34 @@ export function buildResultsCsv(results: MoleculeResult[], agents: AgentMetadata
           String(feature.length),
           JSON.stringify(feature.tokens),
           feature.tokens.join(""),
+          "",
+        ]
+          .map(escapeCsvField)
+          .join(","),
+      );
+    }
+
+    // One row per failed agent, after that molecule's successful rows.
+    // Every value column is left empty rather than filled with a
+    // placeholder: no number is fabricated for a representation that was
+    // never computed.
+    for (const failure of result.feature_errors) {
+      lines.push(
+        [
+          result.smiles,
+          String(result.valid),
+          result.error ?? "",
+          failure.agent_id,
+          failure.agent_version,
+          "",
+          agentsById.get(failure.agent_id)?.value_type ?? "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          failure.error,
         ]
           .map(escapeCsvField)
           .join(","),

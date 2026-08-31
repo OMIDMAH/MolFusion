@@ -84,13 +84,22 @@ export function ResultsPanel({ results, agents, computing, computeError }: Resul
                   </span>
                 </h3>
 
-                {/* `error` is shown whenever populated, independent of `valid`:
-                    valid=false means RDKit rejected the SMILES; valid=true with
-                    a populated error means the molecule itself is fine but a
-                    requested representation could not be computed for it
-                    (features=[] in that case). Deriving this from `!result.valid`
-                    would silently hide the latter case. */}
+                {/* Molecule-level only: `error` means the input itself could
+                    not be used (RDKit rejected the SMILES). A representation
+                    that failed for an otherwise-fine molecule is reported per
+                    agent below instead, so one failing agent never hides the
+                    agents that succeeded. */}
                 {result.error && <p className="error-text">{result.error}</p>}
+
+                {result.feature_errors.length > 0 && (
+                  <ul className="feature-errors" aria-label="Representation errors">
+                    {result.feature_errors.map((failure) => (
+                      <li key={failure.agent_id} className="error-text">
+                        <strong>{failure.agent_id}</strong>: {failure.error}
+                      </li>
+                    ))}
+                  </ul>
+                )}
 
                 {result.valid && vectorFeatures.length > 0 && (
                   <table>

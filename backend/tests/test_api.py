@@ -568,8 +568,11 @@ def _patch_agent_registry_get(monkeypatch, fake_agent):
 
 def test_compute_generic_agent_value_error_keeps_molecule_valid(client, monkeypatch):
     """A chemically valid molecule (RDKit parses it fine) must stay
-    valid=True even when the requested agent's computation fails -- the
-    failure is reported via `error`, not by flipping `valid`."""
+    valid=True even when the requested agent's computation fails.
+
+    Since Phase 5H the failure is reported per agent in `feature_errors`,
+    and the molecule-level `error` stays None -- it now means "the input
+    itself was unusable", which is not the case here."""
     fake_agent = _AlwaysFailsAgent()
     _patch_agent_registry_get(monkeypatch, fake_agent)
 
@@ -580,8 +583,11 @@ def test_compute_generic_agent_value_error_keeps_molecule_valid(client, monkeypa
     assert response.status_code == 200
     result = response.json()["results"][0]
     assert result["valid"] is True
-    assert "synthetic failure" in result["error"]
+    assert result["error"] is None
     assert result["features"] == []
+    assert len(result["feature_errors"]) == 1
+    assert result["feature_errors"][0]["agent_id"] == fake_agent.id
+    assert "synthetic failure" in result["feature_errors"][0]["error"]
 
 
 def test_compute_generic_agent_value_error_does_not_crash_mixed_batch(client, monkeypatch):
@@ -596,7 +602,8 @@ def test_compute_generic_agent_value_error_does_not_crash_mixed_batch(client, mo
     assert response.status_code == 200
     results = response.json()["results"]
     assert len(results) == 2
-    assert all(r["valid"] is True and r["features"] == [] for r in results)
+    assert all(r["valid"] is True and r["error"] is None for r in results)
+    assert all(r["features"] == [] and len(r["feature_errors"]) == 1 for r in results)
 
 
 HYPERVALENT_IODINE = "Cl[I](Cl)Cl"
@@ -620,9 +627,9 @@ def test_hypervalent_iodine_is_rdkit_valid_but_selfies_rejects_it():
 def test_compute_selfies_encoder_failure_is_reported_generically_not_as_http_500(client):
     """Real end-to-end regression: a molecule RDKit parses successfully but
     that SELFIES' pinned default constraints reject (hypervalent iodine)
-    must come back as valid=True with a populated error and no features --
-    not a server error, and not valid=False (the molecule itself is fine;
-    only the SELFIES representation failed)."""
+    must come back as valid=True with the failure recorded against the
+    agent -- not a server error, and not valid=False (the molecule itself
+    is fine; only the SELFIES representation failed)."""
     response = client.post(
         "/features/compute",
         json={"smiles": [HYPERVALENT_IODINE], "agent_ids": ["selfies_sequence"]},
@@ -631,8 +638,11 @@ def test_compute_selfies_encoder_failure_is_reported_generically_not_as_http_500
     assert response.status_code == 200
     result = response.json()["results"][0]
     assert result["valid"] is True
-    assert "failed to encode molecule as SELFIES" in result["error"]
+    assert result["error"] is None
     assert result["features"] == []
+    assert len(result["feature_errors"]) == 1
+    assert result["feature_errors"][0]["agent_id"] == "selfies_sequence"
+    assert "failed to encode molecule as SELFIES" in result["feature_errors"][0]["error"]
 
 
 def test_compute_selfies_failure_does_not_prevent_other_molecules_in_batch(client):
@@ -656,13 +666,15 @@ def test_compute_selfies_failure_does_not_prevent_other_molecules_in_batch(clien
 
     assert ethanol_result["valid"] is True
     assert ethanol_result["error"] is None
+    assert ethanol_result["feature_errors"] == []
     assert len(ethanol_result["features"]) == 1
     assert ethanol_result["features"][0]["output_structure"] == "sequence"
 
     assert iodine_result["valid"] is True
-    assert iodine_result["error"] is not None
-    assert "SELFIES" in iodine_result["error"]
+    assert iodine_result["error"] is None
     assert iodine_result["features"] == []
+    assert len(iodine_result["feature_errors"]) == 1
+    assert "SELFIES" in iodine_result["feature_errors"][0]["error"]
 
     assert benzene_result["valid"] is True
     assert benzene_result["error"] is None
@@ -671,10 +683,10 @@ def test_compute_selfies_failure_does_not_prevent_other_molecules_in_batch(clien
 
 
 def test_compute_genuinely_invalid_smiles_still_returns_valid_false(client):
-    """Regression guarding the distinction this fix introduces: an actual
-    RDKit parse failure must still be valid=False -- only an agent
-    computation failure on an otherwise-parseable molecule becomes
-    valid=True with error populated."""
+    """Regression guarding the distinction: an actual RDKit parse failure
+    must still be valid=False with a molecule-level error. An agent
+    computation failure on a parseable molecule is a different thing --
+    valid=True, error=None, and the failure recorded per agent."""
     response = client.post(
         "/features/compute",
         json={"smiles": [INVALID], "agent_ids": ["selfies_sequence"]},
@@ -685,3 +697,6 @@ def test_compute_genuinely_invalid_smiles_still_returns_valid_false(client):
     assert result["valid"] is False
     assert result["error"] is not None
     assert result["features"] == []
+    # No representation was attempted, so there is nothing to report per
+    # agent -- the failure is entirely at the molecule level.
+    assert result["feature_errors"] == []

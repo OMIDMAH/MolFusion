@@ -1059,3 +1059,94 @@ Two consequences worth knowing rather than fixing here:
 - The API remains all-or-nothing per molecule: if any selected agent
   fails, that molecule returns no features at all. Modelling per-agent
   partial success needs an API revision and is out of scope here.
+
+## Per-agent error isolation (Phase 5H)
+
+MolFusion computes several representations per molecule, and their failure
+modes are independent: SELFIES rejects a hypervalent atom, a TF-IDF
+artifact goes missing, a future learned model fails to converge. Before
+Phase 5H a single such failure discarded *every* representation for that
+molecule. It no longer does.
+
+### Three outcomes, deliberately distinguishable
+
+| Outcome | `valid` | `error` | `features` | `feature_errors` |
+| --- | --- | --- | --- | --- |
+| SMILES RDKit cannot parse | `false` | populated | `[]` | `[]` |
+| Valid molecule, some agents fail | `true` | `null` | successes only | one per failure |
+| Valid molecule, agent returns an empty result | `true` | `null` | includes it | `[]` |
+
+`MoleculeResult.error` now means **molecule-level failure only** -- the
+input itself was unusable. A representation that could not be computed for
+an otherwise-fine molecule never populates it; that failure is recorded
+against the agent instead.
+
+The third row is the case most easily mistaken for a failure. An all-zero
+TF-IDF vector, returned for a molecule containing no vocabulary n-gram, is
+a computed representation whose value happens to be zero. It appears in
+`features` with no error, and conflating it with a failure would report a
+successful computation as broken.
+
+### The failure record
+
+```json
+{
+  "agent_id": "selfies_sequence",
+  "agent_version": "1.0.0",
+  "error": "selfies_sequence: failed to encode molecule as SELFIES: 'ClI(Cl)Cl'"
+}
+```
+
+One generic model for every agent, not per-representation variants: a
+consumer should be able to report "this agent failed" without knowing
+whether that agent emits vectors or token sequences. The message is the
+agent's own and nothing more -- no traceback, no exception class, no
+server internals.
+
+### What is and is not caught
+
+Only `ValueError` is isolated, because that is the documented way a
+`FeatureAgent` signals "I could not produce a result for this molecule".
+Anything else -- a `TypeError`, an `AttributeError`, a `KeyError` -- is a
+bug rather than a representation outcome and is deliberately left to
+propagate. Reshaping programming errors into routine per-agent failures
+would make them invisible exactly where they most need to be seen.
+
+### Ordering
+
+`features` and `feature_errors` both follow the **requested agent order**,
+so output never depends on which agent happened to fail or on how long any
+of them took. Each agent is attempted exactly once per molecule; a failure
+triggers no retry and no artifact reload.
+
+### API compatibility
+
+`feature_errors` is an added field with an empty default. A response in
+which nothing failed is shaped exactly as before, so existing consumers are
+unaffected. The frontend treats the field as optional when parsing, so a
+response from an older backend yields an empty list -- which is precisely
+what that backend was saying.
+
+The one genuine behavioural change: a valid molecule with a failing agent
+used to return `error` populated and `features: []`. It now returns
+`error: null`, the successful features, and the failure in
+`feature_errors`. Any consumer that watched `error` to detect
+representation failures must read `feature_errors` instead.
+
+### CSV export
+
+Successful representations export exactly as before. A failed agent adds
+one row after that molecule's successful rows, with the agent columns
+populated, every value column left empty, and the message in a new
+`feature_error` column. Nothing is fabricated for a representation that
+was never computed, and the new column is separate from `error` so
+molecule-level and representation-level failures stay distinguishable. The
+column is appended, so existing positional readers of the earlier columns
+are unaffected.
+
+### Known limitation
+
+Per-molecule failures are isolated per agent, but the API still computes
+every molecule in a request eagerly and returns one response. A request is
+not partially streamed, and a molecule whose agents all fail still occupies
+a full result entry.

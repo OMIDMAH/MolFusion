@@ -4,6 +4,7 @@ import type {
   AgentOutputStructure,
   AgentValueType,
   ComputeResponse,
+  FeatureComputationError,
   FeatureOutput,
   HealthResponse,
   MoleculeResult,
@@ -225,15 +226,35 @@ function parseFeatureOutput(value: unknown): FeatureOutput {
   return parseSequenceFeatureOutput(value);
 }
 
+function parseFeatureComputationError(value: unknown): FeatureComputationError {
+  if (!isRecord(value)) {
+    throw new ApiError("Backend returned a malformed feature error.");
+  }
+  return {
+    agent_id: expectString(value.agent_id, "agent_id"),
+    agent_version: expectString(value.agent_version, "agent_version"),
+    error: expectString(value.error, "error"),
+  };
+}
+
 function parseMoleculeResult(value: unknown): MoleculeResult {
   if (!isRecord(value)) {
     throw new ApiError("Backend returned malformed molecule result.");
   }
+  // `feature_errors` was added in Phase 5H. Treated as optional so a
+  // response from an older backend parses into an empty list rather than
+  // failing outright -- a missing field means "nothing failed", which is
+  // exactly what an older backend was telling us.
+  const featureErrors =
+    value.feature_errors === null || value.feature_errors === undefined
+      ? []
+      : expectArray(value.feature_errors, "feature_errors").map(parseFeatureComputationError);
   return {
     smiles: expectString(value.smiles, "smiles"),
     valid: expectBoolean(value.valid, "valid"),
     error: expectNullableString(value.error, "error"),
     features: expectArray(value.features, "features").map(parseFeatureOutput),
+    feature_errors: featureErrors,
   };
 }
 
