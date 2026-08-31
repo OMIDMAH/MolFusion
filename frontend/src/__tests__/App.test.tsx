@@ -26,6 +26,7 @@ const MORGAN_AGENT: AgentMetadata = {
   value_type: "binary",
   output_structure: "vector",
   feature_names: null,
+  availability: { available: true, code: null, message: null },
 };
 
 const ERG_AGENT: AgentMetadata = {
@@ -37,6 +38,7 @@ const ERG_AGENT: AgentMetadata = {
   value_type: "continuous",
   output_structure: "vector",
   feature_names: null,
+  availability: { available: true, code: null, message: null },
 };
 
 const FRAGMENT_AGENT: AgentMetadata = {
@@ -48,6 +50,7 @@ const FRAGMENT_AGENT: AgentMetadata = {
   value_type: "count",
   output_structure: "vector",
   feature_names: ["fr_Al_COO", "fr_Ar_COO", "fr_benzene", "fr_ester"],
+  availability: { available: true, code: null, message: null },
 };
 
 const SELFIES_AGENT: AgentMetadata = {
@@ -59,6 +62,7 @@ const SELFIES_AGENT: AgentMetadata = {
   value_type: "categorical",
   output_structure: "sequence",
   feature_names: null,
+  availability: { available: true, code: null, message: null },
 };
 
 const AGENTS: AgentMetadata[] = [MORGAN_AGENT];
@@ -396,5 +400,111 @@ describe("App", () => {
 
     const resultsPanel = await screen.findByTestId("results-panel");
     expect(resultsPanel).toHaveTextContent("Unknown agent id");
+  });
+});
+
+describe("App — unavailable agents (Phase 5I)", () => {
+  const UNAVAILABLE_TFIDF: AgentMetadata = {
+    id: "smiles_tfidf_4096",
+    name: "SMILES Token n-gram TF-IDF",
+    version: "1.0.0",
+    output_dim: 4096,
+    requires_3d: false,
+    value_type: "continuous",
+    output_structure: "vector",
+    feature_names: null,
+    availability: {
+      available: false,
+      code: "artifact_missing",
+      message: "The required representation artifact is not present.",
+    },
+  };
+
+  it("keeps an unavailable agent visible but not selectable", async () => {
+    vi.mocked(getAgents).mockResolvedValue([MORGAN_AGENT, UNAVAILABLE_TFIDF]);
+    render(<App />);
+
+    expect(await screen.findByText("smiles_tfidf_4096")).toBeInTheDocument();
+    const box = screen.getByRole("checkbox", { name: /token n-gram tf-idf/i });
+    expect(box).toBeDisabled();
+    expect(screen.getByText(/Unavailable — The required representation/)).toBeInTheDocument();
+  });
+
+  it("never sends an unavailable agent to the backend", async () => {
+    vi.mocked(getAgents).mockResolvedValue([MORGAN_AGENT, UNAVAILABLE_TFIDF]);
+    vi.mocked(validateMolecules).mockResolvedValue({
+      results: [{ smiles: "CCO", valid: true, error: null }],
+    } satisfies ValidateResponse);
+    vi.mocked(computeFeatures).mockResolvedValue({
+      results: [
+        {
+          smiles: "CCO",
+          valid: true,
+          error: null,
+          feature_errors: [],
+          features: [
+            {
+              output_structure: "vector",
+              agent_id: "morgan_ecfp4_1024",
+              agent_version: "1.0.0",
+              values: [1, 0],
+              dim: 1024,
+            },
+          ],
+        },
+      ],
+    } satisfies ComputeResponse);
+
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByText("smiles_tfidf_4096");
+    await addSmilesViaTextarea(user, "CCO");
+    await screen.findByText("Valid");
+
+    await user.click(screen.getByRole("checkbox", { name: /morgan ecfp/i }));
+    await user.click(screen.getByRole("button", { name: /^compute$/i }));
+
+    await waitFor(() =>
+      expect(computeFeatures).toHaveBeenCalledWith(["CCO"], ["morgan_ecfp4_1024"]),
+    );
+    const [, requestedIds] = vi.mocked(computeFeatures).mock.calls[0];
+    expect(requestedIds).not.toContain("smiles_tfidf_4096");
+  });
+
+  it("still lets the available agents be computed normally", async () => {
+    vi.mocked(getAgents).mockResolvedValue([MORGAN_AGENT, UNAVAILABLE_TFIDF]);
+    vi.mocked(validateMolecules).mockResolvedValue({
+      results: [{ smiles: "CCO", valid: true, error: null }],
+    } satisfies ValidateResponse);
+    vi.mocked(computeFeatures).mockResolvedValue({
+      results: [
+        {
+          smiles: "CCO",
+          valid: true,
+          error: null,
+          feature_errors: [],
+          features: [
+            {
+              output_structure: "vector",
+              agent_id: "morgan_ecfp4_1024",
+              agent_version: "1.0.0",
+              values: [1, 0],
+              dim: 1024,
+            },
+          ],
+        },
+      ],
+    } satisfies ComputeResponse);
+
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByText("morgan_ecfp4_1024");
+    await addSmilesViaTextarea(user, "CCO");
+    await screen.findByText("Valid");
+    await user.click(screen.getByRole("checkbox", { name: /morgan ecfp/i }));
+    await user.click(screen.getByRole("button", { name: /^compute$/i }));
+
+    const resultsPanel = await screen.findByTestId("results-panel");
+    expect(resultsPanel).toHaveTextContent("1024");
   });
 });

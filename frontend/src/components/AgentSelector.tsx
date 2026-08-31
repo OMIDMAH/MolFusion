@@ -28,15 +28,27 @@ export function AgentSelector({ agents, selectedIds, onToggle, loading, error }:
       {!loading && !error && agents.length > 0 && (
         <ul className="agent-list">
           {agents.map((agent) => (
-            <li key={agent.id}>
+            // An unavailable agent stays listed and stays described: the
+            // representation exists, it just cannot run right now, which a
+            // user needs to be able to tell apart from it not existing.
+            // Selection is disabled rather than the entry being hidden.
+            <li key={agent.id} data-available={agent.availability.available}>
               <label>
                 <input
                   type="checkbox"
                   checked={selectedIds.has(agent.id)}
                   onChange={() => onToggle(agent.id)}
+                  disabled={!agent.availability.available}
                 />
                 <span className="agent-name">{agent.name}</span>
               </label>
+
+              {!agent.availability.available && (
+                <p className="error-text agent-unavailable">
+                  Unavailable
+                  {agent.availability.message ? ` — ${agent.availability.message}` : ""}
+                </p>
+              )}
               <dl className="agent-meta">
                 <div>
                   <dt>ID</dt>

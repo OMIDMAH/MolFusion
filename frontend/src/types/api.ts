@@ -13,6 +13,19 @@ export type AgentValueType = "binary" | "count" | "continuous" | "categorical";
  * no fixed output_dim. */
 export type AgentOutputStructure = "vector" | "sequence";
 
+/** Whether an agent can currently accept compute requests.
+ *
+ * Answers "can this agent run at all?", never "will this molecule work?".
+ * A molecule-specific failure appears in MoleculeResult.feature_errors and
+ * leaves the agent available. `code` is a stable generic category
+ * (`artifact_missing`, `artifact_checksum_error`, ...) so the UI can react
+ * to the kind of problem without knowing which representation has it. */
+export interface AgentAvailability {
+  available: boolean;
+  code: string | null;
+  message: string | null;
+}
+
 export interface AgentMetadata {
   id: string;
   name: string;
@@ -25,6 +38,11 @@ export interface AgentMetadata {
   output_structure: AgentOutputStructure;
   /** Per-feature names (e.g. RDKit descriptor names), when the agent exposes them. */
   feature_names: string[] | null;
+  /** Current runtime availability. Required, not optional: an agent that
+   * cannot report its health is not something the UI should quietly treat
+   * as healthy. A response from a backend predating this field is defaulted
+   * to available during parsing, where that decision is visible. */
+  availability: AgentAvailability;
 }
 
 export interface ValidateRequest {

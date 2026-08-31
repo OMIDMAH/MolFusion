@@ -1,5 +1,6 @@
 import { API_BASE_URL } from "../config";
 import type {
+  AgentAvailability,
   AgentMetadata,
   AgentOutputStructure,
   AgentValueType,
@@ -153,6 +154,24 @@ function expectOutputStructure(value: unknown, field: string): AgentOutputStruct
   return value as AgentOutputStructure;
 }
 
+function parseAgentAvailability(value: unknown): AgentAvailability {
+  // Absent means "backend predates Phase 5I", which had no notion of an
+  // unavailable agent -- so every agent it listed was, by that contract,
+  // usable. Defaulting to available here keeps an older backend working
+  // rather than rendering its whole registry as broken.
+  if (value === null || value === undefined) {
+    return { available: true, code: null, message: null };
+  }
+  if (!isRecord(value)) {
+    throw new ApiError("Backend returned malformed agent availability.");
+  }
+  return {
+    available: expectBoolean(value.available, "availability.available"),
+    code: expectNullableString(value.code, "availability.code"),
+    message: expectNullableString(value.message, "availability.message"),
+  };
+}
+
 function parseAgentMetadata(value: unknown): AgentMetadata {
   if (!isRecord(value)) {
     throw new ApiError("Backend returned malformed agent metadata.");
@@ -172,6 +191,7 @@ function parseAgentMetadata(value: unknown): AgentMetadata {
     value_type: expectValueType(value.value_type, "value_type"),
     output_structure: expectOutputStructure(value.output_structure, "output_structure"),
     feature_names: featureNames,
+    availability: parseAgentAvailability(value.availability),
   };
 }
 

@@ -11,6 +11,7 @@ const MORGAN_AGENT: AgentMetadata = {
   value_type: "binary",
   output_structure: "vector",
   feature_names: null,
+  availability: { available: true, code: null, message: null },
 };
 
 const MACCS_AGENT: AgentMetadata = {
@@ -22,6 +23,7 @@ const MACCS_AGENT: AgentMetadata = {
   value_type: "binary",
   output_structure: "vector",
   feature_names: null,
+  availability: { available: true, code: null, message: null },
 };
 
 const DESCRIPTOR_AGENT: AgentMetadata = {
@@ -33,6 +35,7 @@ const DESCRIPTOR_AGENT: AgentMetadata = {
   value_type: "continuous",
   output_structure: "vector",
   feature_names: ["MolWt", "MolLogP", "TPSA"],
+  availability: { available: true, code: null, message: null },
 };
 
 const ERG_AGENT: AgentMetadata = {
@@ -44,6 +47,7 @@ const ERG_AGENT: AgentMetadata = {
   value_type: "continuous",
   output_structure: "vector",
   feature_names: null,
+  availability: { available: true, code: null, message: null },
 };
 
 const FRAGMENT_AGENT: AgentMetadata = {
@@ -55,6 +59,7 @@ const FRAGMENT_AGENT: AgentMetadata = {
   value_type: "count",
   output_structure: "vector",
   feature_names: ["fr_Al_COO", "fr_Ar_COO", "fr_benzene", "fr_ester"],
+  availability: { available: true, code: null, message: null },
 };
 
 const SELFIES_AGENT: AgentMetadata = {
@@ -66,6 +71,7 @@ const SELFIES_AGENT: AgentMetadata = {
   value_type: "categorical",
   output_structure: "sequence",
   feature_names: null,
+  availability: { available: true, code: null, message: null },
 };
 
 const HEADER_ROW =

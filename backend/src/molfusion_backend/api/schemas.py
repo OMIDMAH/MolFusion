@@ -7,8 +7,53 @@ class HealthResponse(BaseModel):
     status: str
 
 
+class AgentAvailability(BaseModel):
+    """Whether one agent can currently accept compute requests.
+
+    Answers "can this agent run at all here?", never "will this molecule
+    succeed?". A molecule-specific failure is reported per molecule in
+    MoleculeResult.feature_errors and leaves the agent available.
+
+    `code` is a stable, generic category (`artifact_missing`,
+    `artifact_checksum_error`, ...) so a client can branch on the kind of
+    problem without knowing which representation the agent implements.
+    Both fields are null when available.
+    """
+
+    available: bool
+    code: str | None = None
+    message: str | None = None
+
+
+class UnavailableAgent(BaseModel):
+    """One selected agent that cannot run, as reported by request preflight."""
+
+    agent_id: str
+    code: str | None = None
+    message: str | None = None
+
+
+class UnavailableAgentsDetail(BaseModel):
+    """Body of the error returned when preflight rejects a compute request.
+
+    Structured rather than a bare string because the caller needs to know
+    *which* of the agents it selected are unusable, and a machine-readable
+    code lets a client distinguish "deploy the artifact" from "fix the
+    configuration" without parsing prose.
+    """
+
+    message: str
+    agents: list[UnavailableAgent]
+
+
 class AgentMetadata(BaseModel):
-    """Metadata for one registered FeatureAgent, as reported by the live registry."""
+    """Metadata for one registered FeatureAgent, as reported by the live registry.
+
+    Identity (id, version, output shape) is static. `availability` is not:
+    it is evaluated per request, so an agent whose prerequisite is missing
+    stays listed here -- a consumer needs to know the representation exists
+    and is currently unusable, which is different from it not existing.
+    """
 
     id: str
     name: str
@@ -20,6 +65,9 @@ class AgentMetadata(BaseModel):
     value_type: Literal["binary", "count", "continuous", "categorical"]
     output_structure: Literal["vector", "sequence"]
     feature_names: list[str] | None = None
+    # Added in Phase 5I. Defaults to available so a metadata dict built
+    # without it (e.g. in a test fixture) still validates.
+    availability: AgentAvailability = Field(default_factory=lambda: AgentAvailability(available=True))
 
 
 class ValidateRequest(BaseModel):

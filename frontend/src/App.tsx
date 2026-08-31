@@ -129,7 +129,21 @@ function App() {
   }
 
   const includedSmiles = queue.filter((m) => m.included).map((m) => m.smiles);
-  const canCompute = includedSmiles.length > 0 && selectedAgentIds.size > 0 && !computing;
+
+  // An agent can become unavailable between one /agents load and the next
+  // (an artifact removed under a running deployment), so a selection made
+  // while it was healthy can go stale. Derived from the current metadata on
+  // every render rather than tracked in state, so it cannot drift out of
+  // date, and the backend rejects such a request anyway -- this just avoids
+  // sending one we already know will be refused.
+  const unavailableSelected = agents.filter(
+    (agent) => selectedAgentIds.has(agent.id) && !agent.availability.available,
+  );
+  const canCompute =
+    includedSmiles.length > 0 &&
+    selectedAgentIds.size > 0 &&
+    unavailableSelected.length === 0 &&
+    !computing;
 
   async function handleCompute() {
     if (includedSmiles.length === 0) {
@@ -138,6 +152,14 @@ function App() {
     }
     if (selectedAgentIds.size === 0) {
       setComputeError("Select at least one feature agent.");
+      return;
+    }
+    if (unavailableSelected.length > 0) {
+      setComputeError(
+        `Cannot compute: ${unavailableSelected
+          .map((agent) => agent.id)
+          .join(", ")} ${unavailableSelected.length === 1 ? "is" : "are"} currently unavailable.`,
+      );
       return;
     }
 

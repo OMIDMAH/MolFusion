@@ -35,6 +35,17 @@ class AgentRegistry:
                 f"Known ids: {sorted(self._agents)}"
             ) from None
 
+    def agents(self) -> list["FeatureAgent"]:
+        """Every registered agent instance, in registration order.
+
+        Static identity -- which agents exist -- deliberately kept separate
+        from whether each can currently run. Availability is computed by
+        `molfusion_backend.agents.availability`, not stored here, so a
+        transient prerequisite failure never changes what the registry
+        contains.
+        """
+        return list(self._agents.values())
+
     def list_agents(self) -> list[dict[str, object]]:
         return [
             {

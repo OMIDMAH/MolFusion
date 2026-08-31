@@ -4,6 +4,8 @@ from typing import Literal, Union
 import numpy as np
 from rdkit import Chem
 
+from molfusion_backend.agents.availability import AVAILABLE, AgentAvailability
+
 # "binary": every value is 0 or 1 (bit-vector fingerprints: Morgan, MACCS,
 #   Avalon). "count": non-negative integer counts (RDKit fragment
 #   descriptors). "continuous": real-valued (RDKit physicochemical
@@ -41,6 +43,23 @@ class FeatureAgent(ABC):
     requires_3d: bool = False
     value_type: ValueType
     output_structure: OutputStructure
+
+    def check_availability(self) -> AgentAvailability:
+        """Whether this agent can currently accept compute requests.
+
+        Defaults to available, which is the honest answer for an agent whose
+        only prerequisites are the libraries the process already imported --
+        every fingerprint and descriptor agent here is in that position, and
+        making each of them implement identical boilerplate would add noise
+        without adding a check.
+
+        Override only where there is a real runtime prerequisite to verify
+        (a fitted artifact, a configured path, an optional dependency), and
+        validate the prerequisite itself: never by calling `compute()` on a
+        sample molecule, which would conflate agent health with one
+        molecule's luck.
+        """
+        return AVAILABLE
 
     @abstractmethod
     def compute(self, mol: Chem.Mol) -> AgentOutput:

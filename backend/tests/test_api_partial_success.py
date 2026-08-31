@@ -360,22 +360,23 @@ def _tfidf_agent_at(root, dimension=None):
     )
 
 
-def test_a_missing_tfidf_artifact_preserves_the_other_agents_output(
-    client, monkeypatch, tmp_path
-):
+def test_a_missing_tfidf_artifact_is_caught_by_preflight(client, monkeypatch, tmp_path):
+    """Since Phase 5I a missing artifact is a systemic condition, caught
+    once at preflight rather than reported per molecule. The per-agent
+    isolation this module covers still applies to molecule-specific
+    failures -- see the SELFIES cases above."""
     patch_agents(monkeypatch, [_tfidf_agent_at(tmp_path / "nothing-here")])
 
-    result = compute(client, [ETHANOL], [MORGAN, TFIDF])[0]
-    assert result["valid"] is True
-    assert result["error"] is None
-    assert [feature["agent_id"] for feature in result["features"]] == [MORGAN]
-    assert result["features"][0]["dim"] == 1024
-    assert len(result["feature_errors"]) == 1
-    assert result["feature_errors"][0]["agent_id"] == TFIDF
-    assert "artifact could not be loaded" in result["feature_errors"][0]["error"]
+    response = client.post(
+        "/features/compute", json={"smiles": [ETHANOL], "agent_ids": [MORGAN, TFIDF]}
+    )
+    assert response.status_code == 409
+    detail = response.json()["detail"]
+    assert [entry["agent_id"] for entry in detail["agents"]] == [TFIDF]
+    assert detail["agents"][0]["code"] == "artifact_missing"
 
 
-def test_a_corrupt_tfidf_artifact_preserves_the_other_agents_output(
+def test_a_corrupt_tfidf_artifact_is_caught_by_preflight(
     client, monkeypatch, tmp_path
 ):
     good = tmp_path / "good"
@@ -388,15 +389,14 @@ def test_a_corrupt_tfidf_artifact_preserves_the_other_agents_output(
 
     patch_agents(monkeypatch, [_tfidf_agent_at(broken, fixture_dimension(broken))])
 
-    result = compute(client, [ETHANOL], [MORGAN, TFIDF])[0]
-    assert result["valid"] is True
-    assert result["error"] is None
-    assert [feature["agent_id"] for feature in result["features"]] == [MORGAN]
-    assert len(result["feature_errors"]) == 1
-    assert result["feature_errors"][0]["agent_id"] == TFIDF
+    response = client.post(
+        "/features/compute", json={"smiles": [ETHANOL], "agent_ids": [MORGAN, TFIDF]}
+    )
+    assert response.status_code == 409
+    assert response.json()["detail"]["agents"][0]["agent_id"] == TFIDF
 
 
-def test_a_semantically_corrupt_tfidf_artifact_preserves_other_output(
+def test_a_semantically_corrupt_tfidf_artifact_is_caught_by_preflight(
     client, monkeypatch, tmp_path
 ):
     """Checksum-valid but formula-wrong -- caught by semantic validation,
@@ -419,9 +419,11 @@ def test_a_semantically_corrupt_tfidf_artifact_preserves_other_output(
 
     patch_agents(monkeypatch, [_tfidf_agent_at(broken, fixture_dimension(broken))])
 
-    result = compute(client, [ETHANOL], [MACCS, TFIDF])[0]
-    assert [feature["agent_id"] for feature in result["features"]] == [MACCS]
-    assert [failure["agent_id"] for failure in result["feature_errors"]] == [TFIDF]
+    response = client.post(
+        "/features/compute", json={"smiles": [ETHANOL], "agent_ids": [MACCS, TFIDF]}
+    )
+    assert response.status_code == 409
+    assert response.json()["detail"]["agents"][0]["code"] == "artifact_semantic_error"
 
 
 def test_a_working_fixture_artifact_produces_no_feature_error(client, monkeypatch, tmp_path):
@@ -471,3 +473,34 @@ def test_an_all_oov_zero_vector_survives_a_sibling_agent_failure(client):
     if TFIDF in by_agent:
         assert all(value == 0.0 for value in by_agent[TFIDF]["values"])
         assert TFIDF not in {f["agent_id"] for f in result["feature_errors"]}
+
+
+def test_an_agent_that_passes_preflight_but_fails_compute_is_still_isolated(
+    client, monkeypatch
+):
+    """Preflight cannot be airtight: a prerequisite can vanish between the
+    check and the compute. Phase 5H isolation remains the final safety
+    layer for that race, so an agent that reports healthy and then fails
+    must still leave its siblings' output intact."""
+
+    class _HealthyButFails(FeatureAgent):
+        id = "healthy_but_fails"
+        name = "healthy but fails"
+        version = "1.0.0"
+        output_dim = 2
+        requires_3d = False
+        value_type = "continuous"
+        output_structure = "vector"
+
+        def compute(self, mol):
+            raise ValueError("healthy_but_fails: prerequisite vanished after preflight")
+
+    agent = _HealthyButFails()
+    assert agent.check_availability().available is True
+    patch_agents(monkeypatch, [agent])
+
+    result = compute(client, [ETHANOL], [MORGAN, agent.id])[0]
+    assert result["valid"] is True
+    assert result["error"] is None
+    assert [feature["agent_id"] for feature in result["features"]] == [MORGAN]
+    assert [failure["agent_id"] for failure in result["feature_errors"]] == [agent.id]

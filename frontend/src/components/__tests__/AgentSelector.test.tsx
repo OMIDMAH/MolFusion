@@ -13,6 +13,7 @@ const AGENTS: AgentMetadata[] = [
     value_type: "binary",
     output_structure: "vector",
     feature_names: null,
+    availability: { available: true, code: null, message: null },
   },
   {
     id: "rdkit_physchem_descriptors",
@@ -23,6 +24,7 @@ const AGENTS: AgentMetadata[] = [
     value_type: "continuous",
     output_structure: "vector",
     feature_names: ["MolWt", "MolLogP", "TPSA"],
+    availability: { available: true, code: null, message: null },
   },
   {
     id: "erg_reduced_graph_315",
@@ -33,6 +35,7 @@ const AGENTS: AgentMetadata[] = [
     value_type: "continuous",
     output_structure: "vector",
     feature_names: null,
+    availability: { available: true, code: null, message: null },
   },
   {
     id: "rdkit_fragment_descriptors",
@@ -43,6 +46,7 @@ const AGENTS: AgentMetadata[] = [
     value_type: "count",
     output_structure: "vector",
     feature_names: ["fr_Al_COO", "fr_benzene"],
+    availability: { available: true, code: null, message: null },
   },
   {
     id: "selfies_sequence",
@@ -53,6 +57,7 @@ const AGENTS: AgentMetadata[] = [
     value_type: "categorical",
     output_structure: "sequence",
     feature_names: null,
+    availability: { available: true, code: null, message: null },
   },
 ];
 
@@ -190,5 +195,113 @@ describe("AgentSelector", () => {
       />,
     );
     expect(screen.getByRole("alert")).toHaveTextContent(/could not reach the molfusion backend/i);
+  });
+});
+
+describe("AgentSelector — agent availability", () => {
+  const AVAILABLE_AGENT: AgentMetadata = {
+    id: "morgan_ecfp4_1024",
+    name: "Morgan ECFP",
+    version: "1.0.0",
+    output_dim: 1024,
+    requires_3d: false,
+    value_type: "binary",
+    output_structure: "vector",
+    feature_names: null,
+    availability: { available: true, code: null, message: null },
+  };
+
+  const UNAVAILABLE_AGENT: AgentMetadata = {
+    id: "smiles_tfidf_4096",
+    name: "SMILES TF-IDF",
+    version: "1.0.0",
+    output_dim: 4096,
+    requires_3d: false,
+    value_type: "continuous",
+    output_structure: "vector",
+    feature_names: null,
+    availability: {
+      available: false,
+      code: "artifact_missing",
+      message: "The required representation artifact is not present.",
+    },
+  };
+
+  function renderSelector(selected = new Set<string>()) {
+    render(
+      <AgentSelector
+        agents={[AVAILABLE_AGENT, UNAVAILABLE_AGENT]}
+        selectedIds={selected}
+        onToggle={vi.fn()}
+        loading={false}
+        error={null}
+      />,
+    );
+  }
+
+  it("keeps an unavailable agent visible", () => {
+    renderSelector();
+    expect(screen.getByText("SMILES TF-IDF")).toBeInTheDocument();
+    expect(screen.getByText("smiles_tfidf_4096")).toBeInTheDocument();
+  });
+
+  it("disables the unavailable agent's selection control", () => {
+    renderSelector();
+    const boxes = screen.getAllByRole("checkbox");
+    expect(boxes[0]).not.toBeDisabled();
+    expect(boxes[1]).toBeDisabled();
+  });
+
+  it("shows a concise generic reason", () => {
+    renderSelector();
+    expect(
+      screen.getByText(/Unavailable — The required representation artifact is not present\./),
+    ).toBeInTheDocument();
+  });
+
+  it("shows no unavailability notice for a healthy agent", () => {
+    render(
+      <AgentSelector
+        agents={[AVAILABLE_AGENT]}
+        selectedIds={new Set()}
+        onToggle={vi.fn()}
+        loading={false}
+        error={null}
+      />,
+    );
+    expect(screen.queryByText(/Unavailable/)).not.toBeInTheDocument();
+  });
+
+  it("leaves available agents selectable", () => {
+    const onToggle = vi.fn();
+    render(
+      <AgentSelector
+        agents={[AVAILABLE_AGENT, UNAVAILABLE_AGENT]}
+        selectedIds={new Set()}
+        onToggle={onToggle}
+        loading={false}
+        error={null}
+      />,
+    );
+    screen.getAllByRole("checkbox")[0].click();
+    expect(onToggle).toHaveBeenCalledWith("morgan_ecfp4_1024");
+  });
+
+  it("renders the reason even without a message", () => {
+    render(
+      <AgentSelector
+        agents={[
+          {
+            ...UNAVAILABLE_AGENT,
+            availability: { available: false, code: "configuration_error", message: null },
+          },
+        ]}
+        selectedIds={new Set()}
+        onToggle={vi.fn()}
+        loading={false}
+        error={null}
+      />,
+    );
+    expect(screen.getByText("Unavailable")).toBeInTheDocument();
   });
 });

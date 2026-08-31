@@ -31,12 +31,28 @@ from typing import Any
 import numpy as np
 from rdkit import Chem
 
+from molfusion_backend.agents.availability import (
+    AVAILABLE,
+    CODE_ARTIFACT_CHECKSUM_ERROR,
+    CODE_ARTIFACT_METADATA_ERROR,
+    CODE_ARTIFACT_MISSING,
+    CODE_ARTIFACT_SEMANTIC_ERROR,
+    CODE_CONFIGURATION_ERROR,
+    AgentAvailability,
+    unavailable,
+)
 from molfusion_backend.agents.base import FeatureAgent
-from molfusion_backend.artifacts.errors import ArtifactError
+from molfusion_backend.artifacts.errors import (
+    ArtifactChecksumError,
+    ArtifactError,
+    ArtifactMetadataError,
+    ArtifactNotFoundError,
+)
 from molfusion_backend.chemistry import canonical_smiles_from_mol
 from molfusion_backend.smiles_tokenizer import tokenize_smiles
 from molfusion_backend.tfidf import contract
 from molfusion_backend.tfidf.loader import load_tfidf_artifact
+from molfusion_backend.tfidf.errors import TfidfArtifactError
 from molfusion_backend.tfidf.transform import TfidfTransformer
 
 AGENT_ID = "smiles_tfidf_4096"
@@ -162,6 +178,60 @@ class SmilesTfidfAgent(FeatureAgent):
                 )
             self._state = _RuntimeState(artifact)
             return self._state
+
+    def check_availability(self) -> AgentAvailability:
+        """Whether the frozen artifact is present, intact and compatible.
+
+        Validates the prerequisite and nothing else: it loads and validates
+        the artifact through the existing generic + semantic loaders, and
+        never transforms a molecule. A molecule that legitimately retains no
+        vocabulary term produces an all-zero vector, which is a successful
+        computation -- using one as a probe would say nothing about health.
+
+        Failure is never cached. `load()` caches success only, so an
+        artifact restored after a bad deployment is observed as available by
+        the next check without restarting the process. The cost of that is a
+        retry per check while broken, which for the common missing-artifact
+        case is a stat call.
+        """
+        try:
+            self.load()
+        except ArtifactNotFoundError:
+            return unavailable(
+                CODE_ARTIFACT_MISSING,
+                "The required representation artifact is not present.",
+            )
+        except ArtifactChecksumError:
+            return unavailable(
+                CODE_ARTIFACT_CHECKSUM_ERROR,
+                "The representation artifact failed checksum verification.",
+            )
+        except ArtifactMetadataError:
+            return unavailable(
+                CODE_ARTIFACT_METADATA_ERROR,
+                "The representation artifact's metadata is missing or invalid.",
+            )
+        except TfidfArtifactError:
+            # Vocabulary, IDF, config and corpus-identity problems: the
+            # payloads are present and intact but do not mean what this
+            # agent requires.
+            return unavailable(
+                CODE_ARTIFACT_SEMANTIC_ERROR,
+                "The representation artifact does not satisfy this agent's contract.",
+            )
+        except ArtifactError:
+            return unavailable(
+                CODE_ARTIFACT_SEMANTIC_ERROR,
+                "The representation artifact could not be validated.",
+            )
+        except ValueError:
+            # Raised by load() when the artifact's dimension disagrees with
+            # the dimension this agent declares.
+            return unavailable(
+                CODE_CONFIGURATION_ERROR,
+                "The representation artifact does not match this agent's configuration.",
+            )
+        return AVAILABLE
 
     @property
     def feature_names(self) -> tuple[str, ...] | None:

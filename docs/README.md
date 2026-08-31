@@ -28,7 +28,10 @@ zero-vector semantics, feature-name format) are documented in the final
 sections of [`reproducibility.md`](reproducibility.md), which also records
 the Phase 5H per-agent error-isolation contract: how an unparseable
 molecule, a failed representation, and a legitimately empty result are kept
-distinguishable from one another.
+distinguishable from one another, and the Phase 5I availability and
+preflight contract: which agents exist, which can currently run, and
+why a systemic prerequisite failure is rejected once per request rather
+than reported once per molecule.
 
 Planned documents (not yet written):
 

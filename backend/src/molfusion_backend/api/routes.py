@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from rdkit import Chem
 
 from molfusion_backend.agents import registry as agent_registry
+from molfusion_backend.agents.availability import check_agent, check_agents
 from molfusion_backend.agents.base import FeatureAgent
 from molfusion_backend.agents.registry import UnknownAgentError
 from molfusion_backend.api.schemas import (
@@ -13,6 +14,8 @@ from molfusion_backend.api.schemas import (
     HealthResponse,
     MoleculeResult,
     SequenceFeatureOutput,
+    UnavailableAgent,
+    UnavailableAgentsDetail,
     ValidateRequest,
     ValidateResponse,
     ValidationResult,
@@ -30,7 +33,22 @@ def health() -> HealthResponse:
 
 @router.get("/agents", response_model=list[AgentMetadata])
 def list_agents() -> list[AgentMetadata]:
-    return [AgentMetadata(**metadata) for metadata in agent_registry.list_agents()]
+    """Every registered agent, with its current availability.
+
+    An unavailable agent is still listed: a caller needs to know the
+    representation exists but cannot run right now, which is a different
+    thing from it not existing. Health checks are isolated per agent, so one
+    agent's missing prerequisite never removes the others from this
+    response.
+    """
+    availability = check_agents(agent_registry.agents())
+    return [
+        AgentMetadata(
+            **metadata,
+            availability=availability[str(metadata["id"])].as_dict(),
+        )
+        for metadata in agent_registry.list_agents()
+    ]
 
 
 @router.post("/molecules/validate", response_model=ValidateResponse)
@@ -73,6 +91,34 @@ def compute_features(request: ComputeRequest) -> ComputeResponse:
             agents.append(agent_registry.get(agent_id))
         except UnknownAgentError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from None
+
+    # Preflight: check each selected agent's prerequisites exactly once,
+    # before any molecule is touched. A missing artifact defeats every
+    # molecule identically, so discovering it 10,000 times during a
+    # 10,000-molecule batch would report a deployment fault as if it were
+    # 10,000 chemistry problems.
+    #
+    # An unavailable agent rejects the whole request rather than being
+    # skipped: the caller explicitly asked for that representation, and
+    # returning the others as though the request had been satisfied would be
+    # misleading. Preflight cannot make this airtight -- a prerequisite can
+    # vanish between the check and the compute -- so Phase 5H's per-agent
+    # feature_errors remain the runtime fallback for that race.
+    unavailable = [
+        UnavailableAgent(
+            agent_id=agent.id, code=availability.code, message=availability.message
+        )
+        for agent, availability in ((agent, check_agent(agent)) for agent in agents)
+        if not availability.available
+    ]
+    if unavailable:
+        raise HTTPException(
+            status_code=409,
+            detail=UnavailableAgentsDetail(
+                message="One or more selected feature agents are unavailable.",
+                agents=unavailable,
+            ).model_dump(),
+        )
 
     results = []
     for smiles in request.smiles:

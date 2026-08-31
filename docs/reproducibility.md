@@ -1150,3 +1150,150 @@ Per-molecule failures are isolated per agent, but the API still computes
 every molecule in a request eagerly and returns one response. A request is
 not partially streamed, and a molecule whose agents all fail still occupies
 a full result entry.
+
+## Agent availability and request preflight (Phase 5I)
+
+Phase 5H made one representation's failure stop discarding the others. It
+did not distinguish a failure that is specific to a molecule from one that
+will defeat every molecule identically. A missing TF-IDF artifact in a
+10,000-molecule batch produced the same error 10,000 times, reporting a
+deployment fault as if it were ten thousand chemistry problems.
+
+Phase 5I adds the missing distinction.
+
+### Four different questions
+
+| Question | Answered by |
+| --- | --- |
+| Which agents exist? | the registry (`GET /agents` identity fields) |
+| Can this agent run at all right now? | `availability` |
+| Is this SMILES parseable? | `MoleculeResult.valid` / `error` |
+| Did this agent work for this molecule? | `MoleculeResult.feature_errors` |
+
+The registry is unchanged by health: an agent with a missing prerequisite
+is still registered and still listed. A consumer needs to know the
+representation exists but is currently unusable, which is a different fact
+from it not existing, and unregistering it would erase that difference.
+
+### Lifecycle
+
+```
+GET /agents
+    availability computed per agent, isolated
+        |
+POST /features/compute
+    resolve requested agent ids      -> 400 if unknown
+        |
+    preflight each selected agent once -> 409 if any unavailable
+        |                                   (molecule loop never runs)
+    molecule loop
+        |
+    Phase 5H per-agent isolation still applies
+```
+
+### What a health check may do
+
+It validates **prerequisites only**. It must never parse a sample
+molecule, call `compute()`, fit anything, read the reference corpus, or
+touch the network. A probe that runs the real computation is not a cheap
+precondition check, and a molecule it happened to pick could fail for
+reasons that say nothing about the agent's health — an all-zero TF-IDF
+vector is a *successful* computation, so using one as a probe would be
+actively misleading.
+
+The default is `available`, which is the honest answer for an agent whose
+only prerequisites are libraries the process already imported. Every
+fingerprint and descriptor agent is in that position; making each implement
+identical boilerplate would add noise without adding a check.
+
+`smiles_tfidf_4096` is the one agent that overrides it, and it validates
+through the existing generic + semantic artifact loaders — the same path
+`compute()` uses, so health and usability cannot disagree.
+
+### Availability codes
+
+Generic and representation-agnostic, so a client can branch on the kind of
+problem without knowing which representation has it:
+
+```
+artifact_missing          artifact_checksum_error
+artifact_metadata_error   artifact_semantic_error
+dependency_unavailable    configuration_error
+health_check_error
+```
+
+There is deliberately no `tfidf_artifact_missing`. Messages are short
+prose; they never carry a traceback, an exception repr, or a filesystem
+path, because they reach API clients.
+
+### Isolation
+
+Health checks are isolated per agent. One agent's missing prerequisite must
+not remove the other seven from `GET /agents`. An agent whose *health check
+itself* raises is reported unavailable with `health_check_error` and the
+exception is logged — not silently treated as healthy, and not allowed to
+take the endpoint down.
+
+### Preflight
+
+Selected agents are checked exactly once per request, after their ids are
+resolved and before any molecule is touched. An unavailable agent rejects
+the whole request with **409 Conflict**:
+
+```json
+{
+  "detail": {
+    "message": "One or more selected feature agents are unavailable.",
+    "agents": [
+      {
+        "agent_id": "smiles_tfidf_4096",
+        "code": "artifact_missing",
+        "message": "The required representation artifact is not present."
+      }
+    ]
+  }
+}
+```
+
+Rejecting rather than skipping is deliberate: the caller explicitly asked
+for that representation, and returning the others as though the request had
+been satisfied would be misleading. Unavailable agents are listed in the
+requested order, and several are reported together rather than one per
+round trip.
+
+409 rather than 400 because the request is well-formed — it conflicts with
+the server's current state. An *unknown* agent id remains a 400: that is a
+request mistake, not an environment problem, and the two are checked in
+that order.
+
+### Preflight is not a guarantee
+
+A prerequisite can disappear between the check and the compute. MolFusion
+does not attempt locking or filesystem synchronisation for this. Preflight
+removes the predictable, systemic case; Phase 5H's `feature_errors` remain
+the runtime fallback for the race, so an agent that passes preflight and
+then fails still leaves its siblings' output intact.
+
+### Recovery
+
+A negative result is never cached. Artifact loading caches success only, so
+an artifact restored after a bad deployment is observed as available by the
+next health check without restarting the process. The cost is a retry per
+check while broken, which for the common missing-artifact case is a stat
+call. A successful check re-uses the validated in-memory state, so polling
+`/agents` does not re-read the payloads.
+
+### Frontend
+
+An unavailable agent stays listed and stays described; its selection
+control is disabled and a concise generic reason is shown. Selection is
+also re-derived from current metadata on every render, so a selection made
+while an agent was healthy cannot be submitted after it goes unavailable.
+There is no representation-specific UI.
+
+### CSV
+
+Unchanged. A rejected request produces no molecule results, so there is
+nothing to export — no placeholder rows are fabricated for a request that
+never ran. The Phase 5H `feature_error` column continues to cover
+molecule-specific failures.

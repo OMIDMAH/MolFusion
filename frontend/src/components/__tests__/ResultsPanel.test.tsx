@@ -13,6 +13,7 @@ const AGENTS: AgentMetadata[] = [
     value_type: "binary",
     output_structure: "vector",
     feature_names: null,
+    availability: { available: true, code: null, message: null },
   },
   {
     id: "selfies_sequence",
@@ -23,6 +24,7 @@ const AGENTS: AgentMetadata[] = [
     value_type: "categorical",
     output_structure: "sequence",
     feature_names: null,
+    availability: { available: true, code: null, message: null },
   },
 ];
 
