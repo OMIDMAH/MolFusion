@@ -922,3 +922,140 @@ The transformation is MolFusion-owned NumPy. sklearn is a **dev-only**
 dependency used solely as an independent reference in tests; it never
 selects the vocabulary, never tokenizes, never chooses feature order, and
 is never imported by production code.
+
+## Production agent: `smiles_tfidf_4096` (Phase 5G)
+
+The frozen TF-IDF representation is now a registered production
+FeatureAgent. Phase 5G is runtime integration only: it fits nothing,
+rebuilds nothing, and changes no scientific decision. The research history
+behind those decisions is in
+[`tfidf-vocabulary-decision.md`](tfidf-vocabulary-decision.md) (which
+features) and [`tfidf-weighting-decision.md`](tfidf-weighting-decision.md)
+(how they are weighted); the artifact itself is described in the previous
+section.
+
+| | |
+| --- | --- |
+| `agent_id` | `smiles_tfidf_4096` |
+| `value_type` | `continuous` |
+| `output_structure` | `vector` |
+| `output_dim` | 4096 |
+| runtime dtype | `float32` |
+| feature names | supported, 4096 unique |
+| backing artifact | `smiles_tfidf / chembl37_token_ngrams_1_3 / 1.0.0` |
+
+The representation is token n-grams of orders 1-3 over a frozen ChEMBL 37
+vocabulary, weighted with sublinear TF and smoothed IDF and L2-normalized.
+Out-of-vocabulary n-grams are ignored; a molecule retaining no vocabulary
+term yields a valid all-zero vector. **No fitting happens at runtime** --
+the vocabulary and IDF are read from the artifact and never recomputed.
+
+The agent ID names the representation and its dimension, not the corpus
+release: provenance belongs to the artifact identity, which the agent
+records and validates, and burying `chembl37` in a user-facing ID would
+duplicate it in the one place it cannot be checked.
+
+### Runtime pipeline
+
+```
+Mol -> canonical_smiles_from_mol()   the shared Phase 5F-A contract
+    -> tokenize_smiles()             the frozen lexer
+    -> token n-grams, orders 1-3
+    -> counts over the frozen vocabulary   (OOV contributes nothing)
+    -> 1 + ln(count)                 sublinear TF
+    -> x IDF (float64, from idf.npy)
+    -> L2 normalize
+    -> float32, shape (4096,)
+```
+
+Canonicalization is not optional and not local to the agent: the
+vocabulary was fitted on strings produced by exactly
+`canonical_smiles_from_mol`, so tokenizing anything else -- including the
+user's original SMILES -- would silently shift a molecule's n-grams away
+from the fitted vocabulary. `CCO` and `OCC` therefore produce identical
+vectors.
+
+The transform is the same `molfusion_backend.tfidf` implementation the
+artifact builder and the clean-room audit used. There is one TF-IDF
+implementation in the codebase, not a second one inside the agent, and
+**sklearn is never imported by production code** -- it remains a dev-only
+test reference.
+
+### Artifact lifecycle
+
+```
+load_artifact()          generic: metadata schema, identity, payload
+                         checksums, path protection
+      |
+load_tfidf_artifact()    semantic: vocabulary, IDF, config, contract
+      |
+immutable runtime state  cached on the agent instance
+```
+
+Loaded lazily and once. Eager loading in the constructor would tie process
+start-up -- and every test that registers the builtin agents -- to the
+artifact being on disk. Loading is guarded by a lock with double-checked
+caching, so concurrent first calls load exactly once and every later call
+reuses read-only state: the IDF buffer is marked non-writeable and the
+vocabulary lookup is wrapped in a read-only mapping.
+
+A load *failure* is deliberately not cached, so an artifact restored after
+a bad deployment starts working without a process restart.
+
+`MOLFUSION_ARTIFACT_ROOT` continues to work because the agent never names
+it: the root is resolved by the generic infrastructure at load time, and
+the agent hard-codes no path.
+
+### Three outcomes that must not be confused
+
+| Situation | `valid` | `error` | features |
+| --- | --- | --- | --- |
+| SMILES RDKit cannot parse | `false` | populated | `[]` |
+| Artifact missing/corrupt/contract-incompatible | `true` | populated | `[]` |
+| Valid molecule, no retained vocabulary term | `true` | `null` | 4096 zeros |
+
+The second and third look superficially similar and are not. An artifact
+fault is a deployment problem and is surfaced as a representation failure
+(a `ValueError`, reported the way every other agent's failure is). It is
+never converted into a zero vector, because a zero vector is a *result*:
+the honest representation of a molecule built entirely from motifs ChEMBL
+never contained. The agent also never falls back to refitting, an empty
+vocabulary, a fabricated IDF, or the reference corpus.
+
+### Feature names
+
+```
+ngram1:["C"]
+ngram2:["Cl","C"]
+ngram3:["C","(","="]
+```
+
+`ngram<order>:<compact JSON token array>`. The JSON array is what keeps the
+name lossless -- `("Cl","C")` and `("C","lC")` concatenate to the same
+string, so a joined name could not tell two real features apart -- and it
+round-trips through `json.loads` once the prefix is stripped. The names
+contain no `;`, which is what the frontend CSV export uses to join them
+into one column.
+
+Names are derived from the artifact's stored token arrays, so they are
+stable across processes and reloads, unique, and aligned index-for-index
+with the vector. When the artifact is unavailable the property reports
+`None` rather than raising, because `GET /agents` reads it for every
+registered agent and an artifact fault should not take the whole registry
+listing down; `compute()` still fails loudly for the same condition.
+
+### API, frontend and CSV
+
+No new schema. The agent flows through the existing discriminated
+`VectorFeatureOutput` (`values`, `dim`), the existing registry-driven
+frontend discovery, and the existing generic vector CSV export. No
+frontend source change was required.
+
+Two consequences worth knowing rather than fixing here:
+
+- A 4096-value vector is a large JSON payload, and `GET /agents` now
+  carries 4096 feature names. Sparse or compressed transport is a separate
+  architectural decision, deliberately not taken in this phase.
+- The API remains all-or-nothing per molecule: if any selected agent
+  fails, that molecule returns no features at all. Modelling per-agent
+  partial success needs an API revision and is out of scope here.

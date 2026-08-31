@@ -22,8 +22,10 @@
 
 The frozen SMILES TF-IDF artifact itself (Phase 5F-D — identity, payload
 schemas, the checksum DAG, immutability and rebuild rules, and the two
-validation layers) is documented in the final section of
-[`reproducibility.md`](reproducibility.md).
+validation layers) and the production `smiles_tfidf_4096` FeatureAgent that
+consumes it (Phase 5G — runtime pipeline, artifact lifecycle, OOV and
+zero-vector semantics, feature-name format) are documented in the final
+sections of [`reproducibility.md`](reproducibility.md).
 
 Planned documents (not yet written):
 

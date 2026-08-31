@@ -197,8 +197,17 @@ def test_round_trip_preserves_every_entry():
 
 
 def test_feature_names_are_lossless_and_stable():
+    """("Cl","C") and ("C","lC") concatenate identically, so the name must
+    keep them apart -- and must avoid ";", the frontend CSV name separator."""
     vocabulary = Vocabulary((entry(0, ("C", "lC"), 9), entry(1, ("Cl", "C"), 9)))
-    assert vocabulary.feature_names() == ['["C", "lC"]', '["Cl", "C"]']
+    names = vocabulary.feature_names()
+    assert names == ['ngram2:["C","lC"]', 'ngram2:["Cl","C"]']
+    assert names[0] != names[1]
+    assert all(";" not in name for name in names)
+    assert [json.loads(name.split(":", 1)[1]) for name in names] == [
+        ["C", "lC"],
+        ["Cl", "C"],
+    ]
 
 
 # ---------------------------------------------------------------------------

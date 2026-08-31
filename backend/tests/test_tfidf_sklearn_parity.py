@@ -175,3 +175,50 @@ def test_sklearn_never_chose_the_vocabulary(fixture_artifact):
     tokens = [entry.tokens for entry in vocabulary.entries]
     assert tokens == sorted(tokens)
     assert all(entry.index == position for position, entry in enumerate(vocabulary.entries))
+
+
+def test_parity_holds_through_the_agent_canonicalization_step():
+    """Parity for the pipeline the agent actually runs.
+
+    The agent canonicalizes before tokenizing, so its counts come from
+    `canonical_smiles_from_mol` output rather than the input string. This
+    builds the whole fixture -- document frequencies, IDF and counts -- from
+    those canonical strings, so sklearn and MolFusion are again describing
+    the same corpus, and any divergence would be arithmetic rather than
+    preprocessing.
+    """
+    from rdkit import Chem
+
+    from molfusion_backend.chemistry import canonical_smiles_from_mol
+
+    canonical = [
+        canonical_smiles_from_mol(Chem.MolFromSmiles(smiles)) for smiles in DOCUMENTS
+    ]
+    tokenized = [tokenize_smiles(text) for text in canonical]
+
+    document_frequency: dict[tuple[str, ...], int] = {}
+    for tokens in tokenized:
+        for ngram in document_ngram_counts_over_orders(tokens, (1, 2, 3)):
+            document_frequency[ngram] = document_frequency.get(ngram, 0) + 1
+
+    vocabulary, _ = select_vocabulary(document_frequency, min_df=2, max_features=64)
+    idf = compute_idf(vocabulary.document_frequencies(), len(canonical))
+    transformer = TfidfTransformer(
+        index_map=vocabulary.index_map(),
+        idf=idf,
+        dimension=vocabulary.dimension,
+        orders=(1, 2, 3),
+    )
+
+    counts = np.vstack([transformer.counts(tokens) for tokens in tokenized])
+    reference = SklearnTfidfTransformer(**REFERENCE_KWARGS).fit(counts)
+    expected = np.asarray(reference.transform(counts).todense(), dtype=np.float64)
+
+    # sklearn's idf_ is fitted on these same counts, so both sides describe
+    # the same corpus; the float32 runtime cast is the only divergence.
+    assert reference.idf_ == pytest.approx(idf, rel=1e-12, abs=1e-12)
+    produced = np.vstack([transformer.transform(tokens) for tokens in tokenized]).astype(
+        np.float64
+    )
+    assert np.max(np.abs(produced - expected)) < 1e-6
+    assert np.max(np.abs(weighting.tfidf(counts, idf, dtype=np.float64) - expected)) < 1e-12

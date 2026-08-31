@@ -47,7 +47,7 @@ def test_agents_returns_200(client):
     assert response.status_code == 200
 
 
-def test_agents_contains_exactly_the_seven_production_agents(client):
+def test_agents_contains_exactly_the_production_agents(client):
     response = client.get("/agents")
     ids = {agent["id"] for agent in response.json()}
     assert ids == {
@@ -58,6 +58,7 @@ def test_agents_contains_exactly_the_seven_production_agents(client):
         "erg_reduced_graph_315",
         "rdkit_fragment_descriptors",
         "selfies_sequence",
+        "smiles_tfidf_4096",
     }
 
 

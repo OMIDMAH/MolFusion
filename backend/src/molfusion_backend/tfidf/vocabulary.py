@@ -29,6 +29,19 @@ from molfusion_backend.tfidf.ngrams import Ngram
 
 VOCABULARY_SCHEMA_VERSION = 1
 
+# Prefix for a per-column feature name; see Vocabulary.feature_names().
+FEATURE_NAME_PREFIX = "ngram"
+
+
+def encode_feature_tokens(tokens: Ngram) -> str:
+    """Compact JSON array of tokens, as embedded in a feature name.
+
+    Separators are given explicitly so the encoding does not depend on
+    `json.dumps` default spacing: a feature name is part of the API and CSV
+    surface, and it should not shift because a default changed.
+    """
+    return json.dumps(list(tokens), ensure_ascii=False, separators=(",", ":"))
+
 
 @dataclass(frozen=True)
 class VocabularyEntry:
@@ -71,14 +84,25 @@ class Vocabulary:
         return [entry.document_frequency for entry in self.entries]
 
     def feature_names(self) -> list[str]:
-        """Stable, unambiguous feature names derived from the token arrays.
+        """Stable, unambiguous per-column feature names.
 
-        JSON arrays rather than a joined string, for the same reason the
-        payload uses them: a joined name cannot distinguish ("Cl","C") from
-        ("C","lC"). A prettier human-facing format can be layered on later,
-        but the name that identifies a column must stay lossless.
+        Format: `ngram<order>:<compact JSON token array>`, e.g.
+        `ngram3:["C","(","="]`.
+
+        The JSON array is what makes a name lossless: ("Cl","C") and
+        ("C","lC") join to the same string, so a concatenated name could
+        not tell two genuinely different features apart. It round-trips
+        through `json.loads` after the prefix is stripped.
+
+        The order prefix is redundant with the array's length and is kept
+        because it makes a name self-describing and groups the vocabulary
+        by order. Neither part can contain ";", which is what the frontend
+        CSV export uses to join names into one column.
         """
-        return [json.dumps(list(entry.tokens), ensure_ascii=False) for entry in self.entries]
+        return [
+            f"{FEATURE_NAME_PREFIX}{entry.order}:{encode_feature_tokens(entry.tokens)}"
+            for entry in self.entries
+        ]
 
 
 def select_vocabulary(
@@ -319,10 +343,12 @@ def composition_by_order(vocabulary: Vocabulary) -> dict[str, int]:
 
 
 __all__ = [
+    "FEATURE_NAME_PREFIX",
     "VOCABULARY_SCHEMA_VERSION",
     "Vocabulary",
     "VocabularyEntry",
     "composition_by_order",
+    "encode_feature_tokens",
     "parse_vocabulary",
     "select_vocabulary",
     "validate_vocabulary",

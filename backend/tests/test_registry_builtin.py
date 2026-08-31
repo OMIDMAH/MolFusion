@@ -6,6 +6,7 @@ from molfusion_backend.agents.fragments import FragmentDescriptorAgent
 from molfusion_backend.agents.maccs import MACCSKeysAgent
 from molfusion_backend.agents.morgan import MorganFingerprintAgent
 from molfusion_backend.agents.selfies_agent import SelfiesSequenceAgent
+from molfusion_backend.agents.smiles_tfidf import SmilesTfidfAgent
 
 VECTOR_AGENT_CLASSES = (
     MorganFingerprintAgent,
@@ -14,6 +15,7 @@ VECTOR_AGENT_CLASSES = (
     AvalonFingerprintAgent,
     ErgReducedGraphAgent,
     FragmentDescriptorAgent,
+    SmilesTfidfAgent,
 )
 
 EXPECTED_IDS = {cls.id for cls in VECTOR_AGENT_CLASSES} | {SelfiesSequenceAgent.id}
@@ -22,7 +24,7 @@ EXPECTED_IDS = {cls.id for cls in VECTOR_AGENT_CLASSES} | {SelfiesSequenceAgent.
 def test_production_registry_contains_exactly_the_expected_agents():
     listed_ids = {entry["id"] for entry in registry.list_agents()}
     assert listed_ids == EXPECTED_IDS
-    assert len(EXPECTED_IDS) == 7
+    assert len(EXPECTED_IDS) == 8
 
 
 def test_ids_are_unique():
@@ -48,6 +50,7 @@ def test_metadata_dimensions_are_correct():
         == PhysicochemicalDescriptorAgent.output_dim
     )
     assert metadata_by_id[SelfiesSequenceAgent.id]["output_dim"] is None
+    assert metadata_by_id[SmilesTfidfAgent.id]["output_dim"] == 4096
 
 
 def test_agents_are_retrievable_by_id():
