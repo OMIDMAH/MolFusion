@@ -17,3 +17,10 @@ build/
 # neither belongs in version control. Only the builder code, its tests,
 # and docs/reproducibility.md are tracked.
 /corpus_data/
+
+# Downloaded TDC ADMET benchmark data (Phase 6A.1). The raw download and
+# the frozen logical serialization are external benchmark inputs, not
+# source. Only the acquisition code, the provenance manifest with its
+# SHA-256 checksums, and docs/benchmark-data.md are tracked -- the
+# manifest is what makes the ignored bytes verifiable.
+/benchmark_data/

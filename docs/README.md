@@ -39,6 +39,13 @@ than reported once per molecule.
   probes and tuning budget, metrics and cross-endpoint ranking, the
   statistical plan, failure accounting, and the reproducibility metadata
   every run must record. Protocol only — no benchmark has been executed
+- [`benchmark-data.md`](benchmark-data.md) — the Phase 6A.1 TDC ADMET
+  acquisition and dataset freeze: how PyTDC is kept out of the MolFusion
+  dependency surface, the frozen serialization contract behind every
+  checksum, what TDC's official split actually does (a fixed held-out test
+  set, re-split only for train/validation), the amendment that split the
+  benchmark into Track A1 and Track A2, and why Track A1 applies no
+  cleaning to the official rows
 
 Planned documents (not yet written):
 

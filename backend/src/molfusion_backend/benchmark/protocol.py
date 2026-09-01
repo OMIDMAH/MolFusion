@@ -167,6 +167,142 @@ SEED_POLICY = (
 )
 
 # ---------------------------------------------------------------------------
+# Phase 6A.1 reconciliation: official TDC splits vs MolFusion splits
+# ---------------------------------------------------------------------------
+#
+# The constants above are Phase 6A as frozen, and they are left exactly as
+# they were written. What follows is an amendment, added after measuring the
+# actual PyTDC 1.0.0 implementation rather than reading its documentation.
+#
+# What Phase 6A assumed: five independent 70/10/20 scaffold splits, each
+# drawing its own test partition, so the spread across splits would include
+# test-partition variability.
+#
+# What TDC actually does, established from source and confirmed against the
+# data for all 22 endpoints:
+#
+#   * train_val.csv and test.csv are shipped files. get() and __next__()
+#     read them directly and neither accepts a seed.
+#   * get_train_valid_split(seed, ...) reads train_val.csv ONLY, and splits
+#     it with frac = [0.875, 0.125, 0.0]. The trailing 0.0 is the test
+#     fraction: no test set is drawn, because one was already held out.
+#   * The seed therefore moves the train/validation boundary and nothing
+#     else. Across all 22 endpoints the test molecule set hashed to the
+#     same SHA-256 at every seed.
+#   * evaluate_many() requires at least 5 runs.
+#
+# Nesting those fractions reproduces Phase 6A's numbers exactly --
+# 0.8 * 0.875 = 0.70 train and 0.8 * 0.125 = 0.10 validation, against a 0.20
+# test set -- so the FRACTIONS in Phase 6A were right. What was wrong was the
+# assumption that the test partition is re-drawn per seed. It is not.
+#
+# That difference is not cosmetic: it changes what the spread across runs
+# measures. Under TDC's protocol the spread is sensitivity to the
+# train/validation boundary on a fixed evaluation set; under Phase 6A's
+# original reading it would also have included which molecules are evaluated
+# at all. Both are legitimate questions, so both are kept -- as two tracks
+# that are never mixed and never share a label.
+
+TRACK_A1 = "tdc_official"
+TRACK_A2 = "molfusion_scaffold"
+EVALUATION_TRACKS = (TRACK_A1, TRACK_A2)
+
+# --- Track A1: the official, leaderboard-comparable evaluation ---------
+TRACK_A1_SPLIT_STRATEGY = "tdc_official_fixed_test"
+TRACK_A1_SEEDS = (1, 2, 3, 4, 5)
+TRACK_A1_TRAIN_VAL_FRACTIONS = (0.875, 0.125, 0.0)
+TRACK_A1_TEST_IS_FIXED = True
+
+TRACK_A1_DEFINITION = (
+    "Track A1 reproduces TDC's official ADMET protocol: the shipped held-out "
+    "test set, unchanged and identical at every seed, with train and "
+    "validation drawn from train_val.csv at fractions 0.875/0.125 using TDC's "
+    "own scaffold splitter, over five runs. Its purpose is comparability with "
+    "published TDC leaderboard numbers, so nothing about the official "
+    "partitions is modified -- including duplicate molecules that TDC's rows "
+    "contain, because removing them would mean scoring on a different test "
+    "set than every published number was computed on."
+)
+
+# Seed values: PyTDC fixes the run COUNT (evaluate_many enforces >= 5) but
+# not the seed values themselves, which the caller passes. 1-5 is the
+# convention TDC's own documentation demonstrates, so it is what A1 uses.
+# Phase 6A's 0-4 is deliberately NOT reused here: two tracks that differ in
+# meaning must not collide in a result file just because both start at a
+# small integer.
+TRACK_A1_SEED_POLICY = (
+    "PyTDC enforces a minimum of five runs but does not fix the seed values; "
+    "the caller supplies them. Track A1 uses TDC's documented 1-5 convention. "
+    "Track A2 keeps Phase 6A's 0-4. The values differ so that a row's seed "
+    "alone can never make the two tracks ambiguous."
+)
+
+# --- Track A2: MolFusion's own robustness analysis ---------------------
+TRACK_A2_SPLIT_STRATEGY = SPLIT_SCAFFOLD
+TRACK_A2_SEEDS = SPLIT_SEEDS
+TRACK_A2_TEST_IS_FIXED = False
+
+TRACK_A2_DEFINITION = (
+    "Track A2 is MolFusion's own repeated-scaffold-split analysis: five "
+    "independent 70/10/20 Bemis-Murcko splits, seeds 0-4, drawn over the "
+    "cleaned molecule universe with the full duplicate and conflict policy "
+    "applied. It answers a question A1 cannot -- whether a representation's "
+    "ranking survives a different scaffold partition, or is an artefact of "
+    "the one partition TDC happened to publish. It is NOT comparable with "
+    "TDC leaderboard numbers and must never be labelled or reported as "
+    "official TDC results."
+)
+
+TRACK_A2_STATUS = "supplementary"
+TRACK_A2_STATUS_RATIONALE = (
+    "A1 is the headline result because it is the one a reader can check "
+    "against published work. A2 is reported as a supplementary robustness "
+    "analysis: it is evidence about the stability of the A1 ranking, not a "
+    "second opinion competing with it. Promoting A2 to the main manuscript "
+    "would invite exactly the confusion this separation exists to prevent."
+)
+
+
+def split_id(track: str, seed: int) -> str:
+    """A split identifier that names its track, so results cannot be mixed.
+
+    Every result row carries this string. A bare seed would make
+    ``seed=1`` under A1 and ``seed=1`` under A2 indistinguishable in a
+    merged table, which is the specific failure this phase exists to
+    prevent.
+    """
+    if track not in EVALUATION_TRACKS:
+        raise ValueError(f"unknown evaluation track: {track!r}")
+    return f"{track}/seed={seed}"
+
+
+# --- cleaning policy per track ----------------------------------------
+#
+# Measured, not assumed. Applying MolFusion's conflicting-label rule to the
+# official partitions removes 0% from 8 endpoints and under 6% from 12
+# more -- but 30% of clearance_hepatocyte_az and 53-58% of ppbr_az, whose
+# rows carry many replicate measurements of the same compound. A test set
+# missing 58% of its molecules is not the test set the leaderboard used, so
+# for A1 the official rows are consumed as shipped and the duplicate
+# structure is reported instead of removed.
+
+TRACK_A1_CLEANING = "none; official rows consumed exactly as shipped"
+TRACK_A2_CLEANING = "full Phase 6A policy: canonicalize, collapse agreeing duplicates, drop conflicting groups"
+
+CLEANING_DIVERGENCE_ALERT = 0.05
+CLEANING_POLICY_RATIONALE = (
+    "MolFusion's duplicate policy is right for MolFusion's own analysis and "
+    "wrong for a leaderboard comparison. Track A1 therefore applies no "
+    "cleaning: it reports the duplicate and conflict structure of the "
+    "official partitions as a caveat on those numbers, rather than silently "
+    "evaluating on a smaller set and presenting the result as comparable. "
+    f"Any endpoint where cleaning would move more than "
+    f"{CLEANING_DIVERGENCE_ALERT:.0%} of either official partition is flagged "
+    "explicitly wherever A1 and A2 results appear together."
+)
+
+
+# ---------------------------------------------------------------------------
 # probes
 # ---------------------------------------------------------------------------
 
@@ -404,6 +540,30 @@ def protocol_summary() -> dict[str, Any]:
         "split_seeds": list(SPLIT_SEEDS),
         "model_seed": MODEL_SEED,
         "seed_policy": SEED_POLICY,
+        # Phase 6A.1 amendment: the split fractions above survived contact
+        # with the real TDC implementation; the assumption that the test
+        # partition is re-drawn per seed did not. Two tracks, never mixed.
+        "evaluation_tracks": {
+            TRACK_A1: {
+                "definition": TRACK_A1_DEFINITION,
+                "split_strategy": TRACK_A1_SPLIT_STRATEGY,
+                "seeds": list(TRACK_A1_SEEDS),
+                "train_val_fractions": list(TRACK_A1_TRAIN_VAL_FRACTIONS),
+                "test_is_fixed": TRACK_A1_TEST_IS_FIXED,
+                "cleaning": TRACK_A1_CLEANING,
+                "status": "primary",
+            },
+            TRACK_A2: {
+                "definition": TRACK_A2_DEFINITION,
+                "split_strategy": TRACK_A2_SPLIT_STRATEGY,
+                "seeds": list(TRACK_A2_SEEDS),
+                "test_is_fixed": TRACK_A2_TEST_IS_FIXED,
+                "cleaning": TRACK_A2_CLEANING,
+                "status": TRACK_A2_STATUS,
+            },
+        },
+        "track_seed_policy": TRACK_A1_SEED_POLICY,
+        "cleaning_policy_rationale": CLEANING_POLICY_RATIONALE,
         "probes": {
             "linear": {"classification": LINEAR_CLASSIFIER, "regression": LINEAR_REGRESSOR},
             "nonlinear": {
