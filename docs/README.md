@@ -46,6 +46,12 @@ than reported once per molecule.
   set, re-split only for train/validation), the amendment that split the
   benchmark into Track A1 and Track A2, and why Track A1 applies no
   cleaning to the official rows
+- [`benchmark-execution.md`](benchmark-execution.md) — the Phase 6A.2 Track
+  A1 execution contract: what "five seeds on one fixed test set" means for
+  later statistics, the matrix feature cache and its key, checkpoint/resume
+  semantics, the two result digests (file versus scientific identity), how
+  the worker count was measured rather than guessed, and the leakage guards
+  re-verified before every endpoint
 
 Planned documents (not yet written):
 

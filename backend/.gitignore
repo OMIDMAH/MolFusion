@@ -24,3 +24,10 @@ build/
 # SHA-256 checksums, and docs/benchmark-data.md are tracked -- the
 # manifest is what makes the ignored bytes verifiable.
 /benchmark_data/
+
+# Generated benchmark execution outputs (Phase 6A.2): feature-matrix caches,
+# result shards and collected result tables. All are reproducible from the
+# frozen release plus committed source, and the caches in particular are
+# large. Runner code, tests and docs stay tracked.
+/benchmark_cache/
+/benchmark_runs/
