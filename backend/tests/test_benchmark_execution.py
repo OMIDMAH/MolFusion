@@ -632,3 +632,54 @@ def test_execution_module_does_not_import_pytdc():
         source = Path(module.__file__).read_text("utf-8")
         assert "import tdc" not in source
         assert "from tdc" not in source
+
+
+def test_leakage_guards_skip_rows_rdkit_cannot_parse(tmp_path):
+    """Regression: unparseable official rows must not reach the scaffold call.
+
+    solubility_aqsoldb ships two SMILES RDKit rejects. An earlier version of
+    the guard passed their raw strings to the scaffold function, which
+    raises, failing all seven of that endpoint's cells. They are excluded
+    now -- which is also what the frozen Phase 6A.1 identities did, so
+    including them would have disagreed with the manifest as well.
+    """
+    from molfusion_backend.benchmark import release as release_module
+
+    broken = "O=C(O)C1=C[NH+2]([O-])[CH-]C=C1"
+    endpoint = a1.OfficialEndpoint(
+        name="demo", task_type=protocol.TASK_REGRESSION,
+        tdc_official_metric="mae", molfusion_primary_metric="mae",
+        canonical_smiles=(BENZENE, broken, ETHANOL, PYRIDINE),
+        labels=(1.0, float("nan"), 2.0, 3.0),
+        raw_smiles=(BENZENE, broken, ETHANOL, PYRIDINE),
+        train_val_rows=2, test_rows=2,
+        invalid_rows={1: "RDKit could not parse the molecule"},
+    )
+    manifest = {
+        "endpoints": {
+            "demo": {
+                "split_identity": {
+                    "test_set_sha256": release_module.molecule_set_identity(
+                        [ETHANOL, PYRIDINE]
+                    )
+                }
+            }
+        }
+    }
+    guards = a1.verify_leakage_guards(endpoint, manifest=manifest)
+    assert guards["unparseable_rows_excluded"] == 1
+    assert guards["canonical_molecule_overlap"] == 0
+    assert guards["test_identity_matches_manifest"] is True
+
+
+def test_leakage_guards_still_reject_a_genuine_test_identity_mismatch():
+    endpoint = a1.OfficialEndpoint(
+        name="demo", task_type=protocol.TASK_REGRESSION,
+        tdc_official_metric="mae", molfusion_primary_metric="mae",
+        canonical_smiles=(BENZENE, ETHANOL),
+        labels=(1.0, 2.0), raw_smiles=(BENZENE, ETHANOL),
+        train_val_rows=1, test_rows=1,
+    )
+    manifest = {"endpoints": {"demo": {"split_identity": {"test_set_sha256": "0" * 64}}}}
+    with pytest.raises(a1.TrackA1Error, match="test identity"):
+        a1.verify_leakage_guards(endpoint, manifest=manifest)

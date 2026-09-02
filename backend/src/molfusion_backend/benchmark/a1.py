@@ -201,8 +201,21 @@ def verify_leakage_guards(
     the run that produces publishable numbers should establish it for itself.
     """
     entry = manifest["endpoints"][endpoint.name]
-    train_val = set(endpoint.canonical_smiles[: endpoint.train_val_rows])
-    test = set(endpoint.canonical_smiles[endpoint.train_val_rows :])
+
+    # Rows RDKit cannot parse are excluded from every set below. They carry
+    # their raw string in place of a canonical one, they cannot belong to a
+    # scaffold group, and -- decisively -- the frozen Phase 6A.1 identities
+    # were computed over parseable rows only, so including them here would
+    # both crash the scaffold call and disagree with the manifest.
+    def parseable(indices) -> set[str]:
+        return {
+            endpoint.canonical_smiles[i]
+            for i in indices
+            if i not in endpoint.invalid_rows
+        }
+
+    train_val = parseable(range(endpoint.train_val_rows))
+    test = parseable(range(endpoint.train_val_rows, len(endpoint.canonical_smiles)))
 
     molecule_overlap = len(train_val & test)
     mf_overlap = len(
@@ -213,9 +226,7 @@ def verify_leakage_guards(
         {tdc.tdc_scaffold(s) for s in train_val} & {tdc.tdc_scaffold(s) for s in test}
     )
 
-    test_identity = release.molecule_set_identity(
-        endpoint.canonical_smiles[endpoint.train_val_rows :]
-    )
+    test_identity = release.molecule_set_identity(test)
     frozen_identity = entry["split_identity"]["test_set_sha256"]
     if test_identity != frozen_identity:
         raise TrackA1Error(
@@ -232,6 +243,7 @@ def verify_leakage_guards(
     return {
         "test_set_sha256": test_identity,
         "test_identity_matches_manifest": True,
+        "unparseable_rows_excluded": len(endpoint.invalid_rows),
         "canonical_molecule_overlap": molecule_overlap,
         "scaffold_overlap_molfusion_convention": mf_overlap,
         "scaffold_overlap_tdc_convention": tdc_overlap,
