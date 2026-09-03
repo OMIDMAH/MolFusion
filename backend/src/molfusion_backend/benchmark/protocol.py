@@ -286,6 +286,52 @@ TRACK_A2_DEFINITION = (
     "official TDC results."
 )
 
+# --- Phase 6A.4 amendment C: partition variability of the A2 splitter ----
+#
+# Recorded before any A2 score was computed, from the pre-execution audit.
+#
+# scaffold_split orders groups by (-group_size, hash(seed, scaffold)): size
+# dominates, and the seed only permutes within an equal-size tier. How much
+# the seed actually moves the test set therefore depends on where the 80%
+# train+validation boundary falls relative to the group-size tiers.
+#
+# Measured over the cleaned universes, as mean pairwise Jaccard overlap
+# between the five test sets (lower = the partitions differ more):
+#
+#   most endpoints          0.17 - 0.35   the boundary falls inside the large
+#                                         singleton tier, which the seed
+#                                         genuinely permutes
+#   ames                    0.85          multi-member groups nearly cover the
+#   ld50_zhu                0.88          boundary, so little is left to permute
+#   solubility_aqsoldb      1.00          multi-member groups (8,510 molecules)
+#                                         already exceed the train+validation
+#                                         target (7,984), so the test set is
+#                                         IDENTICAL at all five seeds
+#
+# The splitter is NOT changed. It was frozen in Phase 6A, and altering it
+# after observing this property would be exactly the post-hoc adjustment the
+# protocol exists to prevent -- and would make A2 incomparable with its own
+# specification.
+#
+# Nor is the affected endpoint dropped: removing it would shrink A2's
+# endpoint set relative to A1 and weaken the comparison A2 exists to make.
+#
+# Instead the flag is recorded per endpoint, and cross-endpoint claims about
+# repartitioning are reported both over all 22 endpoints and over the subset
+# whose partitions genuinely vary. solubility_aqsoldb contributes exactly
+# zero repartitioning information and must not be cited as evidence that a
+# finding survived repartitioning.
+A2_PARTITION_VARIABILITY_ALERT = 0.50
+A2_LOW_VARIABILITY_ENDPOINTS = ("solubility_aqsoldb", "ames", "ld50_zhu")
+A2_PARTITION_VARIABILITY_POLICY = (
+    "Endpoints whose five A2 test sets have mean pairwise Jaccard overlap "
+    f"above {A2_PARTITION_VARIABILITY_ALERT:.2f} are flagged as providing "
+    "little repartitioning signal. They are executed and reported, never "
+    "dropped, but cross-endpoint repartitioning claims are additionally "
+    "reported over the genuinely-repartitioned subset."
+)
+
+
 TRACK_A2_STATUS = "supplementary"
 TRACK_A2_STATUS_RATIONALE = (
     "A1 is the headline result because it is the one a reader can check "
