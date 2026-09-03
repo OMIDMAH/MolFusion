@@ -17,7 +17,36 @@ prevented by construction here rather than by remembering not to.
 
 from typing import Any
 
+import numpy as np
+from sklearn.preprocessing import FunctionTransformer
+
 from molfusion_backend.benchmark import protocol
+
+
+def _non_finite_to_nan(x):
+    """Map +/-inf onto NaN, leaving every finite value untouched.
+
+    Phase 6A specified NaN handling because RDKit emits NaN where a
+    descriptor cannot be computed. It did not anticipate +/-inf, which RDKit
+    also emits: MaxPartialCharge and MaxAbsPartialCharge diverge for certain
+    structures, and one solubility_aqsoldb molecule triggers it. scikit-learn
+    tolerates NaN in both probes but rejects inf in both, so those two values
+    failed the entire endpoint.
+
+    An infinite descriptor means the same thing as a missing one -- the
+    quantity is not meaningfully computable for this molecule -- so it is
+    routed through the machinery the protocol already defines rather than
+    given new machinery of its own. The alternative, dropping the molecule,
+    is not available: Track A1 may not alter the official partitions.
+
+    Stateless by construction, so it fits nothing and cannot leak.
+    """
+    array = np.asarray(x, dtype=np.float64)
+    return np.where(np.isfinite(array), array, np.nan)
+
+
+def _finite_step() -> tuple[str, Any]:
+    return ("finite", FunctionTransformer(_non_finite_to_nan, validate=False))
 
 
 def scaling_for(representation: str, probe: str) -> str:
@@ -55,8 +84,11 @@ def build_pipeline(
 
     if probe == protocol.PROBE_LINEAR:
         # RDKit descriptors legitimately emit NaN where a descriptor cannot
-        # be computed. A linear model cannot consume it, so it is imputed --
-        # from the training split's medians, never the full column.
+        # be computed, and +/-inf where one diverges. Both mean "not
+        # computable"; the second is folded into the first (see
+        # _non_finite_to_nan) and then imputed -- from the training split's
+        # medians, never the full column.
+        steps.append(_finite_step())
         steps.append(("impute", SimpleImputer(strategy="median")))
         if scaling_for(representation, probe) == protocol.SCALING_STANDARD:
             steps.append(("scale", StandardScaler()))
@@ -69,7 +101,10 @@ def build_pipeline(
     elif probe == protocol.PROBE_NONLINEAR:
         # No scaler and no imputer: the model is scale-invariant and consumes
         # NaN natively, so adding either would fit a step that changes
-        # nothing while introducing a place for leakage to hide.
+        # nothing while introducing a place for leakage to hide. The
+        # non-finite fold is still needed -- HistGradientBoosting accepts NaN
+        # but rejects inf -- and it is stateless, so it fits nothing.
+        steps.append(_finite_step())
         if task_type == protocol.TASK_CLASSIFICATION:
             estimator = HistGradientBoostingClassifier(
                 random_state=seed, class_weight=class_weight, **params

@@ -198,6 +198,34 @@ failure this prevents.
 
 ---
 
+## 8a. Amendment: non-finite descriptor values
+
+Phase 6A defined NaN handling for RDKit descriptors. It did not anticipate
+**±inf**, which RDKit also emits: `MaxPartialCharge` and
+`MaxAbsPartialCharge` diverge for certain structures. Exactly one molecule
+in the entire 22-endpoint suite triggers it — a `solubility_aqsoldb`
+training row — producing **two infinite values across 152 feature
+matrices**.
+
+scikit-learn tolerates NaN in both probes and rejects inf in both, so those
+two values failed all seven of that endpoint's cells.
+
+**Amendment:** ±inf is folded onto NaN, then handled by the already-frozen
+NaN policy. An infinite descriptor carries the same information as a missing
+one — the quantity is not meaningfully computable for that molecule — so
+this reuses existing machinery rather than inventing a second mechanism.
+
+The alternatives were worse. Dropping the molecule is unavailable: Track A1
+may not alter the official partitions. Clipping to a finite bound would
+assert a value the descriptor never produced.
+
+The fold is **stateless** (fits nothing, so it cannot leak), applied
+**uniformly** to every representation and both probes (so no representation
+gets special treatment), and is the **identity on finite input** — which is
+why it invalidates none of the 294 cells computed before it existed. A test
+asserts each of those three properties.
+
+
 ## 9. TF-IDF cost is a measurement, not a problem
 
 The nonlinear probe on `smiles_tfidf_4096` is the most expensive cell in the

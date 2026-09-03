@@ -203,6 +203,39 @@ SEED_POLICY = (
 # at all. Both are legitimate questions, so both are kept -- as two tracks
 # that are never mixed and never share a label.
 
+# --- Phase 6A.2 amendment: non-finite descriptor values ----------------
+#
+# Phase 6A specified that RDKit descriptors emit NaN where a descriptor
+# cannot be computed, and defined handling for it: median imputation for the
+# linear probe, native consumption by the trees. It did not anticipate
+# +/-inf, which RDKit also emits -- MaxPartialCharge and MaxAbsPartialCharge
+# diverge for certain structures. Exactly one molecule in the whole 22
+# endpoint suite triggers it (a solubility_aqsoldb training row), producing
+# two infinite values out of 152 feature matrices.
+#
+# scikit-learn tolerates NaN in both probes and rejects inf in both, so those
+# two values failed all seven of that endpoint's cells.
+#
+# The amendment is the smallest one that resolves it: an infinite descriptor
+# means what a missing one means -- not meaningfully computable for this
+# molecule -- so +/-inf is folded onto NaN and then handled by the machinery
+# already frozen. Dropping the molecule was not available, because Track A1
+# may not alter the official partitions.
+#
+# The fold is stateless, applied uniformly to every representation and both
+# probes, and is the identity on finite input -- so it changes no result
+# computed before it existed.
+NON_FINITE_POLICY = "fold +/-inf onto NaN, then apply the frozen NaN policy"
+NON_FINITE_POLICY_RATIONALE = (
+    "An infinite descriptor value carries the same information as a missing "
+    "one: the quantity is not meaningfully computable for that molecule. "
+    "Routing it through the existing NaN policy avoids inventing a second "
+    "mechanism, and avoids the only alternatives -- dropping a molecule, "
+    "which Track A1 forbids, or clipping to an arbitrary finite bound, which "
+    "would assert a value the descriptor never produced."
+)
+
+
 TRACK_A1 = "tdc_official"
 TRACK_A2 = "molfusion_scaffold"
 EVALUATION_TRACKS = (TRACK_A1, TRACK_A2)

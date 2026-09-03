@@ -683,3 +683,63 @@ def test_leakage_guards_still_reject_a_genuine_test_identity_mismatch():
     manifest = {"endpoints": {"demo": {"split_identity": {"test_set_sha256": "0" * 64}}}}
     with pytest.raises(a1.TrackA1Error, match="test identity"):
         a1.verify_leakage_guards(endpoint, manifest=manifest)
+
+
+# --------------------------------------------------------------------------
+# Phase 6A.2 amendment: non-finite descriptor values
+# --------------------------------------------------------------------------
+
+
+def test_non_finite_fold_is_the_identity_on_finite_data():
+    """Why the amendment invalidates no already-computed result.
+
+    Only one matrix in the whole benchmark contained inf. If the fold is the
+    identity everywhere else, adding it cannot have changed any number that
+    was already computed without it.
+    """
+    finite = np.array([[1.0, -2.5, 0.0], [1e300, 3.25, -7.0]])
+    folded = pipelines._non_finite_to_nan(finite)
+    assert np.array_equal(folded, finite)
+
+
+def test_non_finite_fold_maps_both_infinities_to_nan():
+    folded = pipelines._non_finite_to_nan(np.array([[np.inf, -np.inf, 1.0]]))
+    assert np.isnan(folded[0, 0]) and np.isnan(folded[0, 1])
+    assert folded[0, 2] == 1.0
+
+
+def test_non_finite_fold_leaves_existing_nan_alone():
+    folded = pipelines._non_finite_to_nan(np.array([[np.nan, 2.0]]))
+    assert np.isnan(folded[0, 0]) and folded[0, 1] == 2.0
+
+
+def test_non_finite_fold_is_stateless_and_cannot_leak():
+    """It fits nothing, so it cannot carry information from test to train."""
+    step = dict(pipelines._finite_step() for _ in [0])["finite"]
+    before = step.get_params()
+    step.fit(np.array([[np.inf, 1.0]]))
+    assert step.get_params() == before
+
+
+def test_both_probes_survive_an_infinite_descriptor_value():
+    """The failure that stopped solubility_aqsoldb, as a test."""
+    x = np.array([[1.0, np.inf], [2.0, 3.0], [4.0, np.nan], [6.0, 7.0]])
+    y = np.array([0, 0, 1, 1])
+    for probe, params in (("linear", {"C": 1.0}), ("nonlinear", {})):
+        model = pipelines.build_pipeline(
+            representation="rdkit_physchem_descriptors", probe=probe,
+            task_type=protocol.TASK_CLASSIFICATION, hyperparameters=params,
+        )
+        model.fit(x, y)
+        assert model.predict(x).shape == (4,)
+
+
+def test_the_fold_is_applied_to_every_representation_not_just_descriptors():
+    """Uniform, so no representation gets special treatment."""
+    for representation in protocol.TRACK_A_REPRESENTATIONS:
+        for probe in protocol.PROBES:
+            model = pipelines.build_pipeline(
+                representation=representation, probe=probe,
+                task_type=protocol.TASK_CLASSIFICATION, hyperparameters={},
+            )
+            assert "finite" in model.named_steps
