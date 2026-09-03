@@ -52,6 +52,12 @@ than reported once per molecule.
   semantics, the two result digests (file versus scientific identity), how
   the worker count was measured rather than guessed, and the leakage guards
   re-verified before every endpoint
+- [`benchmark-analysis.md`](benchmark-analysis.md) — the Phase 6A.3 Track
+  A1 analysis contract: why the endpoint is the statistical unit and the
+  five seeds are not five observations, the formal review of the two 6A.2
+  amendments, direction-aware ranking with average ties, the Friedman →
+  Holm-corrected Wilcoxon → rank-biserial → endpoint-bootstrap plan, and
+  the regularization-saturation caveat that qualifies the linear results
 
 Planned documents (not yet written):
 
