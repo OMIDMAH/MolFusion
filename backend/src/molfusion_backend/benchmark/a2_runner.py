@@ -17,7 +17,6 @@ import hashlib
 import json
 import os
 import platform
-import subprocess
 import sys
 import tempfile
 import time
@@ -30,7 +29,7 @@ import numpy
 import rdkit
 import sklearn
 
-from molfusion_backend.benchmark import a2, feature_store, protocol, release
+from molfusion_backend.benchmark import a2, feature_store, protocol, provenance, release
 
 SHARD_SCHEMA_VERSION = 1
 
@@ -56,25 +55,20 @@ SCIENTIFIC_COLUMNS = (
 )
 
 
-def _git(*args: str) -> str | None:
-    try:
-        return subprocess.run(["git", *args], capture_output=True, text=True,
-                              check=True).stdout.strip()
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return None
+def _environment(execution: provenance.ExecutionProvenance) -> dict[str, Any]:
+    """Software versions plus the run's frozen execution provenance.
 
-
-def _environment() -> dict[str, Any]:
+    Phase 6A.5: provenance is an argument, not something this function
+    discovers. Workers receive the parent's captured object and copy it, so
+    no shard can disagree with the run report and no worker can produce a
+    null commit by losing a subprocess race.
+    """
     return {
         "python": platform.python_version(),
         "rdkit": rdkit.__version__,
         "numpy": numpy.__version__,
         "scikit_learn": sklearn.__version__,
-        "molfusion_git_commit": _git("rev-parse", "HEAD"),
-        # --porcelain counts untracked files; the repository permanently
-        # carries two unrelated .docx files, so this reads False even with a
-        # clean tracked tree. Recorded as-is rather than quietly filtered.
-        "molfusion_git_working_tree_clean": _git("status", "--porcelain") == "",
+        "execution": execution.as_dict(),
     }
 
 
@@ -200,6 +194,8 @@ def run_unit(job: dict[str, Any]) -> dict[str, Any]:
     """One endpoint x representation unit: both probes, five partitions."""
     frozen_dir = Path(job["frozen_dir"])
     output_dir = Path(job["output_dir"])
+    # Provenance arrives as data. A worker never asks git anything.
+    execution = provenance.ExecutionProvenance.from_dict(job["execution_provenance"])
     manifest = json.loads(Path(job["manifest_path"]).read_text("utf-8"))
     release_identity = manifest["release_identity_sha256"]
     endpoint_name, representation = job["endpoint"], job["representation"]
@@ -247,7 +243,7 @@ def run_unit(job: dict[str, Any]) -> dict[str, Any]:
             "split_audits": {str(s): v.audit for s, v in splits_by_seed.items()},
             "split_distinctness": distinctness,
             "chembl37_exposure": manifest["endpoints"][endpoint_name].get("chembl37_exposure"),
-            "environment": _environment(),
+            "environment": _environment(execution),
             **result,
         }
         write_shard(shard_path(output_dir, endpoint_name, representation, probe), payload)
@@ -290,7 +286,8 @@ def plan(manifest, output_dir: Path, *, endpoints=None, representations=None):
 
 
 def execute(*, frozen_dir: Path, manifest_path: Path, output_dir: Path, cache_dir: Path,
-            workers: int, endpoints=None, representations=None,
+            workers: int, execution: provenance.ExecutionProvenance,
+            endpoints=None, representations=None,
             expected_release_identity: str | None = None) -> dict[str, Any]:
     manifest = json.loads(manifest_path.read_text("utf-8"))
     release_identity = manifest["release_identity_sha256"]
@@ -301,9 +298,14 @@ def execute(*, frozen_dir: Path, manifest_path: Path, output_dir: Path, cache_di
     output_dir.mkdir(parents=True, exist_ok=True)
     cache_dir.mkdir(parents=True, exist_ok=True)
     jobs, done = plan(manifest, output_dir, endpoints=endpoints, representations=representations)
+    # The parent's provenance, copied into every job before the pool exists.
+    # Identical bytes reach every worker, so shard and run report cannot
+    # disagree and no worker performs provenance discovery of its own.
+    execution_payload = execution.as_dict()
     for job in jobs:
         job.update({"frozen_dir": str(frozen_dir), "manifest_path": str(manifest_path),
-                    "output_dir": str(output_dir), "cache_dir": str(cache_dir)})
+                    "output_dir": str(output_dir), "cache_dir": str(cache_dir),
+                    "execution_provenance": execution_payload})
 
     print(f"Track A2: {len(done)} cells already valid, {len(jobs)} units to run "
           f"on {workers} worker(s)", flush=True)
@@ -447,16 +449,36 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--representations", nargs="*", default=None)
     parser.add_argument("--expect-release", default=None)
     parser.add_argument("--collect-only", action="store_true")
+    parser.add_argument("--repo-root", type=Path,
+                        default=provenance.default_repo_root())
     args = parser.parse_args(argv)
 
     manifest = json.loads(args.manifest.read_text("utf-8"))
+
+    # Configuration is final and no worker exists yet: capture provenance
+    # here, exactly once. A ProvenanceError propagates and ends the run
+    # before the first scientific shard, which is the entire point -- the
+    # pre-6A.5 code reached this situation per worker and wrote null.
+    execution = provenance.capture(args.repo_root)
+    print(f"execution commit {execution.git_commit}  tracked_clean="
+          f"{execution.tracked_worktree_clean}  untracked={execution.untracked_files_present}"
+          f"{'  diff=' + execution.tracked_diff_sha256[:16] if execution.tracked_diff_sha256 else ''}",
+          flush=True)
+
     summary: dict[str, Any] = {}
+    mutation: dict[str, Any] = {}
     if not args.collect_only:
         summary = execute(
             frozen_dir=args.frozen_dir, manifest_path=args.manifest,
             output_dir=args.output_dir, cache_dir=args.cache_dir, workers=args.workers,
+            execution=execution,
             endpoints=args.endpoints, representations=args.representations,
             expected_release_identity=args.expect_release)
+        # Once, at the end -- never per shard.
+        mutation = provenance.detect_source_mutation(execution, args.repo_root)
+        if mutation.get("violation"):
+            print("WARNING: tracked source changed during the run; this run is "
+                  "not attributable to a single revision", flush=True)
 
     rows, collected = collect(args.output_dir, manifest)
     audit = collected["audit"]
@@ -469,7 +491,8 @@ def main(argv: list[str] | None = None) -> int:
         "scientific_identity_columns": list(SCIENTIFIC_COLUMNS),
         "cleaning": collected["cleaning"], "split_distinctness": collected["distinctness"],
         "feature_cache_contract": feature_store.cache_contract(),
-        "environment": _environment(),
+        "environment": _environment(execution),
+        "source_mutation_check": mutation,
     }
     for name, payload in (("run_report.json", report),
                           ("timings.json", collected["timings"]),

@@ -273,3 +273,131 @@ Track A2 was not run. No significance test was performed, no pairwise
 comparison was made, and no representation is described as better than
 another — that analysis belongs to the next phase, on the completed and
 audited matrix.
+
+---
+
+## 11. Execution provenance (Phase 6A.5)
+
+### What went wrong before 6A.5
+
+Every worker discovered the commit for itself:
+
+```
+worker -> subprocess git rev-parse -> intermittent failure under load
+       -> exception swallowed     -> null written into the shard
+```
+
+Under two concurrent workers on a two-core host this failed often. The
+result, measured across the completed matrices:
+
+| Track | Shards | Commit recorded | `null` |
+| --- | --- | --- | --- |
+| A1 | 308 | 181 (`459653b` 167, `ddabb42` 12, `2bcb467` 2) | **127** |
+| A2 | 308 | 97 (`e6ae297`) | **211** |
+
+> Historical A1/A2 scientific results remain valid, but some shards lack
+> complete recorded Git metadata because of the pre-6A.5 worker-local
+> provenance implementation.
+
+The values are unaffected — the same code produced every shard, and
+`protocol_version` and `benchmark_release` agree across all 616 — but the
+shards can no longer say so unaided. A provenance field that fails silently
+under load is worse than no field: a `null` from a lost subprocess race is
+indistinguishable from a run that genuinely had no commit.
+
+### The rule
+
+**Provenance is captured once, in the parent, and passed to workers as
+data.** A worker that never asks a question cannot get an intermittent
+answer to it.
+
+```
+parent: configuration finalized
+     -> provenance.capture(repo_root)      <-- the only git invocation
+     -> validate; ProvenanceError aborts the run here
+     -> freeze immutable ExecutionProvenance
+     -> copy into every job payload
+     -> launch pool
+        worker -> ExecutionProvenance.from_dict(job["execution_provenance"])
+```
+
+`benchmark/runner.py` and `benchmark/a2_runner.py` no longer import
+`subprocess` and no longer define `_git`. Both facts are asserted by tests
+that parse the module AST, so the helper cannot quietly return.
+
+### The recorded fields
+
+```python
+@dataclass(frozen=True)
+class ExecutionProvenance:
+    git_commit: str                  # required, non-null by construction
+    tracked_worktree_clean: bool     # tracked files only
+    tracked_diff_sha256: str | None  # required iff the tracked tree is dirty
+    untracked_files_present: bool    # reported separately, never folded in
+```
+
+**Why tracked and untracked are separate.** The old single boolean came
+from `git status --porcelain`, which counts untracked files. This
+repository permanently carries two unrelated `.docx` files, so every A1 and
+A2 shard recorded `working_tree_clean: false` whether or not the scientific
+source had been touched — precisely when a cleanliness flag stops carrying
+information. `tracked_worktree_clean` now answers the question a reader
+actually has: did the source differ from the named commit?
+
+**Why a dirty tree names its diff.** `tracked_diff_sha256` makes the
+modification identifiable rather than merely present. Phase 6A.4 had to
+reconstruct by hand what a bare `false` meant on the A2 shards; with a diff
+identity that audit is a comparison.
+
+The diff identity is `sha256("molfusion_tracked_diff_v1" + US + normalized
+diff + "\n")`, over `git diff HEAD --no-color --no-ext-diff
+--ignore-submodules` with line endings normalized. Nothing volatile
+participates: git's diff output carries no timestamps, and its paths are
+repository-relative, so two checkouts of the same change agree — asserted
+by a test that clones the repository and re-derives the identity.
+
+### Fail loudly, at startup
+
+`provenance.capture()` raises `ProvenanceError` — it has no sentinel to
+return. An official run that cannot resolve its commit, inspect its tracked
+diff, or construct valid provenance **stops before the first scientific
+shard**. A run that cannot describe itself must not produce 6160 rows that
+nobody can attribute.
+
+### Mid-run source mutation
+
+`detect_source_mutation()` runs **once, at the end of a run — never per
+shard**. It re-captures and compares against the startup value; a changed
+commit, tracked cleanliness, or diff identity marks
+`source_mutation_check.violation` in the run report. An untracked file
+appearing is not a violation. The alternative is a report that quietly
+claims a single immutable execution state it did not have.
+
+### Invariants for new runs
+
+- every shard carries `environment.execution` with a non-null `git_commit`
+- shard-level provenance equals run-level provenance, byte for byte
+- `git` is invoked for capture exactly **once per run**, whatever the
+  worker count — tested with a real `ProcessPoolExecutor` at 1, 2 and 8
+  workers
+
+`SHARD_SCHEMA_VERSION` stays at **1** deliberately. It participates in
+`cell_identity`, which is a *scientific* identity; bumping it for a
+provenance change would alter scientific identities and invalidate 616
+completed shards for reuse. Provenance is versioned independently by
+`PROVENANCE_SCHEMA_VERSION`.
+
+### Historical audit
+
+`python -m molfusion_backend.benchmark.provenance_audit` writes
+`backend/benchmark_runs/provenance_audit.json`, separating:
+
+- **recorded** — what a shard literally contains, `null`s included
+- **reconstructed** — what the run provenance demonstrably was, argued from
+  the execution commit and the runner sources at it
+
+**Nothing is backfilled.** Writing an inferred commit into a shard would
+destroy the only evidence the defect existed and make a null shard
+indistinguishable from one that recorded its commit honestly. The audit is
+a claim *about* the raw data, stored beside it, and a test asserts it
+mutates no shard.

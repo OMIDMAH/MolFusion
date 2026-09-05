@@ -51,7 +51,12 @@ than reported once per molecule.
   later statistics, the matrix feature cache and its key, checkpoint/resume
   semantics, the two result digests (file versus scientific identity), how
   the worker count was measured rather than guessed, and the leakage guards
-  re-verified before every endpoint
+  re-verified before every endpoint. Its final section records the Phase
+  6A.5 execution-provenance contract: why worker-local git discovery wrote
+  `null` into 338 of 616 historical shards, the once-per-run parent capture
+  that replaced it, why tracked and untracked cleanliness are now separate
+  fields, the tracked-diff identity, the fail-at-startup policy, and the
+  historical audit that reports the gap without backfilling it
 - [`benchmark-analysis.md`](benchmark-analysis.md) — the Phase 6A.3 Track
   A1 analysis contract: why the endpoint is the statistical unit and the
   five seeds are not five observations, the formal review of the two 6A.2
