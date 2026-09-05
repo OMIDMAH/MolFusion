@@ -298,8 +298,8 @@
       "doi": "10.5281/zenodo.591637",
       "url": "https://www.rdkit.org",
       "type": "software",
-      "verified_via": "RDKit project documentation (rdkit/Docs/Book/Overview.md): the project states there is no RDKit publication and recommends citing the software with the Zenodo DOI for the version used",
-      "supports": "all cheminformatics computation; replace with the release-specific Zenodo DOI for version 2026.03.5 at submission"
+      "verified_via": "RDKit project documentation (rdkit/Docs/Book/Overview.md): the project states there is no RDKit publication and recommends citing the software with the Zenodo DOI for the version used. Checked at submission time (2026-09-05): the Zenodo RDKit series has no record for Release_2026_03_5 (API query returned zero results; the nearest published record is Release_2026_03_6, doi:10.5281/zenodo.22140358). The concept DOI is therefore retained, per the project's own recommendation, and no release DOI was invented.",
+      "supports": "all cheminformatics computation; concept DOI retained because no version-specific Zenodo record exists for the 2026.03.5 release actually used"
     },
     {
       "id": 16,

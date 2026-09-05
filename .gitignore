@@ -1,0 +1,9 @@
+
+# Generated Journal of Cheminformatics submission binaries (Phase 6C.6).
+# The Markdown source, bibliography, CSL, template assets, build scripts and
+# checklists are tracked; the .docx/.pdf they produce are build products,
+# regenerated deterministically by
+# `molfusion_backend.benchmark.submission_cli` (or by the pandoc Makefile),
+# and are not version-controlled.
+docs/manuscript/submission/**/*.docx
+docs/manuscript/submission/**/*.pdf

@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="626" viewBox="0 0 720 626" font-family="Helvetica, Arial, sans-serif">
+  <title>Figure 5 - endpoint rank stability</title>
+  <rect width="720" height="626" fill="#ffffff"/>
+  <text x="360" y="28" font-size="13" text-anchor="middle" fill="#1a1a1a" font-weight="bold">Rank agreement across the five A2 partitions (Kendall's W)</text>
+  <rect x="250" y="67" width="59.71" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="76" width="195.43" height="8" fill="#1b6ca8"/>
+  <text x="240" y="81" font-size="9.5" text-anchor="end" fill="#a33" font-weight="normal">herg</text>
+  <text x="638" y="81" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.16</text>
+  <rect x="250" y="89" width="65.14" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="98" width="137.89" height="8" fill="#1b6ca8"/>
+  <text x="240" y="103" font-size="9.5" text-anchor="end" fill="#a33" font-weight="normal">cyp2c9_substrate_carbonmangels</text>
+  <text x="638" y="103" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.17</text>
+  <rect x="250" y="111" width="79.26" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="120" width="108.57" height="8" fill="#1b6ca8"/>
+  <text x="240" y="125" font-size="9.5" text-anchor="end" fill="#a33" font-weight="normal">clearance_hepatocyte_az</text>
+  <text x="638" y="125" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.21</text>
+  <rect x="250" y="133" width="159.6" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="142" width="82.51" height="8" fill="#1b6ca8"/>
+  <text x="240" y="147" font-size="9.5" text-anchor="end" fill="#a33" font-weight="normal">cyp3a4_substrate_carbonmangels</text>
+  <text x="638" y="147" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.22</text>
+  <rect x="250" y="155" width="118.61" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="164" width="147.66" height="8" fill="#1b6ca8"/>
+  <text x="240" y="169" font-size="9.5" text-anchor="end" fill="#a33" font-weight="normal">cyp2d6_substrate_carbonmangels</text>
+  <text x="638" y="169" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.31</text>
+  <rect x="250" y="177" width="213.61" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="186" width="125.94" height="8" fill="#1b6ca8"/>
+  <text x="240" y="191" font-size="9.5" text-anchor="end" fill="#a33" font-weight="normal">bioavailability_ma</text>
+  <text x="638" y="191" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.33</text>
+  <rect x="250" y="199" width="343.09" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="208" width="130.29" height="8" fill="#1b6ca8"/>
+  <text x="240" y="213" font-size="9.5" text-anchor="end" fill="#6b7280" font-weight="normal">vdss_lombardo</text>
+  <text x="638" y="213" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.34</text>
+  <rect x="250" y="221" width="352.86" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="230" width="141.14" height="8" fill="#1b6ca8"/>
+  <text x="240" y="235" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">half_life_obach</text>
+  <text x="638" y="235" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.37</text>
+  <rect x="250" y="243" width="200.86" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="252" width="254.06" height="8" fill="#1b6ca8"/>
+  <text x="240" y="257" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">bbb_martins</text>
+  <text x="638" y="257" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.53</text>
+  <rect x="250" y="265" width="313.77" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="274" width="210.63" height="8" fill="#1b6ca8"/>
+  <text x="240" y="279" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">pgp_broccatelli</text>
+  <text x="638" y="279" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.55</text>
+  <rect x="250" y="287" width="350.69" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="296" width="219.31" height="8" fill="#1b6ca8"/>
+  <text x="240" y="301" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">cyp2c9_veith</text>
+  <text x="638" y="301" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.58</text>
+  <rect x="250" y="309" width="230.17" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="318" width="248.63" height="8" fill="#1b6ca8"/>
+  <text x="240" y="323" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">hia_hou</text>
+  <text x="638" y="323" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.61</text>
+  <rect x="250" y="331" width="232.34" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="340" width="234.51" height="8" fill="#1b6ca8"/>
+  <text x="240" y="345" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">clearance_microsome_az</text>
+  <text x="638" y="345" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.61</text>
+  <rect x="250" y="353" width="241.03" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="362" width="347.43" height="8" fill="#1b6ca8"/>
+  <text x="240" y="367" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">caco2_wang</text>
+  <text x="638" y="367" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.63</text>
+  <rect x="250" y="375" width="248.9" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="384" width="259.49" height="8" fill="#1b6ca8"/>
+  <text x="240" y="389" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">dili</text>
+  <text x="638" y="389" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.66</text>
+  <rect x="250" y="397" width="353.94" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="406" width="292.06" height="8" fill="#1b6ca8"/>
+  <text x="240" y="411" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">lipophilicity_astrazeneca</text>
+  <text x="638" y="411" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.77</text>
+  <rect x="250" y="419" width="311.6" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="428" width="344.17" height="8" fill="#1b6ca8"/>
+  <text x="240" y="433" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">ppbr_az</text>
+  <text x="638" y="433" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.82</text>
+  <rect x="250" y="441" width="375.66" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="450" width="321.37" height="8" fill="#1b6ca8"/>
+  <text x="240" y="455" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">ames</text>
+  <text x="638" y="455" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.85</text>
+  <rect x="250" y="463" width="338.74" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="472" width="352.86" height="8" fill="#1b6ca8"/>
+  <text x="240" y="477" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">ld50_zhu</text>
+  <text x="638" y="477" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.89</text>
+  <rect x="250" y="485" width="370.23" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="494" width="342" height="8" fill="#1b6ca8"/>
+  <text x="240" y="499" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">cyp2d6_veith</text>
+  <text x="638" y="499" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.90</text>
+  <rect x="250" y="507" width="366.97" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="516" width="375.66" height="8" fill="#1b6ca8"/>
+  <text x="240" y="521" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">cyp3a4_veith</text>
+  <text x="638" y="521" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.97</text>
+  <rect x="250" y="529" width="380" height="8" fill="#8aa9c9"/>
+  <rect x="250" y="538" width="366.97" height="8" fill="#1b6ca8"/>
+  <text x="240" y="543" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">solubility_aqsoldb</text>
+  <text x="638" y="543" font-size="9" text-anchor="start" fill="#6b7280" font-weight="normal">0.97</text>
+  <line x1="383" y1="60" x2="383" y2="550" stroke="#a33" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="388" y="56" font-size="9" text-anchor="start" fill="#a33" font-weight="normal">W = 0.35</text>
+  <text x="50" y="586" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">Light bar = linear probe, dark bar = nonlinear probe. Endpoints below the threshold on their weaker probe (red labels) do not support per-endpoint claims;</text>
+  <text x="50" y="601" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">they are retained in all cross-endpoint analyses.</text>
+</svg>

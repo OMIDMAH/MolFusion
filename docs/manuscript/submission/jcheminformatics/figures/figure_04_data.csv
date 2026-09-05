@@ -1,0 +1,8 @@
+representation,dimension,feature_seconds,linear_model_seconds,nonlinear_model_seconds,total_model_seconds,share_of_nonlinear_model_seconds,relative_nonlinear_cost,a2_nonlinear_model_seconds,nonlinear_mean_rank,a1_nonlinear_mean_rank
+rdkit_physchem_descriptors,217,4050.8,124.5,4998.7,5123.2,0.0954,1.5,21474.6,1.77,1.91
+smiles_tfidf_4096,4096,160.4,1332.8,18539.3,19872.1,0.3536,5.57,73119.3,3.05,4.14
+maccs_keys_167,167,430.4,81.1,4261.2,4342.3,0.0813,1.28,20236.3,4.14,4.14
+avalon_1024,1024,449.2,385.3,6267.6,6652.9,0.1196,1.88,27260.6,4.18,3.68
+morgan_ecfp4_1024,1024,105.5,298.1,11580.1,11878.2,0.2209,3.48,49618.7,4.68,5.05
+erg_reduced_graph_315,315,185.6,116.6,3449.5,3566.2,0.0658,1.04,18423.6,4.77,4.27
+rdkit_fragment_descriptors,85,342.0,31.8,3326.9,3358.6,0.0635,1.0,27499.7,5.41,4.82

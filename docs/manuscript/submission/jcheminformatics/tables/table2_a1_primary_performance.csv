@@ -1,0 +1,8 @@
+representation,category,linear_mean_rank,nonlinear_mean_rank,linear_classification_rank,nonlinear_classification_rank,linear_regression_rank,nonlinear_regression_rank,linear_wins_22,nonlinear_wins_22,linear_top3_22,nonlinear_top3_22
+rdkit_physchem_descriptors,physicochemical descriptors,3.14,1.91,2.0,1.77,4.78,2.11,6,12,15,20
+smiles_tfidf_4096,SMILES n-gram TF-IDF,2.55,4.14,3.38,4.62,1.33,3.44,11,4,16,9
+maccs_keys_167,substructure key fingerprint,4.45,4.14,4.92,4.15,3.78,4.11,1,1,7,9
+avalon_1024,substructure fingerprint,3.73,3.68,3.62,3.08,3.89,4.56,3,2,8,13
+morgan_ecfp4_1024,circular fingerprint,3.82,5.05,3.85,5.0,3.78,5.11,0,0,9,3
+erg_reduced_graph_315,reduced-graph features,5.41,4.27,5.23,4.46,5.67,4.0,0,2,4,8
+rdkit_fragment_descriptors,fragment counts,4.91,4.82,5.0,4.92,4.78,4.67,1,1,7,4

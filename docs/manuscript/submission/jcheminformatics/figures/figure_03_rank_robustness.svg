@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="452" viewBox="0 0 1050 452" font-family="Helvetica, Arial, sans-serif">
+  <title>Figure 3 - A1 to A2 rank robustness</title>
+  <rect width="1050" height="452" fill="#ffffff"/>
+  <text x="285" y="30" font-size="13" text-anchor="middle" fill="#1a1a1a" font-weight="bold">linear probe</text>
+  <text x="190" y="54" font-size="11" text-anchor="middle" fill="#6b7280" font-weight="bold">A1</text>
+  <text x="380" y="54" font-size="11" text-anchor="middle" fill="#6b7280" font-weight="bold">A2</text>
+  <line x1="190" y1="231" x2="380" y2="93" stroke="#2e7d5b" stroke-width="2.6" opacity="0.9"/>
+  <circle cx="190" cy="231" r="4" fill="#2e7d5b"/>
+  <circle cx="380" cy="93" r="4" fill="#2e7d5b"/>
+  <text x="180" y="235" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">4. Morgan ECFP4 (1024)</text>
+  <text x="390" y="97" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">1  (+3)</text>
+  <line x1="190" y1="93" x2="380" y2="139" stroke="#c1441e" stroke-width="2.6" opacity="0.9"/>
+  <circle cx="190" cy="93" r="4" fill="#c1441e"/>
+  <circle cx="380" cy="139" r="4" fill="#c1441e"/>
+  <text x="180" y="97" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">1. SMILES TF-IDF (4096)</text>
+  <text x="390" y="143" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">2  (-1)</text>
+  <line x1="190" y1="185" x2="380" y2="185" stroke="#7a5195" stroke-width="1.4" stroke-dasharray="4 3" opacity="0.9"/>
+  <circle cx="190" cy="185" r="4" fill="#7a5195"/>
+  <circle cx="380" cy="185" r="4" fill="#7a5195"/>
+  <text x="180" y="189" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">3. Avalon (1024)</text>
+  <text x="390" y="189" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">3</text>
+  <line x1="190" y1="139" x2="380" y2="231" stroke="#1b6ca8" stroke-width="2.6" opacity="0.9"/>
+  <circle cx="190" cy="139" r="4" fill="#1b6ca8"/>
+  <circle cx="380" cy="231" r="4" fill="#1b6ca8"/>
+  <text x="180" y="143" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">2. physchem (217)</text>
+  <text x="390" y="235" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">4  (-2)</text>
+  <line x1="190" y1="277" x2="380" y2="277" stroke="#bc8034" stroke-width="1.4" stroke-dasharray="4 3" opacity="0.9"/>
+  <circle cx="190" cy="277" r="4" fill="#bc8034"/>
+  <circle cx="380" cy="277" r="4" fill="#bc8034"/>
+  <text x="180" y="281" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">5. MACCS (167)</text>
+  <text x="390" y="281" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">5</text>
+  <line x1="190" y1="323" x2="380" y2="323" stroke="#94708c" stroke-width="1.4" stroke-dasharray="4 3" opacity="0.9"/>
+  <circle cx="190" cy="323" r="4" fill="#94708c"/>
+  <circle cx="380" cy="323" r="4" fill="#94708c"/>
+  <text x="180" y="327" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">6. fragments (85)</text>
+  <text x="390" y="327" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">6</text>
+  <line x1="190" y1="369" x2="380" y2="369" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="4 3" opacity="0.9"/>
+  <circle cx="190" cy="369" r="4" fill="#6b7280"/>
+  <circle cx="380" cy="369" r="4" fill="#6b7280"/>
+  <text x="180" y="373" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">7. ErG (315)</text>
+  <text x="390" y="373" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">7</text>
+  <text x="685" y="30" font-size="13" text-anchor="middle" fill="#1a1a1a" font-weight="bold">nonlinear probe</text>
+  <text x="590" y="54" font-size="11" text-anchor="middle" fill="#6b7280" font-weight="bold">A1</text>
+  <text x="780" y="54" font-size="11" text-anchor="middle" fill="#6b7280" font-weight="bold">A2</text>
+  <line x1="590" y1="93" x2="780" y2="93" stroke="#1b6ca8" stroke-width="1.4" stroke-dasharray="4 3" opacity="0.9"/>
+  <circle cx="590" cy="93" r="4" fill="#1b6ca8"/>
+  <circle cx="780" cy="93" r="4" fill="#1b6ca8"/>
+  <text x="580" y="97" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">1. physchem (217)</text>
+  <text x="790" y="97" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">1</text>
+  <line x1="590" y1="231" x2="780" y2="139" stroke="#c1441e" stroke-width="2.6" opacity="0.9"/>
+  <circle cx="590" cy="231" r="4" fill="#c1441e"/>
+  <circle cx="780" cy="139" r="4" fill="#c1441e"/>
+  <text x="580" y="235" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">4. SMILES TF-IDF (4096)</text>
+  <text x="790" y="143" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">2  (+2)</text>
+  <line x1="590" y1="185" x2="780" y2="185" stroke="#bc8034" stroke-width="1.4" stroke-dasharray="4 3" opacity="0.9"/>
+  <circle cx="590" cy="185" r="4" fill="#bc8034"/>
+  <circle cx="780" cy="185" r="4" fill="#bc8034"/>
+  <text x="580" y="189" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">3. MACCS (167)</text>
+  <text x="790" y="189" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">3</text>
+  <line x1="590" y1="139" x2="780" y2="231" stroke="#7a5195" stroke-width="2.6" opacity="0.9"/>
+  <circle cx="590" cy="139" r="4" fill="#7a5195"/>
+  <circle cx="780" cy="231" r="4" fill="#7a5195"/>
+  <text x="580" y="143" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">2. Avalon (1024)</text>
+  <text x="790" y="235" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">4  (-2)</text>
+  <line x1="590" y1="369" x2="780" y2="277" stroke="#2e7d5b" stroke-width="2.6" opacity="0.9"/>
+  <circle cx="590" cy="369" r="4" fill="#2e7d5b"/>
+  <circle cx="780" cy="277" r="4" fill="#2e7d5b"/>
+  <text x="580" y="373" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">7. Morgan ECFP4 (1024)</text>
+  <text x="790" y="281" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">5  (+2)</text>
+  <line x1="590" y1="277" x2="780" y2="323" stroke="#6b7280" stroke-width="2.6" opacity="0.9"/>
+  <circle cx="590" cy="277" r="4" fill="#6b7280"/>
+  <circle cx="780" cy="323" r="4" fill="#6b7280"/>
+  <text x="580" y="281" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">5. ErG (315)</text>
+  <text x="790" y="327" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">6  (-1)</text>
+  <line x1="590" y1="323" x2="780" y2="369" stroke="#94708c" stroke-width="2.6" opacity="0.9"/>
+  <circle cx="590" cy="323" r="4" fill="#94708c"/>
+  <circle cx="780" cy="369" r="4" fill="#94708c"/>
+  <text x="580" y="327" font-size="9.5" text-anchor="end" fill="#1a1a1a" font-weight="normal">6. fragments (85)</text>
+  <text x="790" y="373" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">7  (-1)</text>
+  <text x="90" y="430" font-size="9.5" text-anchor="start" fill="#6b7280" font-weight="normal">Position by mean rank, 1 = best. A1 = official TDC partition (primary); A2 = MolFusion scaffold repartitioning (supplementary). Dashed = unchanged.</text>
+</svg>
