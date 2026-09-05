@@ -521,11 +521,13 @@ comparisons used the **paired Wilcoxon signed-rank test**
 [CITATION: Wilcoxon signed-rank test] over endpoint-level scores, with
 **Holm correction** [CITATION: Holm correction] applied across the pairwise
 family. Every pairwise result is reported with its **matched-pairs
-rank-biserial correlation** as an effect size; significance is never
+rank-biserial correlation** [CITATION: rank-biserial effect size] as an
+effect size; significance is never
 reported without magnitude and direction.
 
 **Bootstrap intervals.** Uncertainty in cross-endpoint mean rank was
-characterised by a nonparametric bootstrap with **10,000 resamples**, a
+characterised by a nonparametric bootstrap [CITATION: bootstrap] with
+**10,000 resamples**, a
 fixed random seed of **0**, and the **endpoint** as the resampling unit,
 consistent with the unit of inference. These intervals are marginal
 per-representation intervals, not a simultaneous band. They are used for

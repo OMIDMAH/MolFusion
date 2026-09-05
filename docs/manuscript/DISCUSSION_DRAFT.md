@@ -72,6 +72,18 @@ supports a claim that physicochemical descriptors carry more molecular
 information than circular fingerprints, substructure keys, reduced-graph
 features or SMILES n-gram statistics.
 
+Physicochemical descriptors have a long history in molecular property
+prediction, where molecular size, lipophilicity, polarity and
+hydrogen-bonding capacity are computed directly as interpretable
+quantities [CITATION: molecular descriptors]. Fingerprint representations
+encode a different kind of information, recording the presence of local
+substructures or substructural environments, and the choice among them is
+known to affect downstream performance [CITATION: molecular fingerprints].
+Learned molecular representations pursue a third strategy, adapting the
+encoding to the task rather than specifying it in advance
+[CITATION: representation learning]; they were not part of this benchmark
+and no comparison with them is made here.
+
 Why a compact continuous descriptor set should be well matched to a
 histogram-based gradient-boosting probe is not something this study tested,
 and any explanation offered here is a hypothesis rather than a finding. One
@@ -212,7 +224,14 @@ First, a representation benchmark should specify the downstream probe as
 part of its result. A ranking obtained under one model family did not
 transfer to another here, in either evaluation track, so a single model
 family gives an incomplete picture of comparative representation utility
-[CITATION: representation learning].
+[CITATION: representation learning]. Standardised benchmark collections
+have substantially improved comparability by fixing datasets, metrics and
+splits [CITATION: TDC ADMET], and earlier benchmarking work established
+that featurisation and splitting choices materially affect the conclusions
+drawn from molecular machine learning comparisons
+[CITATION: molecular benchmarking]. A benchmark constrains only what it
+specifies, however, and the downstream model family is frequently left to
+vary alongside the representation.
 
 Second, comparability with an official benchmark partition and robustness
 under repartitioning answer different questions, and both are useful. The

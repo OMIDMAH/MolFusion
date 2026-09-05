@@ -1,0 +1,597 @@
+{
+  "schema": "molfusion_references_v1",
+  "numbering": "alphabetical by first-author surname; renumber to journal style at submission",
+  "verified_on": "2026-09-05",
+  "verification_policy": "Every entry was checked against a publisher page, the Crossref API, or the project's own recommended citation. No bibliographic field was filled from memory.",
+  "references": [
+    {
+      "id": 1,
+      "key": "bemis1996",
+      "authors": [
+        "Bemis, G. W.",
+        "Murcko, M. A."
+      ],
+      "title": "The Properties of Known Drugs. 1. Molecular Frameworks",
+      "container": "Journal of Medicinal Chemistry",
+      "year": 1996,
+      "volume": "39",
+      "issue": "15",
+      "pages": "2887-2893",
+      "doi": "10.1021/jm9602928",
+      "type": "primary",
+      "verified_via": "ACS publisher page (pubs.acs.org/doi/10.1021/jm9602928)",
+      "supports": "Bemis-Murcko molecular framework (scaffold) definition"
+    },
+    {
+      "id": 2,
+      "key": "ceretomassague2015",
+      "authors": [
+        "Cereto-Massague, A.",
+        "Ojeda, M. J.",
+        "Valls, C.",
+        "Mulero, M.",
+        "Garcia-Vallve, S.",
+        "Pujadas, G."
+      ],
+      "title": "Molecular fingerprint similarity search in virtual screening",
+      "container": "Methods",
+      "year": 2015,
+      "volume": "71",
+      "issue": "",
+      "pages": "58-63",
+      "doi": "10.1016/j.ymeth.2014.08.005",
+      "pmid": "25132639",
+      "type": "review",
+      "verified_via": "ScienceDirect publisher page; PubMed 25132639",
+      "supports": "fingerprints encode different structural aspects, and the choice of fingerprint affects performance"
+    },
+    {
+      "id": 3,
+      "key": "david2020",
+      "authors": [
+        "David, L.",
+        "Thakkar, A.",
+        "Mercado, R.",
+        "Engkvist, O."
+      ],
+      "title": "Molecular representations in AI-driven drug discovery: a review and practical guide",
+      "container": "Journal of Cheminformatics",
+      "year": 2020,
+      "volume": "12",
+      "issue": "1",
+      "pages": "56",
+      "doi": "10.1186/s13321-020-00460-5",
+      "pmid": "33431035",
+      "type": "review",
+      "verified_via": "PMC7495975; PubMed 33431035",
+      "supports": "landscape of molecular representations and their role in molecular machine learning"
+    },
+    {
+      "id": 4,
+      "key": "demsar2006",
+      "authors": [
+        "Demsar, J."
+      ],
+      "title": "Statistical Comparisons of Classifiers over Multiple Data Sets",
+      "container": "Journal of Machine Learning Research",
+      "year": 2006,
+      "volume": "7",
+      "issue": "1",
+      "pages": "1-30",
+      "doi": "",
+      "type": "primary",
+      "verified_via": "JMLR official BibTeX at jmlr.org/papers/v7/demsar06a.bib",
+      "supports": "Friedman omnibus followed by corrected post-hoc tests when comparing methods across multiple datasets"
+    },
+    {
+      "id": 5,
+      "key": "durant2002",
+      "authors": [
+        "Durant, J. L.",
+        "Leland, B. A.",
+        "Henry, D. R.",
+        "Nourse, J. G."
+      ],
+      "title": "Reoptimization of MDL Keys for Use in Drug Discovery",
+      "container": "Journal of Chemical Information and Computer Sciences",
+      "year": 2002,
+      "volume": "42",
+      "issue": "6",
+      "pages": "1273-1280",
+      "doi": "10.1021/ci010132r",
+      "pmid": "12444722",
+      "type": "primary",
+      "verified_via": "PubMed 12444722; ACS publisher page",
+      "supports": "MDL/MACCS structural key sets"
+    },
+    {
+      "id": 6,
+      "key": "efron1979",
+      "authors": [
+        "Efron, B."
+      ],
+      "title": "Bootstrap Methods: Another Look at the Jackknife",
+      "container": "The Annals of Statistics",
+      "year": 1979,
+      "volume": "7",
+      "issue": "1",
+      "pages": "1-26",
+      "doi": "10.1214/aos/1176344552",
+      "type": "primary",
+      "verified_via": "Project Euclid record",
+      "supports": "nonparametric bootstrap resampling"
+    },
+    {
+      "id": 7,
+      "key": "friedman1937",
+      "authors": [
+        "Friedman, M."
+      ],
+      "title": "The Use of Ranks to Avoid the Assumption of Normality Implicit in the Analysis of Variance",
+      "container": "Journal of the American Statistical Association",
+      "year": 1937,
+      "volume": "32",
+      "issue": "200",
+      "pages": "675-701",
+      "doi": "10.1080/01621459.1937.10503522",
+      "type": "primary",
+      "verified_via": "Taylor & Francis publisher page",
+      "supports": "Friedman rank-based omnibus test"
+    },
+    {
+      "id": 8,
+      "key": "gedeck2006",
+      "authors": [
+        "Gedeck, P.",
+        "Rohde, B.",
+        "Bartels, C."
+      ],
+      "title": "QSAR - How Good Is It in Practice? Comparison of Descriptor Sets on an Unbiased Cross Section of Corporate Data Sets",
+      "container": "Journal of Chemical Information and Modeling",
+      "year": 2006,
+      "volume": "46",
+      "issue": "5",
+      "pages": "1924-1936",
+      "doi": "10.1021/ci050413p",
+      "type": "primary",
+      "verified_via": "ACS publisher page; the Avalon fingerprint is described in this paper's supporting information, which is the citation the RDKit documentation points to",
+      "supports": "Avalon fingerprint"
+    },
+    {
+      "id": 9,
+      "key": "holm1979",
+      "authors": [
+        "Holm, S."
+      ],
+      "title": "A Simple Sequentially Rejective Multiple Test Procedure",
+      "container": "Scandinavian Journal of Statistics",
+      "year": 1979,
+      "volume": "6",
+      "issue": "2",
+      "pages": "65-70",
+      "doi": "",
+      "jstor": "4615733",
+      "type": "primary",
+      "verified_via": "JSTOR record; no DOI is assigned to this article",
+      "supports": "Holm step-down multiple-comparison correction"
+    },
+    {
+      "id": 10,
+      "key": "huang2021",
+      "authors": [
+        "Huang, K.",
+        "Fu, T.",
+        "Gao, W.",
+        "Zhao, Y.",
+        "Roohani, Y.",
+        "Leskovec, J.",
+        "Coley, C. W.",
+        "Xiao, C.",
+        "Sun, J.",
+        "Zitnik, M."
+      ],
+      "title": "Therapeutics Data Commons: Machine Learning Datasets and Tasks for Drug Discovery and Development",
+      "container": "Proceedings of the Neural Information Processing Systems Track on Datasets and Benchmarks",
+      "year": 2021,
+      "volume": "",
+      "issue": "",
+      "pages": "",
+      "arxiv": "2102.09548",
+      "type": "primary",
+      "verified_via": "arXiv 2102.09548; matches the citation published by the TDC project itself",
+      "supports": "TDC dataset collection and benchmark task definitions, including the ADMET benchmark group"
+    },
+    {
+      "id": 11,
+      "key": "huang2022",
+      "authors": [
+        "Huang, K.",
+        "Fu, T.",
+        "Gao, W.",
+        "Zhao, Y.",
+        "Roohani, Y.",
+        "Leskovec, J.",
+        "Coley, C. W.",
+        "Xiao, C.",
+        "Sun, J.",
+        "Zitnik, M."
+      ],
+      "title": "Artificial intelligence foundation for therapeutic science",
+      "container": "Nature Chemical Biology",
+      "year": 2022,
+      "volume": "18",
+      "issue": "10",
+      "pages": "1033-1036",
+      "doi": "10.1038/s41589-022-01131-2",
+      "type": "primary",
+      "verified_via": "Crossref API (full record retrieved)",
+      "supports": "primary peer-reviewed Therapeutics Data Commons publication"
+    },
+    {
+      "id": 12,
+      "key": "kendall1939",
+      "authors": [
+        "Kendall, M. G.",
+        "Babington Smith, B."
+      ],
+      "title": "The Problem of m Rankings",
+      "container": "The Annals of Mathematical Statistics",
+      "year": 1939,
+      "volume": "10",
+      "issue": "3",
+      "pages": "275-287",
+      "doi": "10.1214/aoms/1177732186",
+      "type": "primary",
+      "verified_via": "Crossref API (bibliographic query, exact match)",
+      "supports": "Kendall coefficient of concordance (W)"
+    },
+    {
+      "id": 13,
+      "key": "kerby2014",
+      "authors": [
+        "Kerby, D. S."
+      ],
+      "title": "The Simple Difference Formula: An Approach to Teaching Nonparametric Correlation",
+      "container": "Comprehensive Psychology",
+      "year": 2014,
+      "volume": "3",
+      "issue": "",
+      "pages": "11.IT.3.1",
+      "doi": "10.2466/11.IT.3.1",
+      "type": "primary",
+      "verified_via": "SAGE publisher page (journals.sagepub.com/doi/10.2466/11.IT.3.1)",
+      "supports": "matched-pairs rank-biserial correlation as a nonparametric effect size"
+    },
+    {
+      "id": 14,
+      "key": "krenn2020",
+      "authors": [
+        "Krenn, M.",
+        "Hase, F.",
+        "Nigam, A.",
+        "Friederich, P.",
+        "Aspuru-Guzik, A."
+      ],
+      "title": "Self-referencing embedded strings (SELFIES): A 100% robust molecular string representation",
+      "container": "Machine Learning: Science and Technology",
+      "year": 2020,
+      "volume": "1",
+      "issue": "4",
+      "pages": "045024",
+      "doi": "10.1088/2632-2153/aba947",
+      "type": "primary",
+      "verified_via": "Crossref API (full record retrieved); IOPscience",
+      "supports": "SELFIES robust molecular string representation"
+    },
+    {
+      "id": 15,
+      "key": "rdkit",
+      "authors": [
+        "Landrum, G."
+      ],
+      "title": "RDKit: Open-source cheminformatics",
+      "container": "Software",
+      "year": null,
+      "volume": "",
+      "issue": "",
+      "pages": "",
+      "doi": "10.5281/zenodo.591637",
+      "url": "https://www.rdkit.org",
+      "type": "software",
+      "verified_via": "RDKit project documentation (rdkit/Docs/Book/Overview.md): the project states there is no RDKit publication and recommends citing the software with the Zenodo DOI for the version used",
+      "supports": "all cheminformatics computation; replace with the release-specific Zenodo DOI for version 2026.03.5 at submission"
+    },
+    {
+      "id": 16,
+      "key": "morgan1965",
+      "authors": [
+        "Morgan, H. L."
+      ],
+      "title": "The Generation of a Unique Machine Description for Chemical Structures - A Technique Developed at Chemical Abstracts Service",
+      "container": "Journal of Chemical Documentation",
+      "year": 1965,
+      "volume": "5",
+      "issue": "2",
+      "pages": "107-113",
+      "doi": "10.1021/c160017a018",
+      "type": "primary",
+      "verified_via": "ACS record via DOI 10.1021/c160017a018; Wikidata Q28837925",
+      "supports": "the Morgan atom-relaxation algorithm from which circular fingerprints derive; distinct from the ECFP formulation"
+    },
+    {
+      "id": 17,
+      "key": "pedregosa2011",
+      "authors": [
+        "Pedregosa, F.",
+        "Varoquaux, G.",
+        "Gramfort, A.",
+        "Michel, V.",
+        "Thirion, B.",
+        "Grisel, O.",
+        "Blondel, M.",
+        "Prettenhofer, P.",
+        "Weiss, R.",
+        "Dubourg, V.",
+        "Vanderplas, J.",
+        "Passos, A.",
+        "Cournapeau, D.",
+        "Brucher, M.",
+        "Perrot, M.",
+        "Duchesnay, E."
+      ],
+      "title": "Scikit-learn: Machine Learning in Python",
+      "container": "Journal of Machine Learning Research",
+      "year": 2011,
+      "volume": "12",
+      "issue": "",
+      "pages": "2825-2830",
+      "doi": "",
+      "type": "software",
+      "verified_via": "scikit-learn project citation page; dblp record; ACM DL 10.5555/1953048.2078195",
+      "supports": "logistic regression, ridge regression, histogram-based gradient boosting, pipeline and preprocessing implementations"
+    },
+    {
+      "id": 18,
+      "key": "rogers2010",
+      "authors": [
+        "Rogers, D.",
+        "Hahn, M."
+      ],
+      "title": "Extended-Connectivity Fingerprints",
+      "container": "Journal of Chemical Information and Modeling",
+      "year": 2010,
+      "volume": "50",
+      "issue": "5",
+      "pages": "742-754",
+      "doi": "10.1021/ci100050t",
+      "pmid": "20426451",
+      "type": "primary",
+      "verified_via": "ACS publisher page; PubMed 20426451",
+      "supports": "extended-connectivity (ECFP) circular fingerprints"
+    },
+    {
+      "id": 19,
+      "key": "stiefl2006",
+      "authors": [
+        "Stiefl, N.",
+        "Watson, I. A.",
+        "Baumann, K.",
+        "Zaliani, A."
+      ],
+      "title": "ErG: 2D Pharmacophore Descriptions for Scaffold Hopping",
+      "container": "Journal of Chemical Information and Modeling",
+      "year": 2006,
+      "volume": "46",
+      "issue": "1",
+      "pages": "208-220",
+      "doi": "10.1021/ci050457y",
+      "pmid": "16426057",
+      "type": "primary",
+      "verified_via": "ACS publisher page; PubMed 16426057",
+      "supports": "extended reduced graph (ErG) pharmacophore-type representation"
+    },
+    {
+      "id": 20,
+      "key": "todeschini2009",
+      "authors": [
+        "Todeschini, R.",
+        "Consonni, V."
+      ],
+      "title": "Molecular Descriptors for Chemoinformatics",
+      "container": "Wiley-VCH, Weinheim",
+      "year": 2009,
+      "volume": "",
+      "issue": "",
+      "pages": "",
+      "isbn": "978-3-527-31852-0",
+      "type": "book",
+      "verified_via": "Wiley-VCH publisher page",
+      "supports": "definition and scope of physicochemical and constitutional molecular descriptors"
+    },
+    {
+      "id": 21,
+      "key": "virtanen2020",
+      "authors": [
+        "Virtanen, P.",
+        "Gommers, R.",
+        "Oliphant, T. E.",
+        "Haberland, M.",
+        "Reddy, T.",
+        "Cournapeau, D.",
+        "et al."
+      ],
+      "title": "SciPy 1.0: fundamental algorithms for scientific computing in Python",
+      "container": "Nature Methods",
+      "year": 2020,
+      "volume": "17",
+      "issue": "3",
+      "pages": "261-272",
+      "doi": "10.1038/s41592-019-0686-2",
+      "pmid": "32015543",
+      "type": "software",
+      "verified_via": "Nature publisher page; PubMed 32015543",
+      "supports": "statistical computation (Friedman, Wilcoxon, Spearman)"
+    },
+    {
+      "id": 22,
+      "key": "weininger1988",
+      "authors": [
+        "Weininger, D."
+      ],
+      "title": "SMILES, a chemical language and information system. 1. Introduction to methodology and encoding rules",
+      "container": "Journal of Chemical Information and Computer Sciences",
+      "year": 1988,
+      "volume": "28",
+      "issue": "1",
+      "pages": "31-36",
+      "doi": "10.1021/ci00057a005",
+      "type": "primary",
+      "verified_via": "ACS publisher page",
+      "supports": "SMILES line notation"
+    },
+    {
+      "id": 23,
+      "key": "wilcoxon1945",
+      "authors": [
+        "Wilcoxon, F."
+      ],
+      "title": "Individual Comparisons by Ranking Methods",
+      "container": "Biometrics Bulletin",
+      "year": 1945,
+      "volume": "1",
+      "issue": "6",
+      "pages": "80-83",
+      "doi": "10.2307/3001968",
+      "type": "primary",
+      "verified_via": "JSTOR DOI record",
+      "supports": "Wilcoxon signed-rank test"
+    },
+    {
+      "id": 24,
+      "key": "wu2018",
+      "authors": [
+        "Wu, Z.",
+        "Ramsundar, B.",
+        "Feinberg, E. N.",
+        "Gomes, J.",
+        "Geniesse, C.",
+        "Pappu, A. S.",
+        "Leswing, K.",
+        "Pande, V."
+      ],
+      "title": "MoleculeNet: a benchmark for molecular machine learning",
+      "container": "Chemical Science",
+      "year": 2018,
+      "volume": "9",
+      "issue": "2",
+      "pages": "513-530",
+      "doi": "10.1039/c7sc02664a",
+      "pmid": "29629118",
+      "type": "primary",
+      "verified_via": "Crossref API (full record retrieved); RSC publisher page",
+      "supports": "benchmark datasets, evaluation metrics and featurization/splitting choices in molecular machine learning"
+    },
+    {
+      "id": 25,
+      "key": "zdrazil2024",
+      "authors": [
+        "Zdrazil, B.",
+        "Felix, E.",
+        "Hunter, F.",
+        "Manners, E. J.",
+        "Blackshaw, J.",
+        "Corbett, S.",
+        "et al."
+      ],
+      "title": "The ChEMBL Database in 2023: a drug discovery platform spanning multiple bioactivity data types and time periods",
+      "container": "Nucleic Acids Research",
+      "year": 2024,
+      "volume": "52",
+      "issue": "D1",
+      "pages": "D1180-D1192",
+      "doi": "10.1093/nar/gkad1004",
+      "type": "primary",
+      "verified_via": "Oxford Academic publisher page",
+      "supports": "ChEMBL bioactivity database, the source of the frozen TF-IDF fitting corpus"
+    }
+  ],
+  "placeholder_resolution": {
+    "TDC": [
+      10,
+      11
+    ],
+    "TDC ADMET": [
+      10,
+      11
+    ],
+    "TDC; TDC ADMET": [
+      10,
+      11
+    ],
+    "RDKit": [
+      15
+    ],
+    "Morgan fingerprint; ECFP": [
+      16,
+      18
+    ],
+    "MACCS keys": [
+      5
+    ],
+    "Avalon": [
+      8
+    ],
+    "ErG": [
+      19
+    ],
+    "Bemis-Murcko scaffold": [
+      1
+    ],
+    "SMILES": [
+      22
+    ],
+    "SELFIES": [
+      14
+    ],
+    "ChEMBL": [
+      25
+    ],
+    "scikit-learn": [
+      17
+    ],
+    "SciPy": [
+      21
+    ],
+    "Friedman test": [
+      7,
+      4
+    ],
+    "Wilcoxon signed-rank test": [
+      23
+    ],
+    "Holm correction": [
+      9
+    ],
+    "Kendall's W": [
+      12
+    ],
+    "molecular descriptors": [
+      20
+    ],
+    "molecular fingerprints": [
+      2
+    ],
+    "representation learning": [
+      3
+    ],
+    "rank-biserial effect size": [
+      13
+    ],
+    "bootstrap": [
+      6
+    ],
+    "molecular benchmarking": [
+      24
+    ]
+  }
+}

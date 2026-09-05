@@ -100,7 +100,19 @@ than reported once per molecule.
   which classifies each interpretive paragraph as evidence, inference,
   hypothesis, methodological or limitation, and records the
   confidence-interval verification that confirmed the Results draft needed
-  no correction
+  no correction. Phase 6C.5 completes the manuscript:
+  [`INTRODUCTION_DRAFT.md`](manuscript/INTRODUCTION_DRAFT.md),
+  [`FIGURE_CAPTIONS.md`](manuscript/FIGURE_CAPTIONS.md),
+  [`TABLE_CAPTIONS.md`](manuscript/TABLE_CAPTIONS.md), a verified
+  bibliography ([`references.json`](manuscript/references.json) as the
+  structured source of truth, rendered to
+  [`REFERENCES.md`](manuscript/REFERENCES.md), with per-reference
+  verification recorded in
+  [`REFERENCE_EVIDENCE_MAP.md`](manuscript/REFERENCE_EVIDENCE_MAP.md)), the
+  assembled [`MANUSCRIPT_DRAFT.md`](manuscript/MANUSCRIPT_DRAFT.md) built
+  deterministically from the section drafts by
+  `molfusion_backend.benchmark.manuscript_cli`, and the whole-manuscript
+  [`MANUSCRIPT_EVIDENCE_MAP.md`](manuscript/MANUSCRIPT_EVIDENCE_MAP.md)
 
 Planned documents (not yet written):
 
