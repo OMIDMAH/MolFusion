@@ -83,7 +83,12 @@ than reported once per molecule.
   abstract and its numerical sources, keywords), and
   [`CLAIM_TO_SECTION_MAP.md`](manuscript/CLAIM_TO_SECTION_MAP.md) with its
   machine-readable companion — which claim may appear where, and the
-  prohibited-wording audit of the abstract
+  prohibited-wording audit of the abstract. Phase 6C.2 adds
+  [`METHODS_DRAFT.md`](manuscript/METHODS_DRAFT.md), the complete Materials
+  and Methods section, and
+  [`METHODS_EVIDENCE_MAP.md`](manuscript/METHODS_EVIDENCE_MAP.md), which
+  traces every technical and numerical Methods statement to committed
+  source or frozen output and lists the proposed Supplementary Methods
 
 Planned documents (not yet written):
 
