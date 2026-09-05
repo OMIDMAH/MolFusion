@@ -88,7 +88,12 @@ than reported once per molecule.
   and Methods section, and
   [`METHODS_EVIDENCE_MAP.md`](manuscript/METHODS_EVIDENCE_MAP.md), which
   traces every technical and numerical Methods statement to committed
-  source or frozen output and lists the proposed Supplementary Methods
+  source or frozen output and lists the proposed Supplementary Methods.
+  Phase 6C.3 adds [`RESULTS_DRAFT.md`](manuscript/RESULTS_DRAFT.md), the
+  Results section §3.1-3.10, and
+  [`RESULTS_EVIDENCE_MAP.md`](manuscript/RESULTS_EVIDENCE_MAP.md), which
+  maps every Results paragraph to a registered claim and records the
+  denominator reconciliation behind the reported compute shares
 
 Planned documents (not yet written):
 
