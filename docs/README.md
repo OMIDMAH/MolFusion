@@ -93,7 +93,14 @@ than reported once per molecule.
   Results section §3.1-3.10, and
   [`RESULTS_EVIDENCE_MAP.md`](manuscript/RESULTS_EVIDENCE_MAP.md), which
   maps every Results paragraph to a registered claim and records the
-  denominator reconciliation behind the reported compute shares
+  denominator reconciliation behind the reported compute shares. Phase
+  6C.4 adds [`DISCUSSION_DRAFT.md`](manuscript/DISCUSSION_DRAFT.md) —
+  Discussion §4.1-4.5, Limitations and Conclusion — and
+  [`DISCUSSION_EVIDENCE_MAP.md`](manuscript/DISCUSSION_EVIDENCE_MAP.md),
+  which classifies each interpretive paragraph as evidence, inference,
+  hypothesis, methodological or limitation, and records the
+  confidence-interval verification that confirmed the Results draft needed
+  no correction
 
 Planned documents (not yet written):
 
