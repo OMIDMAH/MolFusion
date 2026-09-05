@@ -266,8 +266,13 @@ TRACK_A1_DEFINITION = (
 TRACK_A1_SEED_POLICY = (
     "PyTDC enforces a minimum of five runs but does not fix the seed values; "
     "the caller supplies them. Track A1 uses TDC's documented 1-5 convention. "
-    "Track A2 keeps Phase 6A's 0-4. The values differ so that a row's seed "
-    "alone can never make the two tracks ambiguous."
+    "Track A2 keeps Phase 6A's 0-4. NOTE (corrected in Phase 6A.4): these "
+    "two seed SETS are different but they are not disjoint -- 1, 2, 3 and 4 "
+    "occur in both. An earlier version of this note claimed a bare seed "
+    "distinguished the tracks, which is false. What actually disambiguates "
+    "every row is the `track` column and the `split_id`, which carries its "
+    "track name (tdc_official/seed=3 versus molfusion_scaffold/seed=3). "
+    "Never join or group result rows on `seed` alone."
 )
 
 # --- Track A2: MolFusion's own robustness analysis ---------------------
