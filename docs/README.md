@@ -63,6 +63,16 @@ than reported once per molecule.
   amendments, direction-aware ranking with average ties, the Friedman →
   Holm-corrected Wilcoxon → rank-biserial → endpoint-bootstrap plan, and
   the regularization-saturation caveat that qualifies the linear results
+- [`publication-evidence.md`](publication-evidence.md) — the Phase 6B
+  publication evidence package: the claim registry and its
+  prohibited-wording gate, the confidence-interval separation check behind
+  the primary claim, why the linear result is a finding rather than a
+  failure, the TF-IDF regression weakening, why ChEMBL exposure stays
+  exploratory and untested, endpoint stability flagging and the 22-versus-19
+  endpoint subsets, cost and performance as separate axes, the table and
+  figure plan with exported figure data, the Methods evidence map, and the
+  reproducibility statement that separates historical execution commits from
+  the post-hoc provenance hardening
 
 Planned documents (not yet written):
 
