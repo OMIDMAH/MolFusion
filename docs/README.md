@@ -73,6 +73,17 @@ than reported once per molecule.
   figure plan with exported figure data, the Methods evidence map, and the
   reproducibility statement that separates historical execution commits from
   the post-hoc provenance hardening
+- [`manuscript/`](manuscript/) — the Phase 6C.1 manuscript freeze:
+  [`MANUSCRIPT_ARCHITECTURE.md`](manuscript/MANUSCRIPT_ARCHITECTURE.md)
+  (section structure, the three frozen editorial decisions, figure and table
+  placement, and the rule that statistical support is attributed to the
+  Friedman/Holm/rank-biserial chain rather than to interval non-overlap),
+  [`TITLE_AND_ABSTRACT.md`](manuscript/TITLE_AND_ABSTRACT.md) (framing,
+  twelve ranked title candidates, the contribution statement, the frozen
+  abstract and its numerical sources, keywords), and
+  [`CLAIM_TO_SECTION_MAP.md`](manuscript/CLAIM_TO_SECTION_MAP.md) with its
+  machine-readable companion — which claim may appear where, and the
+  prohibited-wording audit of the abstract
 
 Planned documents (not yet written):
 
