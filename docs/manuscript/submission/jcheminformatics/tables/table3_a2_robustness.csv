@@ -1,0 +1,15 @@
+representation,probe,a1_mean_rank,a2_mean_rank,rank_displacement,a1_position,a2_position,position_change,robustness_verdict,a2_repartitioned_only_mean_rank,a1_classification_rank,a2_classification_rank,a1_regression_rank,a2_regression_rank
+rdkit_physchem_descriptors,linear,3.14,3.77,0.64,2,4,-2,weakened,3.42,2.0,2.62,4.78,5.44
+rdkit_physchem_descriptors,nonlinear,1.91,1.77,-0.14,1,1,0,reproduced,1.84,1.77,1.69,2.11,1.89
+smiles_tfidf_4096,linear,2.55,3.0,0.45,1,2,-1,reproduced,3.26,3.38,3.46,1.33,2.33
+smiles_tfidf_4096,nonlinear,4.14,3.05,-1.09,4,2,2,strengthened,2.89,4.62,3.31,3.44,2.67
+maccs_keys_167,linear,4.45,3.86,-0.59,5,5,0,strengthened,3.95,4.92,4.08,3.78,3.56
+maccs_keys_167,nonlinear,4.14,4.14,0.0,3,3,0,reproduced,4.26,4.15,3.92,4.11,4.44
+avalon_1024,linear,3.73,3.73,0.0,3,3,0,reproduced,3.84,3.62,3.85,3.89,3.56
+avalon_1024,nonlinear,3.68,4.18,0.5,2,4,-2,reproduced,4.26,3.08,3.92,4.56,4.56
+morgan_ecfp4_1024,linear,3.82,2.77,-1.05,4,1,3,strengthened,2.79,3.85,2.85,3.78,2.67
+morgan_ecfp4_1024,nonlinear,5.05,4.68,-0.36,7,5,2,reproduced,4.84,5.0,4.54,5.11,4.89
+erg_reduced_graph_315,linear,5.41,5.5,0.09,7,7,0,reproduced,5.42,5.23,5.15,5.67,6.0
+erg_reduced_graph_315,nonlinear,4.27,4.77,0.5,5,6,-1,reproduced,4.63,4.46,5.31,4.0,4.0
+rdkit_fragment_descriptors,linear,4.91,5.36,0.45,6,6,0,reproduced,5.32,5.0,6.0,4.78,4.44
+rdkit_fragment_descriptors,nonlinear,4.82,5.41,0.59,6,7,-1,weakened,5.26,4.92,5.31,4.67,5.56

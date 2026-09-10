@@ -1,0 +1,8 @@
+representation,category,dimension,value_type,mean_sparsity,artifact_dependency,feature_seconds_total,agent_version
+rdkit_physchem_descriptors,physicochemical descriptors,217,continuous,0.4958,none (stateless),4050.8,1.0.0
+smiles_tfidf_4096,SMILES n-gram TF-IDF,4096,continuous,0.9839,fitted ChEMBL 37 TF-IDF artifact,160.4,1.0.0
+maccs_keys_167,substructure key fingerprint,167,binary,0.7228,none (stateless),430.4,1.0.0
+avalon_1024,substructure fingerprint,1024,binary,0.8055,none (stateless),449.2,1.0.0
+morgan_ecfp4_1024,circular fingerprint,1024,binary,0.9585,none (stateless),105.5,1.0.0
+erg_reduced_graph_315,reduced-graph features,315,continuous,0.8229,none (stateless),185.6,1.0.0
+rdkit_fragment_descriptors,fragment counts,85,count,0.8896,none (stateless),342.0,1.0.0

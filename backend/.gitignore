@@ -1,0 +1,33 @@
+.venv/
+__pycache__/
+*.pyc
+dist/
+build/
+*.egg-info/
+
+# Fitted/pretrained artifact payloads are never committed (see
+# artifacts/README.md and docs/reproducibility.md). Directory docs and
+# metadata schemas are code, not artifacts, and stay tracked.
+/artifacts/*
+!/artifacts/README.md
+
+# Generated reference corpora and the ChEMBL source data they are built
+# from (Phase 5F-B). Both are external build inputs/outputs -- a ChEMBL
+# SQLite release is multi-GB and a built corpus is hundreds of MB -- so
+# neither belongs in version control. Only the builder code, its tests,
+# and docs/reproducibility.md are tracked.
+/corpus_data/
+
+# Downloaded TDC ADMET benchmark data (Phase 6A.1). The raw download and
+# the frozen logical serialization are external benchmark inputs, not
+# source. Only the acquisition code, the provenance manifest with its
+# SHA-256 checksums, and docs/benchmark-data.md are tracked -- the
+# manifest is what makes the ignored bytes verifiable.
+/benchmark_data/
+
+# Generated benchmark execution outputs (Phase 6A.2): feature-matrix caches,
+# result shards and collected result tables. All are reproducible from the
+# frozen release plus committed source, and the caches in particular are
+# large. Runner code, tests and docs stay tracked.
+/benchmark_cache/
+/benchmark_runs/

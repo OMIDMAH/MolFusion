@@ -1,0 +1,233 @@
+{
+ "schema": "molfusion_supplementary_manifest_v1",
+ "note": "Exported from the frozen publication evidence package. No scientific value was recomputed.",
+ "publication_evidence_identity": "5790359bb24db13653750d9c43075b53b3e47edd7156910f9dab9d8853c49a18",
+ "tables": [
+  {
+   "table": "S1",
+   "filename": "supplementary_table_S1_pairwise_contrasts_a2.csv",
+   "description": "Complete pairwise contrasts, Track A2",
+   "rows": 126,
+   "columns": 11,
+   "column_names": [
+    "probe",
+    "task_type",
+    "a",
+    "b",
+    "n_endpoints",
+    "median_difference",
+    "wilcoxon_statistic",
+    "p_raw",
+    "effect_size_rank_biserial",
+    "p_holm",
+    "significant_after_holm"
+   ],
+   "sha256": "94af5c405558b08691acd8032249287951b14ffd6507f968b7184e6bd27286ae",
+   "scientific_source": "backend/benchmark_runs/publication/supplementary/all_pairwise_contrasts_a2.csv"
+  },
+  {
+   "table": "S2",
+   "filename": "supplementary_table_S2_pairwise_contrasts_a1.csv",
+   "description": "Complete pairwise contrasts, Track A1",
+   "rows": 105,
+   "columns": 11,
+   "column_names": [
+    "probe",
+    "task_type",
+    "a",
+    "b",
+    "n_endpoints",
+    "median_difference",
+    "wilcoxon_statistic",
+    "p_raw",
+    "effect_size_rank_biserial",
+    "p_holm",
+    "significant_after_holm"
+   ],
+   "sha256": "29f49fff6d74477cf144e528f9e9dae0a3b1a87e2f0aaf00a7441f504aab0010",
+   "scientific_source": "backend/benchmark_runs/publication/supplementary/all_pairwise_contrasts_a1.csv"
+  },
+  {
+   "table": "S3",
+   "filename": "supplementary_table_S3_contrast_reproduction.csv",
+   "description": "Reproduction of Track A1 contrasts under Track A2",
+   "rows": 11,
+   "columns": 11,
+   "column_names": [
+    "probe",
+    "task_type",
+    "a",
+    "b",
+    "a1_p_holm",
+    "a1_effect",
+    "a2_p_holm",
+    "a2_effect",
+    "a2_tested",
+    "reproduced",
+    "effect_direction_preserved"
+   ],
+   "sha256": "44484a62d0f863f07028430d3ffa37b048ac624e762a174d2cf9ea3b48c6a774",
+   "scientific_source": "backend/benchmark_runs/publication/supplementary/a1_vs_a2_contrasts.csv"
+  },
+  {
+   "table": "S4",
+   "filename": "supplementary_table_S4_endpoint_ranks.csv",
+   "description": "Endpoint-level ranks for both tracks (assembled)",
+   "rows": 616,
+   "columns": 6,
+   "column_names": [
+    "track",
+    "endpoint",
+    "probe",
+    "representation",
+    "rank",
+    "task_type"
+   ],
+   "sha256": "88e6e449cfea994298dd74820984af22f32d869cad4a03ac25c827e86b4c6e8a",
+   "scientific_source": "assembled from frozen analysis outputs"
+  },
+  {
+   "table": "S5",
+   "filename": "supplementary_table_S5_chembl_exposure.csv",
+   "description": "ChEMBL 37 corpus exposure by endpoint",
+   "rows": 44,
+   "columns": 9,
+   "column_names": [
+    "endpoint",
+    "probe",
+    "chembl37_overlap_fraction",
+    "molecules_in_chembl37",
+    "benchmark_molecules",
+    "tfidf_a1_rank",
+    "tfidf_a2_rank",
+    "exposure_class",
+    "interpretation"
+   ],
+   "sha256": "cd4467295d033a8330810ca5d04a4ad4904bbb21dfd8be357051be531263fc16",
+   "scientific_source": "backend/benchmark_runs/publication/supplementary/chembl_exposure.csv"
+  },
+  {
+   "table": "S6",
+   "filename": "supplementary_table_S6_split_stability.csv",
+   "description": "Per-partition stability detail",
+   "rows": 308,
+   "columns": 9,
+   "column_names": [
+    "endpoint",
+    "probe",
+    "representation",
+    "n_splits",
+    "mean_rank",
+    "rank_sd_across_splits",
+    "rank_min",
+    "rank_max",
+    "rank_range"
+   ],
+   "sha256": "cd5509a703f09a9f7467959c089c52b65603528aedd4af024f6a9ac09941d76a",
+   "scientific_source": "backend/benchmark_runs/publication/supplementary/split_stability_detail.csv"
+  },
+  {
+   "table": "S7",
+   "filename": "supplementary_table_S7_curation_and_distinctness.csv",
+   "description": "Curation effects and partition distinctness by endpoint (assembled)",
+   "rows": 22,
+   "columns": 12,
+   "column_names": [
+    "endpoint",
+    "raw_rows",
+    "usable",
+    "rdkit_invalid",
+    "duplicates_collapsed",
+    "conflicting_molecule_count",
+    "duplicates_conflicting_dropped",
+    "missing_label_dropped",
+    "mean_pairwise_test_jaccard",
+    "max_pairwise_test_jaccard",
+    "distinct_test_sets",
+    "genuinely_repartitioned"
+   ],
+   "sha256": "980ce8b6935bc79ec356783e94e99619242ca1f08f214ed528364a62475a72c5",
+   "scientific_source": "assembled from frozen analysis outputs"
+  },
+  {
+   "table": "S8",
+   "filename": "supplementary_table_S8_friedman.csv",
+   "description": "Friedman omnibus results for both tracks (assembled)",
+   "rows": 12,
+   "columns": 10,
+   "column_names": [
+    "track",
+    "probe",
+    "task_type",
+    "n_endpoints",
+    "n_representations",
+    "statistic",
+    "p_value",
+    "reject_at_alpha",
+    "alpha",
+    "runnable"
+   ],
+   "sha256": "3abbbf8d214f34d2eb309be974374d93cc049c6865772d83fd9d01b53c56219f",
+   "scientific_source": "assembled from frozen analysis outputs"
+  },
+  {
+   "table": "S9",
+   "filename": "supplementary_table_S9_provenance_audit.csv",
+   "description": "Execution provenance audit (assembled)",
+   "rows": 2,
+   "columns": 10,
+   "column_names": [
+    "track",
+    "track_identifier",
+    "total_shards",
+    "shards_with_recorded_commit",
+    "shards_without_recorded_commit",
+    "recorded_commit_counts",
+    "reconstructed_execution_commits",
+    "backfilled_into_shards",
+    "scientific_identity",
+    "reconstruction_basis"
+   ],
+   "sha256": "90ff9a65f71a97cedb615eae1e764b6154f0c4b10a688746a3f95efe08e5f447",
+   "scientific_source": "assembled from frozen analysis outputs"
+  },
+  {
+   "table": "S10",
+   "filename": "supplementary_table_S10_endpoint_stability.csv",
+   "description": "Endpoint stability (former main Table 6)",
+   "rows": 22,
+   "columns": 9,
+   "column_names": [
+    "endpoint",
+    "kendall_w_linear",
+    "kendall_w_nonlinear",
+    "kendall_w_min",
+    "rule_low_stability",
+    "pre_registered_low_stability",
+    "endpoint_stability_flag",
+    "per_endpoint_interpretation",
+    "agrees_with_pre_registration"
+   ],
+   "sha256": "cf04a474486ba1f267ab43b6682461d43d4528ab62d7d63867c9f31481a368e4",
+   "scientific_source": "backend/benchmark_runs/publication/tables/table6_endpoint_stability.csv"
+  },
+  {
+   "table": "S11",
+   "filename": "supplementary_table_S11_endpoint_subsets.csv",
+   "description": "All-endpoint and repartitioned-subset summaries (former main Table 7)",
+   "rows": 28,
+   "columns": 7,
+   "column_names": [
+    "probe",
+    "subset",
+    "n_endpoints",
+    "representation",
+    "mean_rank",
+    "wins",
+    "top3"
+   ],
+   "sha256": "a4bdccc88f4c234afa86b45e2d982ee0fec54694cdda52558293904244e94089",
+   "scientific_source": "backend/benchmark_runs/publication/tables/table7_22_vs_19_endpoint_subset.csv"
+  }
+ ]
+}

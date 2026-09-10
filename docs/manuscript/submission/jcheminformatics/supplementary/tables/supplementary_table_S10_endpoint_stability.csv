@@ -1,0 +1,23 @@
+endpoint,kendall_w_linear,kendall_w_nonlinear,kendall_w_min,rule_low_stability,pre_registered_low_stability,endpoint_stability_flag,per_endpoint_interpretation,agrees_with_pre_registration
+ames,0.9885714285714285,0.8457142857142858,0.8457142857142858,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+bbb_martins,0.5285714285714286,0.6685714285714286,0.5285714285714286,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+bioavailability_ma,0.5621428571428572,0.3314285714285714,0.3314285714285714,True,True,LOW,per-endpoint interpretation: NOT RECOMMENDED,True
+caco2_wang,0.6342857142857142,0.9142857142857143,0.6342857142857142,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+clearance_hepatocyte_az,0.20857142857142857,0.2857142857142857,0.20857142857142857,True,True,LOW,per-endpoint interpretation: NOT RECOMMENDED,True
+clearance_microsome_az,0.6114285714285714,0.6171428571428571,0.6114285714285714,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+cyp2c9_substrate_carbonmangels,0.17142857142857143,0.3628571428571429,0.17142857142857143,True,True,LOW,per-endpoint interpretation: NOT RECOMMENDED,True
+cyp2c9_veith,0.9228571428571428,0.5771428571428572,0.5771428571428572,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+cyp2d6_substrate_carbonmangels,0.31214285714285717,0.38857142857142857,0.31214285714285717,True,True,LOW,per-endpoint interpretation: NOT RECOMMENDED,True
+cyp2d6_veith,0.9742857142857143,0.9,0.9,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+cyp3a4_substrate_carbonmangels,0.42,0.21714285714285714,0.21714285714285714,True,True,LOW,per-endpoint interpretation: NOT RECOMMENDED,True
+cyp3a4_veith,0.9657142857142857,0.9885714285714285,0.9657142857142857,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+dili,0.655,0.6828571428571428,0.655,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+half_life_obach,0.9285714285714286,0.37142857142857144,0.37142857142857144,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+herg,0.15714285714285714,0.5142857142857142,0.15714285714285714,True,True,LOW,per-endpoint interpretation: NOT RECOMMENDED,True
+hia_hou,0.6057142857142858,0.6542857142857142,0.6057142857142858,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+ld50_zhu,0.8914285714285715,0.9285714285714286,0.8914285714285715,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+lipophilicity_astrazeneca,0.9314285714285714,0.7685714285714286,0.7685714285714286,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+pgp_broccatelli,0.8257142857142857,0.5542857142857143,0.5542857142857143,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+ppbr_az,0.82,0.9057142857142857,0.82,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+solubility_aqsoldb,1.0,0.9657142857142857,0.9657142857142857,False,False,OK,per-endpoint interpretation: RECOMMENDED,True
+vdss_lombardo,0.9028571428571428,0.34285714285714286,0.34285714285714286,True,False,BORDERLINE,per-endpoint interpretation: RECOMMENDED,False

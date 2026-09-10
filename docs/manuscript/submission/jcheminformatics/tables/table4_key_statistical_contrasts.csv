@@ -1,0 +1,13 @@
+probe,task_family,representation_a,representation_b,p_holm,rank_biserial,abs_effect,superior_representation,direction,reproduced_from_a1,n_endpoints
+nonlinear,all,avalon_1024,rdkit_physchem_descriptors,0.0001,-0.98,0.98,rdkit_physchem_descriptors,rdkit_physchem_descriptors ranks better,False,22
+nonlinear,all,maccs_keys_167,rdkit_physchem_descriptors,0.0001,-0.96,0.96,rdkit_physchem_descriptors,rdkit_physchem_descriptors ranks better,True,22
+linear,all,rdkit_fragment_descriptors,smiles_tfidf_4096,0.0008,-0.9,0.9,smiles_tfidf_4096,smiles_tfidf_4096 ranks better,True,22
+linear,all,erg_reduced_graph_315,smiles_tfidf_4096,0.0038,-0.83,0.83,smiles_tfidf_4096,smiles_tfidf_4096 ranks better,True,22
+nonlinear,all,erg_reduced_graph_315,rdkit_physchem_descriptors,0.0058,-0.82,0.82,rdkit_physchem_descriptors,rdkit_physchem_descriptors ranks better,False,22
+nonlinear,all,morgan_ecfp4_1024,rdkit_physchem_descriptors,0.0091,-0.79,0.79,rdkit_physchem_descriptors,rdkit_physchem_descriptors ranks better,True,22
+nonlinear,all,rdkit_fragment_descriptors,rdkit_physchem_descriptors,0.0091,-0.79,0.79,rdkit_physchem_descriptors,rdkit_physchem_descriptors ranks better,True,22
+linear,classification,rdkit_fragment_descriptors,rdkit_physchem_descriptors,0.0103,-0.98,0.98,rdkit_physchem_descriptors,rdkit_physchem_descriptors ranks better,True,13
+nonlinear,classification,erg_reduced_graph_315,rdkit_physchem_descriptors,0.0103,-0.98,0.98,rdkit_physchem_descriptors,rdkit_physchem_descriptors ranks better,True,13
+nonlinear,classification,avalon_1024,rdkit_physchem_descriptors,0.0244,-0.93,0.93,rdkit_physchem_descriptors,rdkit_physchem_descriptors ranks better,False,13
+nonlinear,classification,morgan_ecfp4_1024,rdkit_physchem_descriptors,0.0325,-0.91,0.91,rdkit_physchem_descriptors,rdkit_physchem_descriptors ranks better,True,13
+nonlinear,classification,maccs_keys_167,rdkit_physchem_descriptors,0.0439,-0.89,0.89,rdkit_physchem_descriptors,rdkit_physchem_descriptors ranks better,True,13

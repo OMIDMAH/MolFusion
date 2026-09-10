@@ -1,0 +1,4066 @@
+{
+ "canonicalization_contract": "rdkit_canonical_isomeric_smiles_v1",
+ "endpoint_count": 22,
+ "endpoints": {
+  "ames": {
+   "checksums": {
+    "test": {
+     "bytes": 69441,
+     "rows": 1457,
+     "sha256": "d87e29ad1f188d6ee4fcdd5c3c3aa4ba15e4fec657553353d0d951ad8df02d3f"
+    },
+    "train_val": {
+     "bytes": 245590,
+     "rows": 5821,
+     "sha256": "8b3add847978ec60685541e07696c837f116b7cb245d44f86eb8f4f69da8e44d"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 7255,
+    "overlap_fraction": 0.4496209510682288,
+    "present_in_chembl37": 3262
+   },
+   "common_evaluation_set": 7255,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 7255,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 7255,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 23,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 7278,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 7255
+   },
+   "label_summary": {
+    "counts": {
+     "0.0": 3304,
+     "1.0": 3951
+    },
+    "minority_fraction": 0.45541006202618883,
+    "total": 7255
+   },
+   "molfusion_primary_metric": "auroc",
+   "name": "ames",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 506,
+    "test_scaffolds_tdc_convention": 449,
+    "test_unique_molecules": 1453,
+    "train_val_unique_molecules": 5802
+   },
+   "raw_rows": 7278,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 33.995,
+     "successes": 7255
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 15.79,
+     "successes": 7255
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 47.464,
+     "successes": 7255
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 8.753,
+     "successes": 7255
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 35.859,
+     "successes": 7255
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 322.261,
+     "successes": 7255
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 18.275,
+     "successes": 7255
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 1260,
+    "largest_group_size": 1260,
+    "unique_scaffolds": 1749
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "73951b024efd2c98b5ee7a6ba8cf546256ad95344f4c6718d18aad1c2d2432d0",
+      "train_set_sha256": "ce00b0411c8b22a8f981a7a641e9e85b8d2752c24a302d4ec0b6cd360fbd6995",
+      "train_size": 5093,
+      "valid_size": 728,
+      "validation_set_sha256": "23380c8476ce44c4e9e4ec335c7bc0e5c094153972a79aae91d4f65a6f8ed2fe"
+     },
+     "2": {
+      "test_set_sha256": "73951b024efd2c98b5ee7a6ba8cf546256ad95344f4c6718d18aad1c2d2432d0",
+      "train_set_sha256": "bc50ce037b63150c5f928a03b06fbca314cd77ee884b7c1a530988892814ba51",
+      "train_size": 4553,
+      "valid_size": 1268,
+      "validation_set_sha256": "395168c6ffc0ce4c81fad0c87ba7e34677999ab0b35a7441b47e05f3dec5bc08"
+     },
+     "3": {
+      "test_set_sha256": "73951b024efd2c98b5ee7a6ba8cf546256ad95344f4c6718d18aad1c2d2432d0",
+      "train_set_sha256": "b21e64b4486a1ca3b278dff4e3a991dcf038ccf02f5276d1d55b7c2177943178",
+      "train_size": 5093,
+      "valid_size": 728,
+      "validation_set_sha256": "ed8f1738512238f58255316d857cf94eb67f71e818d67af9a93ad0d5ba7cd171"
+     },
+     "4": {
+      "test_set_sha256": "73951b024efd2c98b5ee7a6ba8cf546256ad95344f4c6718d18aad1c2d2432d0",
+      "train_set_sha256": "c82b85fb8c4759f2505c92a074176a763077c3e24582634879134151458952dc",
+      "train_size": 5093,
+      "valid_size": 728,
+      "validation_set_sha256": "808e57cd2f9013eb54130b2591cb29b773b6a7449b7d92fd90d15b07b32c475f"
+     },
+     "5": {
+      "test_set_sha256": "73951b024efd2c98b5ee7a6ba8cf546256ad95344f4c6718d18aad1c2d2432d0",
+      "train_set_sha256": "8bdc5e123291cf9ab84a219fb3080b32be0a928e79116292c42b5148db082474",
+      "train_size": 5093,
+      "valid_size": 728,
+      "validation_set_sha256": "991e3b499fa2a8cb4b1b215d2cb375478892be77a0a8bc4640ec23a8032b4574"
+     }
+    },
+    "test_fraction": 0.2001923605386095,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 1457,
+    "test_set_sha256": "73951b024efd2c98b5ee7a6ba8cf546256ad95344f4c6718d18aad1c2d2432d0",
+    "train_val_rows": 5821,
+    "train_val_set_sha256": "c2dec51924da27e044a624123c3c8a35c7a295e1cb48ce46f36f5ba507e8a407"
+   },
+   "task_type": "classification",
+   "tdc_category": "Tox",
+   "tdc_identity": {
+    "dataset_id": 4259564,
+    "dataset_name": "ames",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "roc-auc",
+   "test": {
+    "bytes": 69441,
+    "rows": 1457,
+    "sha256": "d87e29ad1f188d6ee4fcdd5c3c3aa4ba15e4fec657553353d0d951ad8df02d3f"
+   },
+   "train_val": {
+    "bytes": 245590,
+    "rows": 5821,
+    "sha256": "8b3add847978ec60685541e07696c837f116b7cb245d44f86eb8f4f69da8e44d"
+   },
+   "usable": 7255
+  },
+  "bbb_martins": {
+   "checksums": {
+    "test": {
+     "bytes": 22353,
+     "rows": 406,
+     "sha256": "82d4fa96f671a8382e9d8e6de3dde8385b9f337854c83e6fde2e69a7be93754f"
+    },
+    "train_val": {
+     "bytes": 107016,
+     "rows": 1624,
+     "sha256": "5035139072311f4cb0a1a54cffe11bc727004886ace4629b98f6db20c431e4af"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 1965,
+    "overlap_fraction": 0.7893129770992366,
+    "present_in_chembl37": 1551
+   },
+   "common_evaluation_set": 1965,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 1965,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 1965,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 10,
+    "duplicates_collapsed": 45,
+    "duplicates_conflicting_dropped": 20,
+    "input_records": 2030,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 1965
+   },
+   "label_summary": {
+    "counts": {
+     "0.0": 465,
+     "1.0": 1500
+    },
+    "minority_fraction": 0.2366412213740458,
+    "total": 1965
+   },
+   "molfusion_primary_metric": "auroc",
+   "name": "bbb_martins",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 207,
+    "test_scaffolds_tdc_convention": 196,
+    "test_unique_molecules": 394,
+    "train_val_unique_molecules": 1581
+   },
+   "raw_rows": 2030,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 13.738,
+     "successes": 1965
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 5.172,
+     "successes": 1965
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 16.057,
+     "successes": 1965
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 3.207,
+     "successes": 1965
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 11.856,
+     "successes": 1965
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 131.618,
+     "successes": 1965
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 6.198,
+     "successes": 1965
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 95,
+    "largest_group_size": 128,
+    "unique_scaffolds": 1097
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "a85c5c7a2902aad3fca24b6b8c95e794474d4dd463a51a90e1e5bb114feb404b",
+      "train_set_sha256": "9ff22c545757ff8958d3d42899e1ba6fd69061f404c1778ca4d877019872cad6",
+      "train_size": 1421,
+      "valid_size": 203,
+      "validation_set_sha256": "bcb42f196a1377efe45bfb43232d761c7bb758e15ff90b788b1ca64f283d608e"
+     },
+     "2": {
+      "test_set_sha256": "a85c5c7a2902aad3fca24b6b8c95e794474d4dd463a51a90e1e5bb114feb404b",
+      "train_set_sha256": "9fe8a1f1202c23f61f1eba866b99dbee6d80b5632d2ddd555d1f865c497a779b",
+      "train_size": 1421,
+      "valid_size": 203,
+      "validation_set_sha256": "7f12a5d83d52716bd1ff64a89ff2252a617bec81451702e11328a6f74093f29e"
+     },
+     "3": {
+      "test_set_sha256": "a85c5c7a2902aad3fca24b6b8c95e794474d4dd463a51a90e1e5bb114feb404b",
+      "train_set_sha256": "5b97528870b4cebd78cdd7ed1df464a1f19c1bb17a4808b5580ead47b33ddaa9",
+      "train_size": 1421,
+      "valid_size": 203,
+      "validation_set_sha256": "07e35b7aebd260ece918c3dbf0b4b3d0d01c73b4e224ba2145bed4366540b1cb"
+     },
+     "4": {
+      "test_set_sha256": "a85c5c7a2902aad3fca24b6b8c95e794474d4dd463a51a90e1e5bb114feb404b",
+      "train_set_sha256": "f66b3b2e173250826ed175d077c69814b8349137dd01c51c6aa7cf8730334051",
+      "train_size": 1421,
+      "valid_size": 203,
+      "validation_set_sha256": "678f4cf81a9f25a74048e844dfeb9398f7ce563a0bbf0f94341c768282c6ae0a"
+     },
+     "5": {
+      "test_set_sha256": "a85c5c7a2902aad3fca24b6b8c95e794474d4dd463a51a90e1e5bb114feb404b",
+      "train_set_sha256": "21a8db3a3f49a43bda2ac0791d22004dd4d65472923f988f94658a5096a2d35d",
+      "train_size": 1421,
+      "valid_size": 203,
+      "validation_set_sha256": "81eec841e3f1e77218f26f74663eff946718eabb4bb4c50288b38cf8d5680059"
+     }
+    },
+    "test_fraction": 0.2,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 406,
+    "test_set_sha256": "a85c5c7a2902aad3fca24b6b8c95e794474d4dd463a51a90e1e5bb114feb404b",
+    "train_val_rows": 1624,
+    "train_val_set_sha256": "53f555b55fef8243741d4fe5861d74f9c9b72ac3412e42d1b0aa50c056abafed"
+   },
+   "task_type": "classification",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4259566,
+    "dataset_name": "bbb_martins",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "roc-auc",
+   "test": {
+    "bytes": 22353,
+    "rows": 406,
+    "sha256": "82d4fa96f671a8382e9d8e6de3dde8385b9f337854c83e6fde2e69a7be93754f"
+   },
+   "train_val": {
+    "bytes": 107016,
+    "rows": 1624,
+    "sha256": "5035139072311f4cb0a1a54cffe11bc727004886ace4629b98f6db20c431e4af"
+   },
+   "usable": 1965
+  },
+  "bioavailability_ma": {
+   "checksums": {
+    "test": {
+     "bytes": 8515,
+     "rows": 128,
+     "sha256": "329a4a20a82975658d15bc488ad4f68d58bc68c511273360d9fdcaef61a9f281"
+    },
+    "train_val": {
+     "bytes": 32596,
+     "rows": 512,
+     "sha256": "f2b9eb265aed8261cb4033668b20d78e082dd9f43ccdbd1b3781d05596b5b137"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 640,
+    "overlap_fraction": 0.9296875,
+    "present_in_chembl37": 595
+   },
+   "common_evaluation_set": 640,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 640,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 640,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 0,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 640,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 640
+   },
+   "label_summary": {
+    "counts": {
+     "0.0": 148,
+     "1.0": 492
+    },
+    "minority_fraction": 0.23125,
+    "total": 640
+   },
+   "molfusion_primary_metric": "auroc",
+   "name": "bioavailability_ma",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 97,
+    "test_scaffolds_tdc_convention": 93,
+    "test_unique_molecules": 128,
+    "train_val_unique_molecules": 512
+   },
+   "raw_rows": 640,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 4.209,
+     "successes": 640
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 1.698,
+     "successes": 640
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 5.197,
+     "successes": 640
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 0.987,
+     "successes": 640
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 3.716,
+     "successes": 640
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 43.231,
+     "successes": 640
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 1.888,
+     "successes": 640
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 17,
+    "largest_group_size": 49,
+    "unique_scaffolds": 445
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "17b0bc0d8e5dfa539efdcd889edcd707ba54c55ee7c04380569d97ee6ca45530",
+      "train_set_sha256": "18728e9ad1993df48e0db25da1e0f239237687a9b97f6db13fe094d51a1147fa",
+      "train_size": 448,
+      "valid_size": 64,
+      "validation_set_sha256": "f70a6d65f7ba40b2d7bf3bbd63a4bdd094ba7427347d7210e9ab824e022a6f5b"
+     },
+     "2": {
+      "test_set_sha256": "17b0bc0d8e5dfa539efdcd889edcd707ba54c55ee7c04380569d97ee6ca45530",
+      "train_set_sha256": "06fb3a657819559757f41891b156c247f1b6fa10b0e6bc51c48aa6ea1210db58",
+      "train_size": 448,
+      "valid_size": 64,
+      "validation_set_sha256": "d901d0ad74727fc327f1908a10b1d1d28ece3f9bfe8083bebd689081468fe610"
+     },
+     "3": {
+      "test_set_sha256": "17b0bc0d8e5dfa539efdcd889edcd707ba54c55ee7c04380569d97ee6ca45530",
+      "train_set_sha256": "caae356a0eaba5f7870105be439f03d80baf30d1cba74e138ceb4ba648d08efa",
+      "train_size": 448,
+      "valid_size": 64,
+      "validation_set_sha256": "ddf113997130bba8d4f090fd7462e7a6b6697e31087d878f0832c8a609350a9d"
+     },
+     "4": {
+      "test_set_sha256": "17b0bc0d8e5dfa539efdcd889edcd707ba54c55ee7c04380569d97ee6ca45530",
+      "train_set_sha256": "84ada955c50871e3191c29fbe7232623827cc2c40024e46380fc62723e3b9c51",
+      "train_size": 448,
+      "valid_size": 64,
+      "validation_set_sha256": "7ed5d2eac7574ea4070a19a6f9ebbe6416964b90737f231fc972b3d382e780d7"
+     },
+     "5": {
+      "test_set_sha256": "17b0bc0d8e5dfa539efdcd889edcd707ba54c55ee7c04380569d97ee6ca45530",
+      "train_set_sha256": "9d9575fcd02c78461d64277b69f87abd0b68db11195e60e0161f07a544b459f6",
+      "train_size": 448,
+      "valid_size": 64,
+      "validation_set_sha256": "0c628a2ff1d906c16c52671ce020de72172eb0d926aa5faa5140e7c5ada7474c"
+     }
+    },
+    "test_fraction": 0.2,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 128,
+    "test_set_sha256": "17b0bc0d8e5dfa539efdcd889edcd707ba54c55ee7c04380569d97ee6ca45530",
+    "train_val_rows": 512,
+    "train_val_set_sha256": "002f58b6d74561883d0e3c00f35895fdeb87eda099d46ad16bf4406a71634487"
+   },
+   "task_type": "classification",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4259567,
+    "dataset_name": "bioavailability_ma",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "roc-auc",
+   "test": {
+    "bytes": 8515,
+    "rows": 128,
+    "sha256": "329a4a20a82975658d15bc488ad4f68d58bc68c511273360d9fdcaef61a9f281"
+   },
+   "train_val": {
+    "bytes": 32596,
+    "rows": 512,
+    "sha256": "f2b9eb265aed8261cb4033668b20d78e082dd9f43ccdbd1b3781d05596b5b137"
+   },
+   "usable": 640
+  },
+  "caco2_wang": {
+   "checksums": {
+    "test": {
+     "bytes": 17277,
+     "rows": 182,
+     "sha256": "4e2f0ecb9216545e6adf3567e7d817838471cc629125487b52affc464ea1090a"
+    },
+    "train_val": {
+     "bytes": 61681,
+     "rows": 728,
+     "sha256": "6670e12aa2ce24404bd3e18c9998f39e76704bd127420def39814687ca5e7e3b"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 902,
+    "overlap_fraction": 0.5665188470066519,
+    "present_in_chembl37": 511
+   },
+   "common_evaluation_set": 902,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 902,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 902,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 4,
+    "duplicates_collapsed": 0,
+    "duplicates_conflicting_dropped": 8,
+    "input_records": 910,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 902
+   },
+   "label_summary": {
+    "conflict_tolerance": 0.04250000200000001,
+    "max": -3.51,
+    "median": -5.1382737,
+    "min": -7.7600002,
+    "spread": 4.250000200000001
+   },
+   "molfusion_primary_metric": "mae",
+   "name": "caco2_wang",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 83,
+    "test_scaffolds_tdc_convention": 72,
+    "test_unique_molecules": 181,
+    "train_val_unique_molecules": 725
+   },
+   "raw_rows": 910,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 8.375,
+     "successes": 902
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 2.7,
+     "successes": 902
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 7.32,
+     "successes": 902
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 1.595,
+     "successes": 902
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 5.61,
+     "successes": 902
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 71.905,
+     "successes": 902
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 2.851,
+     "successes": 902
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 25,
+    "largest_group_size": 45,
+    "unique_scaffolds": 486
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "0c9ceab14f157cf61072928ab88ec654a1f6e21cff6c08b1a5a4c0468cb1b140",
+      "train_set_sha256": "e7ec20f9af7c226520fd28ebe1bead307550089b1a5f5fe5d722804ab81fb12c",
+      "train_size": 637,
+      "valid_size": 91,
+      "validation_set_sha256": "909774dd671499282fcd0c0dd4e635789eb04658b4b7281fc2f7ba6498884753"
+     },
+     "2": {
+      "test_set_sha256": "0c9ceab14f157cf61072928ab88ec654a1f6e21cff6c08b1a5a4c0468cb1b140",
+      "train_set_sha256": "06457f8447490a1656c06f0f49760ac78f63ec69c00d414ddf1870480a5d209d",
+      "train_size": 637,
+      "valid_size": 91,
+      "validation_set_sha256": "633dfa261dceebbfbd8db53510e33c59facca000e4d36825d712f56acf82f1a8"
+     },
+     "3": {
+      "test_set_sha256": "0c9ceab14f157cf61072928ab88ec654a1f6e21cff6c08b1a5a4c0468cb1b140",
+      "train_set_sha256": "2501490de4c12ae3345427b4214a40ddfb2d36da1575b335fe0e1d91b56c8798",
+      "train_size": 637,
+      "valid_size": 91,
+      "validation_set_sha256": "eb09121da7ebeb33e0d597299aead7646b5518f4f107bc42d9bfee4bf7422b7b"
+     },
+     "4": {
+      "test_set_sha256": "0c9ceab14f157cf61072928ab88ec654a1f6e21cff6c08b1a5a4c0468cb1b140",
+      "train_set_sha256": "10eb4c632d556a4cc31f87dd0fd167adaec3f2792c9b7545a2ec3af3d7ce0d4a",
+      "train_size": 637,
+      "valid_size": 91,
+      "validation_set_sha256": "9dab5474c46fa12d8c42e9438248e2d44c97e21d4f58453558fb25ec82e9154a"
+     },
+     "5": {
+      "test_set_sha256": "0c9ceab14f157cf61072928ab88ec654a1f6e21cff6c08b1a5a4c0468cb1b140",
+      "train_set_sha256": "b059cef5ea664ecb74c45b19173cd207c2b440f7e9eb8f607735d95e49d5677f",
+      "train_size": 637,
+      "valid_size": 91,
+      "validation_set_sha256": "eeb42924c53c99694b13785d08ba8643acbb1636a22cf7329453b539a0da0226"
+     }
+    },
+    "test_fraction": 0.2,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 182,
+    "test_set_sha256": "0c9ceab14f157cf61072928ab88ec654a1f6e21cff6c08b1a5a4c0468cb1b140",
+    "train_val_rows": 728,
+    "train_val_set_sha256": "0459aa78d050fbec5bedccfd79703c2d662365082c2a1b4451adc021b545a1c5"
+   },
+   "task_type": "regression",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4259569,
+    "dataset_name": "caco2_wang",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "mae",
+   "test": {
+    "bytes": 17277,
+    "rows": 182,
+    "sha256": "4e2f0ecb9216545e6adf3567e7d817838471cc629125487b52affc464ea1090a"
+   },
+   "train_val": {
+    "bytes": 61681,
+    "rows": 728,
+    "sha256": "6670e12aa2ce24404bd3e18c9998f39e76704bd127420def39814687ca5e7e3b"
+   },
+   "usable": 902
+  },
+  "clearance_hepatocyte_az": {
+   "checksums": {
+    "test": {
+     "bytes": 17054,
+     "rows": 243,
+     "sha256": "23e061c3fdc2627707c099be6a3082a55fd928a1f19e555f6f4f4b734ed8d314"
+    },
+    "train_val": {
+     "bytes": 69682,
+     "rows": 970,
+     "sha256": "dcb4e04024bee243ff4c55c182bd450b89e43a605f9947d57417a2fcd11a2687"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 842,
+    "overlap_fraction": 0.996437054631829,
+    "present_in_chembl37": 839
+   },
+   "common_evaluation_set": 842,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 842,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 842,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 178,
+    "duplicates_collapsed": 15,
+    "duplicates_conflicting_dropped": 356,
+    "input_records": 1213,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 842
+   },
+   "label_summary": {
+    "conflict_tolerance": 1.47,
+    "max": 150.0,
+    "median": 20.42,
+    "min": 3.0,
+    "spread": 147.0
+   },
+   "molfusion_primary_metric": "mae",
+   "name": "clearance_hepatocyte_az",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 145,
+    "test_scaffolds_tdc_convention": 144,
+    "test_unique_molecules": 203,
+    "train_val_unique_molecules": 817
+   },
+   "raw_rows": 1213,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 6.48,
+     "successes": 842
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 2.534,
+     "successes": 842
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 6.364,
+     "successes": 842
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 1.572,
+     "successes": 842
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 5.105,
+     "successes": 842
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 64.989,
+     "successes": 842
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 2.744,
+     "successes": 842
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 4,
+    "largest_group_size": 15,
+    "unique_scaffolds": 638
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "463e13488a8a45dc439ac845cf43c8557f6d01503e1a57f66dfc84b0ca78d4b8",
+      "train_set_sha256": "f27a7b34f93a0164547c94746f311dd5ba164ac97c905a51c63f204cd97bda8a",
+      "train_size": 848,
+      "valid_size": 122,
+      "validation_set_sha256": "b70f2ab20b0dd873b21dca3ed95e8c483363b757f7756560c4af60acae2db609"
+     },
+     "2": {
+      "test_set_sha256": "463e13488a8a45dc439ac845cf43c8557f6d01503e1a57f66dfc84b0ca78d4b8",
+      "train_set_sha256": "1a6d3ef01a4d98b0fe05d576af4fa3fa2db69e7a0b0179697ab6c5097033612c",
+      "train_size": 848,
+      "valid_size": 122,
+      "validation_set_sha256": "8b574c06d2b31fe278b47c021585668c15d3da1da32042f5842710c7d2fc535b"
+     },
+     "3": {
+      "test_set_sha256": "463e13488a8a45dc439ac845cf43c8557f6d01503e1a57f66dfc84b0ca78d4b8",
+      "train_set_sha256": "93dcf288c2009bf45a9568d26d1bfb8d26be1d3f625c176fa4195811ab9a56a1",
+      "train_size": 848,
+      "valid_size": 122,
+      "validation_set_sha256": "d0d436e1ca8339d8a47219a125a64974782974899be4731f24d4f715b2bcded5"
+     },
+     "4": {
+      "test_set_sha256": "463e13488a8a45dc439ac845cf43c8557f6d01503e1a57f66dfc84b0ca78d4b8",
+      "train_set_sha256": "1e75e4e10a379817f05897edbffa26725a114b0cf4be1bcfec4dde365030f8c2",
+      "train_size": 848,
+      "valid_size": 122,
+      "validation_set_sha256": "2e8dde0128480c9660c294075d77f3424782b49f8d04c57f8bcea3d3aff6f8e1"
+     },
+     "5": {
+      "test_set_sha256": "463e13488a8a45dc439ac845cf43c8557f6d01503e1a57f66dfc84b0ca78d4b8",
+      "train_set_sha256": "05ac2ea098d8571186bfb3b0e723d1ed193537850027fbf6685d5d305205576c",
+      "train_size": 848,
+      "valid_size": 122,
+      "validation_set_sha256": "0b800d981e8751706ebf2fb64bdf4b1f90a0fb473c74ed81bbd739d22382f431"
+     }
+    },
+    "test_fraction": 0.20032976092333057,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 243,
+    "test_set_sha256": "463e13488a8a45dc439ac845cf43c8557f6d01503e1a57f66dfc84b0ca78d4b8",
+    "train_val_rows": 970,
+    "train_val_set_sha256": "c97893fa228be233a55340f6ce914d3fdc1bf8d8502de7460c7ee8c48162d717"
+   },
+   "task_type": "regression",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4266187,
+    "dataset_name": "clearance_hepatocyte_az",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "spearman",
+   "test": {
+    "bytes": 17054,
+    "rows": 243,
+    "sha256": "23e061c3fdc2627707c099be6a3082a55fd928a1f19e555f6f4f4b734ed8d314"
+   },
+   "train_val": {
+    "bytes": 69682,
+    "rows": 970,
+    "sha256": "dcb4e04024bee243ff4c55c182bd450b89e43a605f9947d57417a2fcd11a2687"
+   },
+   "usable": 842
+  },
+  "clearance_microsome_az": {
+   "checksums": {
+    "test": {
+     "bytes": 15515,
+     "rows": 221,
+     "sha256": "832c4479f007ea7b11a41301d20e55e226aa5f52ebbaa1ca7783854f64e4fdf5"
+    },
+    "train_val": {
+     "bytes": 61761,
+     "rows": 881,
+     "sha256": "736ffa13d70b38d68ab0b956200292084dcbd5e970e8d72a62eb715d8763b660"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 1102,
+    "overlap_fraction": 0.9954627949183303,
+    "present_in_chembl37": 1097
+   },
+   "common_evaluation_set": 1102,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 1102,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 1102,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 0,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 1102,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 1102
+   },
+   "label_summary": {
+    "conflict_tolerance": 1.47,
+    "max": 150.0,
+    "median": 12.88,
+    "min": 3.0,
+    "spread": 147.0
+   },
+   "molfusion_primary_metric": "mae",
+   "name": "clearance_microsome_az",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 125,
+    "test_scaffolds_tdc_convention": 124,
+    "test_unique_molecules": 221,
+    "train_val_unique_molecules": 881
+   },
+   "raw_rows": 1102,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 8.467,
+     "successes": 1102
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 3.47,
+     "successes": 1102
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 9.256,
+     "successes": 1102
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 2.005,
+     "successes": 1102
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 6.534,
+     "successes": 1102
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 83.104,
+     "successes": 1102
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 3.581,
+     "successes": 1102
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 1,
+    "largest_group_size": 32,
+    "unique_scaffolds": 716
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "f380cc5cbde3ba73d7c9ee76c8a17b035348c9be2a15c8bdedd9907a8199920e",
+      "train_set_sha256": "ab36887a196a190f0a830ea2537e6110110cc4b3c07fcc9904fd462715ac5031",
+      "train_size": 770,
+      "valid_size": 111,
+      "validation_set_sha256": "9dd8c7a99bb58b9ea1593d8ff9bfb63f5607dc6d125903fa90d01f19e6842950"
+     },
+     "2": {
+      "test_set_sha256": "f380cc5cbde3ba73d7c9ee76c8a17b035348c9be2a15c8bdedd9907a8199920e",
+      "train_set_sha256": "4a32f46d5fe3dcba9d05ab30ca1cc8d8d35370470fdf3ff9f14e5f9f152d7f5b",
+      "train_size": 770,
+      "valid_size": 111,
+      "validation_set_sha256": "cf0040c93f3aa6f02ab1308718e644c9c905fcec514fd311430dd8e49b073086"
+     },
+     "3": {
+      "test_set_sha256": "f380cc5cbde3ba73d7c9ee76c8a17b035348c9be2a15c8bdedd9907a8199920e",
+      "train_set_sha256": "ec7814ba3fadd02e2e28483b8bf2070c30a499a52bc46b3514490d12bb8a8ab5",
+      "train_size": 770,
+      "valid_size": 111,
+      "validation_set_sha256": "c1ae9c791869f133d7c82fcd404eab080e255436b432581ad5968b82c480cf8c"
+     },
+     "4": {
+      "test_set_sha256": "f380cc5cbde3ba73d7c9ee76c8a17b035348c9be2a15c8bdedd9907a8199920e",
+      "train_set_sha256": "d10724969248902bddb10fd6c75cb4dafcc91ab776fbec03754aecaf7e09bb4f",
+      "train_size": 770,
+      "valid_size": 111,
+      "validation_set_sha256": "c50324f35424a915c6d23344a5332c0de0c8c604b2dd529788181f99bf6bd672"
+     },
+     "5": {
+      "test_set_sha256": "f380cc5cbde3ba73d7c9ee76c8a17b035348c9be2a15c8bdedd9907a8199920e",
+      "train_set_sha256": "7f3293255d63361f337b2925d208c57a14721140fb2b7f6ab704216f856ab6f0",
+      "train_size": 770,
+      "valid_size": 111,
+      "validation_set_sha256": "32ec87f99dec7a8a0eb3b5fd9fec34c5d574dd6fa9671f0fc622fea82d72966a"
+     }
+    },
+    "test_fraction": 0.20054446460980035,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 221,
+    "test_set_sha256": "f380cc5cbde3ba73d7c9ee76c8a17b035348c9be2a15c8bdedd9907a8199920e",
+    "train_val_rows": 881,
+    "train_val_set_sha256": "34ad09aa976bacb5bfd4acb870d04b3a3f98a6cbbc55b96f80a7a68ae3347a02"
+   },
+   "task_type": "regression",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4266186,
+    "dataset_name": "clearance_microsome_az",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "spearman",
+   "test": {
+    "bytes": 15515,
+    "rows": 221,
+    "sha256": "832c4479f007ea7b11a41301d20e55e226aa5f52ebbaa1ca7783854f64e4fdf5"
+   },
+   "train_val": {
+    "bytes": 61761,
+    "rows": 881,
+    "sha256": "736ffa13d70b38d68ab0b956200292084dcbd5e970e8d72a62eb715d8763b660"
+   },
+   "usable": 1102
+  },
+  "cyp2c9_substrate_carbonmangels": {
+   "checksums": {
+    "test": {
+     "bytes": 9351,
+     "rows": 135,
+     "sha256": "2b4c4fc9babd751ff0cfdc7f04e671aa8d1d2ced0051825380711c1cbe2a8d2a"
+    },
+    "train_val": {
+     "bytes": 33590,
+     "rows": 534,
+     "sha256": "64bfc7ba07896486b9cf4253a9e31e6551586a1d868a4fef14b4981137b19371"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 666,
+    "overlap_fraction": 0.8048048048048048,
+    "present_in_chembl37": 536
+   },
+   "common_evaluation_set": 666,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 666,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 666,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 3,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 669,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 666
+   },
+   "label_summary": {
+    "counts": {
+     "0.0": 525,
+     "1.0": 141
+    },
+    "minority_fraction": 0.21171171171171171,
+    "total": 666
+   },
+   "molfusion_primary_metric": "auroc",
+   "name": "cyp2c9_substrate_carbonmangels",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 107,
+    "test_scaffolds_tdc_convention": 105,
+    "test_unique_molecules": 135,
+    "train_val_unique_molecules": 531
+   },
+   "raw_rows": 669,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 4.844,
+     "successes": 666
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 1.998,
+     "successes": 666
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 4.999,
+     "successes": 666
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 1.089,
+     "successes": 666
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 3.692,
+     "successes": 666
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 45.435,
+     "successes": 666
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 2.013,
+     "successes": 666
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 21,
+    "largest_group_size": 54,
+    "unique_scaffolds": 458
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "404ed7f90fdd81a02c484a0e57cb7fd1283984a831a3e371f660b39cda2aae17",
+      "train_set_sha256": "12c959058104224d1076ae94d045af7f3856424b350d386d06581936359e1660",
+      "train_size": 467,
+      "valid_size": 67,
+      "validation_set_sha256": "f6bf7deda2e15c134b3128329edf43d4a4451722f8b561ec8f25d7e459c17654"
+     },
+     "2": {
+      "test_set_sha256": "404ed7f90fdd81a02c484a0e57cb7fd1283984a831a3e371f660b39cda2aae17",
+      "train_set_sha256": "3c4b773b0eb9216ee4b55ad0eb221811d6d4a69f2b14e3726f13cc8c3426e219",
+      "train_size": 467,
+      "valid_size": 67,
+      "validation_set_sha256": "4ad8db87ec5ea865dc627a5da1aad59ec011d414b2a0f0b6363908e56054b5d7"
+     },
+     "3": {
+      "test_set_sha256": "404ed7f90fdd81a02c484a0e57cb7fd1283984a831a3e371f660b39cda2aae17",
+      "train_set_sha256": "eb7804f85c3f6e8744c9a76d4b9699beae281a0e1185c827d833f9e4fe28413a",
+      "train_size": 467,
+      "valid_size": 67,
+      "validation_set_sha256": "f8b926dd6a3a4f1effe96994bf304c2ffcfed718d7afdc49d24c7245472036ca"
+     },
+     "4": {
+      "test_set_sha256": "404ed7f90fdd81a02c484a0e57cb7fd1283984a831a3e371f660b39cda2aae17",
+      "train_set_sha256": "92166216ece67d53627427246665a265d0fc1d2ae4324aa3c96e67b43162c7d1",
+      "train_size": 467,
+      "valid_size": 67,
+      "validation_set_sha256": "2fac2bdfe09ef42c6acd2869110e73d052dad4fad58e3b0bf13a73e9469364f2"
+     },
+     "5": {
+      "test_set_sha256": "404ed7f90fdd81a02c484a0e57cb7fd1283984a831a3e371f660b39cda2aae17",
+      "train_set_sha256": "9d2123b4e3ae2d1e17ec4ea0a92e853dfcdc7cb46c532231e7922de0ed5cc30c",
+      "train_size": 467,
+      "valid_size": 67,
+      "validation_set_sha256": "600d03379b84efcf5d0e3520685243fc9c09f1a6d50908553fbf412fda8051aa"
+     }
+    },
+    "test_fraction": 0.20179372197309417,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 135,
+    "test_set_sha256": "404ed7f90fdd81a02c484a0e57cb7fd1283984a831a3e371f660b39cda2aae17",
+    "train_val_rows": 534,
+    "train_val_set_sha256": "580461b555cd5e9429114dbacb9902c8dd9f651a984bdcc3cf38845d6e022673"
+   },
+   "task_type": "classification",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4259584,
+    "dataset_name": "cyp2c9_substrate_carbonmangels",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "pr-auc",
+   "test": {
+    "bytes": 9351,
+    "rows": 135,
+    "sha256": "2b4c4fc9babd751ff0cfdc7f04e671aa8d1d2ced0051825380711c1cbe2a8d2a"
+   },
+   "train_val": {
+    "bytes": 33590,
+    "rows": 534,
+    "sha256": "64bfc7ba07896486b9cf4253a9e31e6551586a1d868a4fef14b4981137b19371"
+   },
+   "usable": 666
+  },
+  "cyp2c9_veith": {
+   "checksums": {
+    "test": {
+     "bytes": 139376,
+     "rows": 2419,
+     "sha256": "e62409b62d6adc69c25eb47d83bfb88379878d70656e0191a8f555ef733e2519"
+    },
+    "train_val": {
+     "bytes": 576176,
+     "rows": 9673,
+     "sha256": "f7d1cb85adac9b1c4bca33936c7ecde2d0e3c127258846786ca7bf6418ddb1a4"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 12092,
+    "overlap_fraction": 0.8978663579225935,
+    "present_in_chembl37": 10857
+   },
+   "common_evaluation_set": 12092,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 12092,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 12092,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 0,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 12092,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 12092
+   },
+   "label_summary": {
+    "counts": {
+     "0.0": 8047,
+     "1.0": 4045
+    },
+    "minority_fraction": 0.33451869004300366,
+    "total": 12092
+   },
+   "molfusion_primary_metric": "auroc",
+   "name": "cyp2c9_veith",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 1463,
+    "test_scaffolds_tdc_convention": 1421,
+    "test_unique_molecules": 2419,
+    "train_val_unique_molecules": 9673
+   },
+   "raw_rows": 12092,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 62.224,
+     "successes": 12092
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 28.359,
+     "successes": 12092
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 88.207,
+     "successes": 12092
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 19.94,
+     "successes": 12092
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 54.47,
+     "successes": 12092
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 688.654,
+     "successes": 12092
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 28.639,
+     "successes": 12092
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 270,
+    "largest_group_size": 476,
+    "unique_scaffolds": 7373
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "a00b13ac788e0aa47577764014cbaa9965622c7795637cbb76831a8da382729b",
+      "train_set_sha256": "c8939178c8e6b652a5d91851bb345fb01704b4a2c2ca2ac5cdb4f458207199e2",
+      "train_size": 8463,
+      "valid_size": 1210,
+      "validation_set_sha256": "66db6726e5022f5d2aa1025c62078b97a1e1e58c8c8c34e7de2dbc4be33e7a35"
+     },
+     "2": {
+      "test_set_sha256": "a00b13ac788e0aa47577764014cbaa9965622c7795637cbb76831a8da382729b",
+      "train_set_sha256": "79908ea1eecec24344ddc6a27f3d4b3bcef0d38e551cd64c019e68e8d3f33c49",
+      "train_size": 8463,
+      "valid_size": 1210,
+      "validation_set_sha256": "387eae9330b95873aa9ff27a6e982f54c8d301769fadcdcf0abdebb9b2513ed6"
+     },
+     "3": {
+      "test_set_sha256": "a00b13ac788e0aa47577764014cbaa9965622c7795637cbb76831a8da382729b",
+      "train_set_sha256": "172fa474fe4c8406b2bc8b78cb479e5d1935e93e42eceb7af197c0e7c570f5aa",
+      "train_size": 8463,
+      "valid_size": 1210,
+      "validation_set_sha256": "6ba630b1394be03924d9724e53fe5a1520dbc006498eebf58d3d8c5d49bd598a"
+     },
+     "4": {
+      "test_set_sha256": "a00b13ac788e0aa47577764014cbaa9965622c7795637cbb76831a8da382729b",
+      "train_set_sha256": "f4b1d3e46b56a64eed1abb67aa21ec12b5fb6dede191afd5322c0d9770b3495e",
+      "train_size": 8463,
+      "valid_size": 1210,
+      "validation_set_sha256": "4b24334f64bfadd91b3c23d676c7aef54bde1c8d6c69fdba256f256d77cd3f46"
+     },
+     "5": {
+      "test_set_sha256": "a00b13ac788e0aa47577764014cbaa9965622c7795637cbb76831a8da382729b",
+      "train_set_sha256": "7759d09356d6242f4f78faf6b0ae83699378494507bc9fd62c0f255e9f01c7bf",
+      "train_size": 8463,
+      "valid_size": 1210,
+      "validation_set_sha256": "84db50adf479dac1ebb843ead6aad71e3a5d2ba1a88bc8a125217ee952721b2d"
+     }
+    },
+    "test_fraction": 0.2000496195831955,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 2419,
+    "test_set_sha256": "a00b13ac788e0aa47577764014cbaa9965622c7795637cbb76831a8da382729b",
+    "train_val_rows": 9673,
+    "train_val_set_sha256": "764437b9bd78c2f689b60a1a1c2ae66309581768fd3a8dc664bf7251eaf1843e"
+   },
+   "task_type": "classification",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4259577,
+    "dataset_name": "cyp2c9_veith",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "pr-auc",
+   "test": {
+    "bytes": 139376,
+    "rows": 2419,
+    "sha256": "e62409b62d6adc69c25eb47d83bfb88379878d70656e0191a8f555ef733e2519"
+   },
+   "train_val": {
+    "bytes": 576176,
+    "rows": 9673,
+    "sha256": "f7d1cb85adac9b1c4bca33936c7ecde2d0e3c127258846786ca7bf6418ddb1a4"
+   },
+   "usable": 12092
+  },
+  "cyp2d6_substrate_carbonmangels": {
+   "checksums": {
+    "test": {
+     "bytes": 9427,
+     "rows": 135,
+     "sha256": "18b78567d7c0a0add39dae9e329c71c338db7666be42d3e81729ed3edb74d0da"
+    },
+    "train_val": {
+     "bytes": 33310,
+     "rows": 532,
+     "sha256": "4257760cccc9f903d230708192afb399e56b78d8f1c6f2f4569b65b489bcd693"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 663,
+    "overlap_fraction": 0.803921568627451,
+    "present_in_chembl37": 533
+   },
+   "common_evaluation_set": 663,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 663,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 663,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 1,
+    "duplicates_collapsed": 2,
+    "duplicates_conflicting_dropped": 2,
+    "input_records": 667,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 663
+   },
+   "label_summary": {
+    "counts": {
+     "0.0": 473,
+     "1.0": 190
+    },
+    "minority_fraction": 0.2865761689291101,
+    "total": 663
+   },
+   "molfusion_primary_metric": "auroc",
+   "name": "cyp2d6_substrate_carbonmangels",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 98,
+    "test_scaffolds_tdc_convention": 97,
+    "test_unique_molecules": 134,
+    "train_val_unique_molecules": 530
+   },
+   "raw_rows": 667,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 3.435,
+     "successes": 663
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 1.355,
+     "successes": 663
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 5.156,
+     "successes": 663
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 0.777,
+     "successes": 663
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 2.65,
+     "successes": 663
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 31.735,
+     "successes": 663
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 1.458,
+     "successes": 663
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 21,
+    "largest_group_size": 54,
+    "unique_scaffolds": 457
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "1104862eda75b2dd38f9220889d09da3f5dc38f472c085a2f40db95b65a13050",
+      "train_set_sha256": "e5ed87d01d0a5bc0e696b7fa76995cfc8ccd9d95116fc54a7b1c9dc71ab6bdfe",
+      "train_size": 465,
+      "valid_size": 67,
+      "validation_set_sha256": "47a875838fbf114c5e315a4066dc536954abcc93f4ab4e933c5c86566400c345"
+     },
+     "2": {
+      "test_set_sha256": "1104862eda75b2dd38f9220889d09da3f5dc38f472c085a2f40db95b65a13050",
+      "train_set_sha256": "c42fdd915e8995cb39d34b291d1432ac03559f0bbb8fad07db2b23321355257e",
+      "train_size": 465,
+      "valid_size": 67,
+      "validation_set_sha256": "b6e0aa1043e345fe450ae6a26b7753d93c359a109fce72ce05ab73428f752075"
+     },
+     "3": {
+      "test_set_sha256": "1104862eda75b2dd38f9220889d09da3f5dc38f472c085a2f40db95b65a13050",
+      "train_set_sha256": "e44cfea8d3f8e4bfd11395f88ecc91b82df8b1888babeaba3e35775d9b52a7e2",
+      "train_size": 465,
+      "valid_size": 67,
+      "validation_set_sha256": "2d83aff52fd4d3c55fbcc1cda256fe68e789650b9355b8a89697b2c521dad32d"
+     },
+     "4": {
+      "test_set_sha256": "1104862eda75b2dd38f9220889d09da3f5dc38f472c085a2f40db95b65a13050",
+      "train_set_sha256": "94562469e8d6d1e6801a37edd88a88a5ec5903fc8213e5147b50392eada05929",
+      "train_size": 465,
+      "valid_size": 67,
+      "validation_set_sha256": "fa6e07cacc9ce8336041c974f6e37face07872bce0161aafc0b4eb56efd7f68c"
+     },
+     "5": {
+      "test_set_sha256": "1104862eda75b2dd38f9220889d09da3f5dc38f472c085a2f40db95b65a13050",
+      "train_set_sha256": "dd895c177ac8bc34d57b55544c84b5805c86960319d63824dc960558373fa539",
+      "train_size": 465,
+      "valid_size": 67,
+      "validation_set_sha256": "2c936ae02310e180f6228a6c6bc93ee91385a52559de043e49d29062eba2eaf6"
+     }
+    },
+    "test_fraction": 0.20239880059970014,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 135,
+    "test_set_sha256": "1104862eda75b2dd38f9220889d09da3f5dc38f472c085a2f40db95b65a13050",
+    "train_val_rows": 532,
+    "train_val_set_sha256": "54c8c1f667cde08a8d19c949984d353d38f44c74c55db97102176ffd055dfdd2"
+   },
+   "task_type": "classification",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4259578,
+    "dataset_name": "cyp2d6_substrate_carbonmangels",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "pr-auc",
+   "test": {
+    "bytes": 9427,
+    "rows": 135,
+    "sha256": "18b78567d7c0a0add39dae9e329c71c338db7666be42d3e81729ed3edb74d0da"
+   },
+   "train_val": {
+    "bytes": 33310,
+    "rows": 532,
+    "sha256": "4257760cccc9f903d230708192afb399e56b78d8f1c6f2f4569b65b489bcd693"
+   },
+   "usable": 663
+  },
+  "cyp2d6_veith": {
+   "checksums": {
+    "test": {
+     "bytes": 143144,
+     "rows": 2626,
+     "sha256": "8e8f9ec13df932e38b6467051a1ac496d498bd87ef9d893fde3490757e676c16"
+    },
+    "train_val": {
+     "bytes": 630120,
+     "rows": 10504,
+     "sha256": "e9e65ba87e09d23aa49fa068bdbb6a16dc686d7916d15f1028569bf6fc3bc5c8"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 13130,
+    "overlap_fraction": 0.8961157654226961,
+    "present_in_chembl37": 11766
+   },
+   "common_evaluation_set": 13130,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 13130,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 13130,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 0,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 13130,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 13130
+   },
+   "label_summary": {
+    "counts": {
+     "0.0": 10616,
+     "1.0": 2514
+    },
+    "minority_fraction": 0.19146991622239146,
+    "total": 13130
+   },
+   "molfusion_primary_metric": "auroc",
+   "name": "cyp2d6_veith",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 1169,
+    "test_scaffolds_tdc_convention": 1135,
+    "test_unique_molecules": 2626,
+    "train_val_unique_molecules": 10504
+   },
+   "raw_rows": 13130,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 67.152,
+     "successes": 13130
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 27.898,
+     "successes": 13130
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 78.663,
+     "successes": 13130
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 16.058,
+     "successes": 13130
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 54.221,
+     "successes": 13130
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 692.508,
+     "successes": 13130
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 29.275,
+     "successes": 13130
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 273,
+    "largest_group_size": 522,
+    "unique_scaffolds": 8015
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "6fb508cf6611ea0e080d30cd7f4d5616fe10c5dc0751faa1e2f7146cdd6ccaf0",
+      "train_set_sha256": "f2c4f614bfd98933fd2abd4382e009ee6b69b442d59da75ed381c2ddd144c82e",
+      "train_size": 9191,
+      "valid_size": 1313,
+      "validation_set_sha256": "663a0c4411e07c21bf5f7bca9ad9dc12d832700c2b642a2683a5b6a69899216a"
+     },
+     "2": {
+      "test_set_sha256": "6fb508cf6611ea0e080d30cd7f4d5616fe10c5dc0751faa1e2f7146cdd6ccaf0",
+      "train_set_sha256": "8f7abc18a27514bce1f1706691b515a9a2750b5cbb62042c02159280afa717b9",
+      "train_size": 9191,
+      "valid_size": 1313,
+      "validation_set_sha256": "b5a5a3bcae43fff237a342b8eb41bd2bfb67af3ba9af1ec505d5b79d23dd9a2f"
+     },
+     "3": {
+      "test_set_sha256": "6fb508cf6611ea0e080d30cd7f4d5616fe10c5dc0751faa1e2f7146cdd6ccaf0",
+      "train_set_sha256": "5739deb5cd0e6256f42561fee40f76fe54fb6f17c7fa44860ce3c7c3a18118fc",
+      "train_size": 9191,
+      "valid_size": 1313,
+      "validation_set_sha256": "2538fb564a5a755bb3e58890637b18c6053336c67cbdaec1873b36d6ea6a083f"
+     },
+     "4": {
+      "test_set_sha256": "6fb508cf6611ea0e080d30cd7f4d5616fe10c5dc0751faa1e2f7146cdd6ccaf0",
+      "train_set_sha256": "7be4ee260cb5b42298582404d52ed2c493592d8ea25e4b30616188de57d403a7",
+      "train_size": 9191,
+      "valid_size": 1313,
+      "validation_set_sha256": "9db37fb11367155b109066379f22db6b4934f1d840be3caa0369ea9e9f0569da"
+     },
+     "5": {
+      "test_set_sha256": "6fb508cf6611ea0e080d30cd7f4d5616fe10c5dc0751faa1e2f7146cdd6ccaf0",
+      "train_set_sha256": "5eac0e4186fac56b051f9b71dea9b387e4cf0f8ca21cdb42928c948836677667",
+      "train_size": 9191,
+      "valid_size": 1313,
+      "validation_set_sha256": "6880d1be854a1544a48e05da674106bc9cd067aff24c7c5681ba86b640d4600f"
+     }
+    },
+    "test_fraction": 0.2,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 2626,
+    "test_set_sha256": "6fb508cf6611ea0e080d30cd7f4d5616fe10c5dc0751faa1e2f7146cdd6ccaf0",
+    "train_val_rows": 10504,
+    "train_val_set_sha256": "dae4a4b9e31e8188dc1700c88d83b8c972346f77c76ee63f9e77ec23b8df74ff"
+   },
+   "task_type": "classification",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4259580,
+    "dataset_name": "cyp2d6_veith",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "pr-auc",
+   "test": {
+    "bytes": 143144,
+    "rows": 2626,
+    "sha256": "8e8f9ec13df932e38b6467051a1ac496d498bd87ef9d893fde3490757e676c16"
+   },
+   "train_val": {
+    "bytes": 630120,
+    "rows": 10504,
+    "sha256": "e9e65ba87e09d23aa49fa068bdbb6a16dc686d7916d15f1028569bf6fc3bc5c8"
+   },
+   "usable": 13130
+  },
+  "cyp3a4_substrate_carbonmangels": {
+   "checksums": {
+    "test": {
+     "bytes": 9289,
+     "rows": 135,
+     "sha256": "6a1a41df7eacb6f7a98a9cf81d9117ec0d74b1f4ca5d3930579dcc8b861772f7"
+    },
+    "train_val": {
+     "bytes": 34093,
+     "rows": 535,
+     "sha256": "f34d74d38b59100f8218645120ce028a91383bfa318cbb951a33418ba42eddc3"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 667,
+    "overlap_fraction": 0.8020989505247377,
+    "present_in_chembl37": 535
+   },
+   "common_evaluation_set": 667,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 667,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 667,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 3,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 670,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 667
+   },
+   "label_summary": {
+    "counts": {
+     "0.0": 313,
+     "1.0": 354
+    },
+    "minority_fraction": 0.46926536731634183,
+    "total": 667
+   },
+   "molfusion_primary_metric": "auroc",
+   "name": "cyp3a4_substrate_carbonmangels",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 99,
+    "test_scaffolds_tdc_convention": 98,
+    "test_unique_molecules": 134,
+    "train_val_unique_molecules": 533
+   },
+   "raw_rows": 670,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 3.223,
+     "successes": 667
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 1.261,
+     "successes": 667
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 3.756,
+     "successes": 667
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 0.743,
+     "successes": 667
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 2.538,
+     "successes": 667
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 32.768,
+     "successes": 667
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 1.444,
+     "successes": 667
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 21,
+    "largest_group_size": 53,
+    "unique_scaffolds": 461
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "d0e44071ffe08b1aa4289d87a772d7f32952d626a80e0e94f95cfa89590afa56",
+      "train_set_sha256": "12d5748a80e6475914973792839cfb7a3ad914763cba7ed80f1317ca92907e54",
+      "train_size": 468,
+      "valid_size": 67,
+      "validation_set_sha256": "78ac0693c4fb83729c03381028dc8f2927a200d5e27e7db515dda6d1c3de4305"
+     },
+     "2": {
+      "test_set_sha256": "d0e44071ffe08b1aa4289d87a772d7f32952d626a80e0e94f95cfa89590afa56",
+      "train_set_sha256": "acaff9a88b1d929ccae4bed1fafb729103892b78fb4b5ff765d18319fe6ce83c",
+      "train_size": 468,
+      "valid_size": 67,
+      "validation_set_sha256": "b14502d1f924946e77909ae7729be5c9da3dafdebf809a5551ce07d0bbb4a940"
+     },
+     "3": {
+      "test_set_sha256": "d0e44071ffe08b1aa4289d87a772d7f32952d626a80e0e94f95cfa89590afa56",
+      "train_set_sha256": "bd6c09de1a2c3ecd1b21629ff63ebdf626f69672c6c0e63672ee9363a653aaf9",
+      "train_size": 468,
+      "valid_size": 67,
+      "validation_set_sha256": "147791f7ea108844a7396f4dcacb8b2a66a69136cf4fd1a32e70348458132475"
+     },
+     "4": {
+      "test_set_sha256": "d0e44071ffe08b1aa4289d87a772d7f32952d626a80e0e94f95cfa89590afa56",
+      "train_set_sha256": "ab302d7418af0a2b37a63e06cf5b4378abea99b828c71bf8ee624205694f17de",
+      "train_size": 468,
+      "valid_size": 67,
+      "validation_set_sha256": "f241476bcf2875bffb0d51ae5efc7040a33e7d8caf96f954bb44f648df89c77b"
+     },
+     "5": {
+      "test_set_sha256": "d0e44071ffe08b1aa4289d87a772d7f32952d626a80e0e94f95cfa89590afa56",
+      "train_set_sha256": "9d77dc166af8bd9145227df490f6bbb95e3e5f1ff46061b463d6e3bcef1dc8d7",
+      "train_size": 468,
+      "valid_size": 67,
+      "validation_set_sha256": "0330a0b412a87fcb435f1c9a33d69bb14aa3efeddeaf79026f336459d2bf8454"
+     }
+    },
+    "test_fraction": 0.20149253731343283,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 135,
+    "test_set_sha256": "d0e44071ffe08b1aa4289d87a772d7f32952d626a80e0e94f95cfa89590afa56",
+    "train_val_rows": 535,
+    "train_val_set_sha256": "7504004958482f3ce893c5298100738e35dbf3fcb92b3b548cc9029c32dba99f"
+   },
+   "task_type": "classification",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4259581,
+    "dataset_name": "cyp3a4_substrate_carbonmangels",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "roc-auc",
+   "test": {
+    "bytes": 9289,
+    "rows": 135,
+    "sha256": "6a1a41df7eacb6f7a98a9cf81d9117ec0d74b1f4ca5d3930579dcc8b861772f7"
+   },
+   "train_val": {
+    "bytes": 34093,
+    "rows": 535,
+    "sha256": "f34d74d38b59100f8218645120ce028a91383bfa318cbb951a33418ba42eddc3"
+   },
+   "usable": 667
+  },
+  "cyp3a4_veith": {
+   "checksums": {
+    "test": {
+     "bytes": 148130,
+     "rows": 2467,
+     "sha256": "5b7d31656dd28ad48e2a1c9ee9b59cce39b6dfa268f5f285f939629a339ec9bc"
+    },
+    "train_val": {
+     "bytes": 573412,
+     "rows": 9861,
+     "sha256": "df6944a7a01cf8ba0a56b87214ea9e25ac40a8f8a64d92da454f12fbc50d179f"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 12328,
+    "overlap_fraction": 0.8964146658014276,
+    "present_in_chembl37": 11051
+   },
+   "common_evaluation_set": 12328,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 12328,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 12328,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 0,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 12328,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 12328
+   },
+   "label_summary": {
+    "counts": {
+     "0.0": 7218,
+     "1.0": 5110
+    },
+    "minority_fraction": 0.4145035691109669,
+    "total": 12328
+   },
+   "molfusion_primary_metric": "auroc",
+   "name": "cyp3a4_veith",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 1661,
+    "test_scaffolds_tdc_convention": 1616,
+    "test_unique_molecules": 2467,
+    "train_val_unique_molecules": 9861
+   },
+   "raw_rows": 12328,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 59.157,
+     "successes": 12328
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 24.172,
+     "successes": 12328
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 62.957,
+     "successes": 12328
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 13.987,
+     "successes": 12328
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 48.74,
+     "successes": 12328
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 587.997,
+     "successes": 12328
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 27.602,
+     "successes": 12328
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 277,
+    "largest_group_size": 508,
+    "unique_scaffolds": 7631
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "34a90e49ce9593ae2d4065a7812c78f7433be7d6bc7aeb5b2dce1de878ba9ae1",
+      "train_set_sha256": "cea39c87f487cb915ebc67d6a1c37b471be545d2d1b41df4b2faef8002888b10",
+      "train_size": 8628,
+      "valid_size": 1233,
+      "validation_set_sha256": "5114121900347cfda55950c7c744f9b844ceb4a23d3042ebf59a4b1a8305d3e1"
+     },
+     "2": {
+      "test_set_sha256": "34a90e49ce9593ae2d4065a7812c78f7433be7d6bc7aeb5b2dce1de878ba9ae1",
+      "train_set_sha256": "1a97689218fbc8e4a8550a93996dc443a9a9deaccd496e1d65457cddef07a537",
+      "train_size": 8628,
+      "valid_size": 1233,
+      "validation_set_sha256": "1b33cd3950362e09d8cb6b6a53c83ad869417b12d2c39c6ae8f1317356be55e7"
+     },
+     "3": {
+      "test_set_sha256": "34a90e49ce9593ae2d4065a7812c78f7433be7d6bc7aeb5b2dce1de878ba9ae1",
+      "train_set_sha256": "6e2d315b3b024685015baf1d07c1120246db8da455b7c265d133b5dfc95fa2cb",
+      "train_size": 8628,
+      "valid_size": 1233,
+      "validation_set_sha256": "ad59c73a392c1f7bd386de166d61987127965a022811a36fee940cd8c34cc598"
+     },
+     "4": {
+      "test_set_sha256": "34a90e49ce9593ae2d4065a7812c78f7433be7d6bc7aeb5b2dce1de878ba9ae1",
+      "train_set_sha256": "f28995ca7a67a00428a2d9fbfee4d409ebdc2fe83c9fe5a2a0ef99811d6dd088",
+      "train_size": 8628,
+      "valid_size": 1233,
+      "validation_set_sha256": "79337ad8e8aed8e847eb0eda8b910e95107028e432f0a47d30878cc1d3d3850e"
+     },
+     "5": {
+      "test_set_sha256": "34a90e49ce9593ae2d4065a7812c78f7433be7d6bc7aeb5b2dce1de878ba9ae1",
+      "train_set_sha256": "bdcb27c6becb71c14ad437a6d78b6525a84a666784fb2acb1176531d393959ae",
+      "train_size": 8628,
+      "valid_size": 1233,
+      "validation_set_sha256": "671a261dab8266236c0e2b147943d63e943fbc8c47b743322f457fdfb9fe645f"
+     }
+    },
+    "test_fraction": 0.20011356262167423,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 2467,
+    "test_set_sha256": "34a90e49ce9593ae2d4065a7812c78f7433be7d6bc7aeb5b2dce1de878ba9ae1",
+    "train_val_rows": 9861,
+    "train_val_set_sha256": "96702b135aebaf963bd2b4d1c54ad56d1cc61293b7c7efa2fb78ed14b0ee06e3"
+   },
+   "task_type": "classification",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4259582,
+    "dataset_name": "cyp3a4_veith",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "pr-auc",
+   "test": {
+    "bytes": 148130,
+    "rows": 2467,
+    "sha256": "5b7d31656dd28ad48e2a1c9ee9b59cce39b6dfa268f5f285f939629a339ec9bc"
+   },
+   "train_val": {
+    "bytes": 573412,
+    "rows": 9861,
+    "sha256": "df6944a7a01cf8ba0a56b87214ea9e25ac40a8f8a64d92da454f12fbc50d179f"
+   },
+   "usable": 12328
+  },
+  "dili": {
+   "checksums": {
+    "test": {
+     "bytes": 5726,
+     "rows": 96,
+     "sha256": "eb4cacff67a3f25d1d5e6a4c15ada68239af630ec19979097c4c832b185478e8"
+    },
+    "train_val": {
+     "bytes": 20016,
+     "rows": 379,
+     "sha256": "0a5c221e3a62b204a990586be505ae1373884b7ef10e983bea1821901755c908"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 475,
+    "overlap_fraction": 0.7452631578947368,
+    "present_in_chembl37": 354
+   },
+   "common_evaluation_set": 475,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 475,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 475,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 0,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 475,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 475
+   },
+   "label_summary": {
+    "counts": {
+     "0.0": 239,
+     "1.0": 236
+    },
+    "minority_fraction": 0.4968421052631579,
+    "total": 475
+   },
+   "molfusion_primary_metric": "auroc",
+   "name": "dili",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 80,
+    "test_scaffolds_tdc_convention": 80,
+    "test_unique_molecules": 96,
+    "train_val_unique_molecules": 379
+   },
+   "raw_rows": 475,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 2.138,
+     "successes": 475
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 0.873,
+     "successes": 475
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 3.265,
+     "successes": 475
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 0.683,
+     "successes": 475
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 1.834,
+     "successes": 475
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 25.511,
+     "successes": 475
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 0.904,
+     "successes": 475
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 35,
+    "largest_group_size": 54,
+    "unique_scaffolds": 311
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "f7b012b0569430610060ff95481ba2d0954bca4d39738ed6a160e22e08e9fc99",
+      "train_set_sha256": "d5eca4157e2b310deb626a3e03ec8356c7388f0ad027cf18a841c4cd7e926c35",
+      "train_size": 325,
+      "valid_size": 54,
+      "validation_set_sha256": "91034fb7e37d6f494100130f5c7c7422f54620f95556f3ae735b2c133301c278"
+     },
+     "2": {
+      "test_set_sha256": "f7b012b0569430610060ff95481ba2d0954bca4d39738ed6a160e22e08e9fc99",
+      "train_set_sha256": "aa380f5234048721e9fa64a48c35f59a8d8d38326ce2c245b0ddba5382e09735",
+      "train_size": 331,
+      "valid_size": 48,
+      "validation_set_sha256": "f3bfb6cb31fbe03e4473cfd776e93fba04a5324b50b5da9beb732d33a443d7a0"
+     },
+     "3": {
+      "test_set_sha256": "f7b012b0569430610060ff95481ba2d0954bca4d39738ed6a160e22e08e9fc99",
+      "train_set_sha256": "8711126c4f821eebe295df3e65f52a6017cbbb1be92bfd02f15b3f9e6c74042b",
+      "train_size": 331,
+      "valid_size": 48,
+      "validation_set_sha256": "97ffd1d26e8c5046e4fdb94651acf76c594ff8fe105846c9e8431b47c45d5f5b"
+     },
+     "4": {
+      "test_set_sha256": "f7b012b0569430610060ff95481ba2d0954bca4d39738ed6a160e22e08e9fc99",
+      "train_set_sha256": "ab8623f7e7ade11004fd51bb6ef23f3f06f75438daf87bfe4534faa526c48d14",
+      "train_size": 331,
+      "valid_size": 48,
+      "validation_set_sha256": "a4279090dda63545cbec23a646ba0eb057fd54f266e0e17bd6a68f1f150e9c23"
+     },
+     "5": {
+      "test_set_sha256": "f7b012b0569430610060ff95481ba2d0954bca4d39738ed6a160e22e08e9fc99",
+      "train_set_sha256": "92e1725f6aa36f9a4b0a0662628ead619c231b86819e45d493b5dfd4fb082a35",
+      "train_size": 331,
+      "valid_size": 48,
+      "validation_set_sha256": "0f6c38fc80c7e0bd106b8616be17c34f5580b9f5ede39a7c01f18a46c3587f4f"
+     }
+    },
+    "test_fraction": 0.20210526315789473,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 96,
+    "test_set_sha256": "f7b012b0569430610060ff95481ba2d0954bca4d39738ed6a160e22e08e9fc99",
+    "train_val_rows": 379,
+    "train_val_set_sha256": "0daa19ec95465f18c442e52f898fa08464fc596c39ca06bb0e613f384bdd2306"
+   },
+   "task_type": "classification",
+   "tdc_category": "Tox",
+   "tdc_identity": {
+    "dataset_id": 4259585,
+    "dataset_name": "dili",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "roc-auc",
+   "test": {
+    "bytes": 5726,
+    "rows": 96,
+    "sha256": "eb4cacff67a3f25d1d5e6a4c15ada68239af630ec19979097c4c832b185478e8"
+   },
+   "train_val": {
+    "bytes": 20016,
+    "rows": 379,
+    "sha256": "0a5c221e3a62b204a990586be505ae1373884b7ef10e983bea1821901755c908"
+   },
+   "usable": 475
+  },
+  "half_life_obach": {
+   "checksums": {
+    "test": {
+     "bytes": 10529,
+     "rows": 135,
+     "sha256": "ec68952751525bee83c40ad23be420da183b787b04319cbbf9877d3a2eb02316"
+    },
+    "train_val": {
+     "bytes": 40409,
+     "rows": 532,
+     "sha256": "31ad09226c2d3a86ac5dd312f5f93aa1ba5153c45d0aaf90c8e2c69ba6d46d37"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 665,
+    "overlap_fraction": 0.9714285714285714,
+    "present_in_chembl37": 646
+   },
+   "common_evaluation_set": 665,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 665,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 665,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 2,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 667,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 665
+   },
+   "label_summary": {
+    "conflict_tolerance": 11.99935,
+    "max": 1200.0,
+    "median": 4.2,
+    "min": 0.065,
+    "spread": 1199.935
+   },
+   "molfusion_primary_metric": "mae",
+   "name": "half_life_obach",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 110,
+    "test_scaffolds_tdc_convention": 104,
+    "test_unique_molecules": 134,
+    "train_val_unique_molecules": 531
+   },
+   "raw_rows": 667,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 4.159,
+     "successes": 665
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 1.413,
+     "successes": 665
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 4.127,
+     "successes": 665
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 0.815,
+     "successes": 665
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 2.747,
+     "successes": 665
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 40.03,
+     "successes": 665
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 1.51,
+     "successes": 665
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 15,
+    "largest_group_size": 58,
+    "unique_scaffolds": 460
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "d994d7c3296d2ec0de4cf93f00387a9b44d63a3d9186258b8a5657cda8b54715",
+      "train_set_sha256": "efe5b927c5d16716e68057656e54a9b9f997f492d65b027ee324c73757948fa6",
+      "train_size": 465,
+      "valid_size": 67,
+      "validation_set_sha256": "3bc730a422d3d73b33cf741f8a919a019789f5bc1f3f6d032752cedb1524a2ec"
+     },
+     "2": {
+      "test_set_sha256": "d994d7c3296d2ec0de4cf93f00387a9b44d63a3d9186258b8a5657cda8b54715",
+      "train_set_sha256": "826242e24f4bd882aaa08deb60ad82fd32fc5e756b5a1526dc4bdbfd767661de",
+      "train_size": 465,
+      "valid_size": 67,
+      "validation_set_sha256": "0e6ad2e4fc616782c9383becd187259e8b42e869c0bb06232830d0785a1a64e9"
+     },
+     "3": {
+      "test_set_sha256": "d994d7c3296d2ec0de4cf93f00387a9b44d63a3d9186258b8a5657cda8b54715",
+      "train_set_sha256": "6d81786d06bc35c439426d17228b68d4a9a443b480b189f6a7fd6a393b2b300a",
+      "train_size": 465,
+      "valid_size": 67,
+      "validation_set_sha256": "2464071012b7092b566a520a5848a2e725639830f8fd39e9d5f047b2c1f2b653"
+     },
+     "4": {
+      "test_set_sha256": "d994d7c3296d2ec0de4cf93f00387a9b44d63a3d9186258b8a5657cda8b54715",
+      "train_set_sha256": "4ca5728cd7702a5afc554856c65b54ad69b0a9eb067bc8a53da4722691c381a7",
+      "train_size": 465,
+      "valid_size": 67,
+      "validation_set_sha256": "aa4529c978523d3f3b5f6982dcdc37b7cb1a80a15cf34af0c2f01b00455a2aee"
+     },
+     "5": {
+      "test_set_sha256": "d994d7c3296d2ec0de4cf93f00387a9b44d63a3d9186258b8a5657cda8b54715",
+      "train_set_sha256": "304bccc3a8a86d904f492403068b20fa9d6deb0159a4dffd77ea7e454b8302fb",
+      "train_size": 465,
+      "valid_size": 67,
+      "validation_set_sha256": "8b5312e9548cc80cd752bb29efa43ffe90267e191c1b62fb0974294d69ee45e9"
+     }
+    },
+    "test_fraction": 0.20239880059970014,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 135,
+    "test_set_sha256": "d994d7c3296d2ec0de4cf93f00387a9b44d63a3d9186258b8a5657cda8b54715",
+    "train_val_rows": 532,
+    "train_val_set_sha256": "de7978c2e539b7c4eb9d6158267b39dd19e929cb23d33882a08b665b70b43a08"
+   },
+   "task_type": "regression",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4266799,
+    "dataset_name": "half_life_obach",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "spearman",
+   "test": {
+    "bytes": 10529,
+    "rows": 135,
+    "sha256": "ec68952751525bee83c40ad23be420da183b787b04319cbbf9877d3a2eb02316"
+   },
+   "train_val": {
+    "bytes": 40409,
+    "rows": 532,
+    "sha256": "31ad09226c2d3a86ac5dd312f5f93aa1ba5153c45d0aaf90c8e2c69ba6d46d37"
+   },
+   "usable": 665
+  },
+  "herg": {
+   "checksums": {
+    "test": {
+     "bytes": 9150,
+     "rows": 132,
+     "sha256": "8d5d02b45f4a7ec7c9e9376b8d19d04180a585fc2428be8096225f748722050a"
+    },
+    "train_val": {
+     "bytes": 38521,
+     "rows": 523,
+     "sha256": "db8866a16aad6fdfd7567d78a0976909e337c42fd6ecd149a4d05416a7b94cb2"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 645,
+    "overlap_fraction": 0.36589147286821705,
+    "present_in_chembl37": 236
+   },
+   "common_evaluation_set": 645,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 645,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 645,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 3,
+    "duplicates_collapsed": 4,
+    "duplicates_conflicting_dropped": 6,
+    "input_records": 655,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 645
+   },
+   "label_summary": {
+    "counts": {
+     "0.0": 201,
+     "1.0": 444
+    },
+    "minority_fraction": 0.3116279069767442,
+    "total": 645
+   },
+   "molfusion_primary_metric": "auroc",
+   "name": "herg",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 71,
+    "test_scaffolds_tdc_convention": 69,
+    "test_unique_molecules": 128,
+    "train_val_unique_molecules": 520
+   },
+   "raw_rows": 655,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 3.249,
+     "successes": 645
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 1.279,
+     "successes": 645
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 3.496,
+     "successes": 645
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 0.787,
+     "successes": 645
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 2.891,
+     "successes": 645
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 33.301,
+     "successes": 645
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 1.554,
+     "successes": 645
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 18,
+    "largest_group_size": 32,
+    "unique_scaffolds": 422
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "daa166dbe6fa6f4ec78243fecd9fb7a1875708fa6cb26639527a9bb24b873299",
+      "train_set_sha256": "464d12e1120a0ec118307e6eb1ed3fcdf8acd6803f34d2787081b8bd050a67e4",
+      "train_size": 457,
+      "valid_size": 66,
+      "validation_set_sha256": "637ed28bfa45284a30a22003a01d72ae65cb35b75f4b43855ee5fcc06f8e97f0"
+     },
+     "2": {
+      "test_set_sha256": "daa166dbe6fa6f4ec78243fecd9fb7a1875708fa6cb26639527a9bb24b873299",
+      "train_set_sha256": "2ad61c9edcc730de0b09c415df9f225f94e15ec8fcab4e2e33de60ea0fc1e7c2",
+      "train_size": 457,
+      "valid_size": 66,
+      "validation_set_sha256": "b970819c128470ccad1e2606ad8bd238f8b1a0355789afeae67320258efc9fc1"
+     },
+     "3": {
+      "test_set_sha256": "daa166dbe6fa6f4ec78243fecd9fb7a1875708fa6cb26639527a9bb24b873299",
+      "train_set_sha256": "2ba9ed611f44b260af24025b11f13800fe461a20b4438c368afdff5a2754baed",
+      "train_size": 457,
+      "valid_size": 66,
+      "validation_set_sha256": "f5b5289672a5c2d1db72e0082c6edd52b0f447f7aa73fbc1b7b64c3719a4e2f2"
+     },
+     "4": {
+      "test_set_sha256": "daa166dbe6fa6f4ec78243fecd9fb7a1875708fa6cb26639527a9bb24b873299",
+      "train_set_sha256": "a75b94d32c36a6ec6105f884dd03587aa93ed3c32ff986795cfc2b71b771e7f8",
+      "train_size": 457,
+      "valid_size": 66,
+      "validation_set_sha256": "99c9158e00d82e8135cdc4cc219f559230b8ab9a249c14a252b84066863c00f6"
+     },
+     "5": {
+      "test_set_sha256": "daa166dbe6fa6f4ec78243fecd9fb7a1875708fa6cb26639527a9bb24b873299",
+      "train_set_sha256": "0df0d54da7d32158ed0c964aa88d0b2e68695fe029128f5af4d53f09a9de7f1f",
+      "train_size": 457,
+      "valid_size": 66,
+      "validation_set_sha256": "c1a097ac4cf05b438ea495e48d1174261312db8a592e491703dd0eaec3c9420b"
+     }
+    },
+    "test_fraction": 0.2015267175572519,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 132,
+    "test_set_sha256": "daa166dbe6fa6f4ec78243fecd9fb7a1875708fa6cb26639527a9bb24b873299",
+    "train_val_rows": 523,
+    "train_val_set_sha256": "c901e3d5963e9b85cbd8354ad60006dc7e51681781faaf98bc0f66a2338123d2"
+   },
+   "task_type": "classification",
+   "tdc_category": "Tox",
+   "tdc_identity": {
+    "dataset_id": 4259588,
+    "dataset_name": "herg",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "roc-auc",
+   "test": {
+    "bytes": 9150,
+    "rows": 132,
+    "sha256": "8d5d02b45f4a7ec7c9e9376b8d19d04180a585fc2428be8096225f748722050a"
+   },
+   "train_val": {
+    "bytes": 38521,
+    "rows": 523,
+    "sha256": "db8866a16aad6fdfd7567d78a0976909e337c42fd6ecd149a4d05416a7b94cb2"
+   },
+   "usable": 645
+  },
+  "hia_hou": {
+   "checksums": {
+    "test": {
+     "bytes": 8149,
+     "rows": 117,
+     "sha256": "da702497c3c0a50dbdff77471517562a8813859f53f069ac5bb43126aa534351"
+    },
+    "train_val": {
+     "bytes": 29694,
+     "rows": 461,
+     "sha256": "87f35dc1767174efa245ee71644229b5073a8490988527a3fe6d2f1e7522c7db"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 578,
+    "overlap_fraction": 0.5588235294117647,
+    "present_in_chembl37": 323
+   },
+   "common_evaluation_set": 578,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 578,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 578,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 0,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 578,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 578
+   },
+   "label_summary": {
+    "counts": {
+     "0.0": 78,
+     "1.0": 500
+    },
+    "minority_fraction": 0.13494809688581316,
+    "total": 578
+   },
+   "molfusion_primary_metric": "auroc",
+   "name": "hia_hou",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 71,
+    "test_scaffolds_tdc_convention": 68,
+    "test_unique_molecules": 117,
+    "train_val_unique_molecules": 461
+   },
+   "raw_rows": 578,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 2.527,
+     "successes": 578
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 1.138,
+     "successes": 578
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 2.859,
+     "successes": 578
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 0.703,
+     "successes": 578
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 2.134,
+     "successes": 578
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 24.785,
+     "successes": 578
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 1.212,
+     "successes": 578
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 19,
+    "largest_group_size": 64,
+    "unique_scaffolds": 399
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "8e9f8d9a57f5b7967ba997b0efac4c6239e572024cf9b05027d1aa9fc1e9f02c",
+      "train_set_sha256": "407aa11e76452f017401fdfea8474c67864a2671f80f021699c26c5bab200bc8",
+      "train_size": 403,
+      "valid_size": 58,
+      "validation_set_sha256": "d4265dd355ebca2dea7cfd71d9495846af1d1ca2a56183fb09c20f09bc794a46"
+     },
+     "2": {
+      "test_set_sha256": "8e9f8d9a57f5b7967ba997b0efac4c6239e572024cf9b05027d1aa9fc1e9f02c",
+      "train_set_sha256": "c0b8c1a49d85b01c65b4c157d0e9db90e9e105ef6bfa4bde04bf39b23062af77",
+      "train_size": 403,
+      "valid_size": 58,
+      "validation_set_sha256": "87660b337805d80557948be7541ed17f72a493db093c277202d4683fabe46af1"
+     },
+     "3": {
+      "test_set_sha256": "8e9f8d9a57f5b7967ba997b0efac4c6239e572024cf9b05027d1aa9fc1e9f02c",
+      "train_set_sha256": "ccab9b81a61ddccac3fbcff4f0530f87eddf4a2e60b6978ddda2b4584a0225f8",
+      "train_size": 403,
+      "valid_size": 58,
+      "validation_set_sha256": "c98e51a82daae856cc195a3aed0a0f4b2c04abdc8f89358711bfb08b47aab9e8"
+     },
+     "4": {
+      "test_set_sha256": "8e9f8d9a57f5b7967ba997b0efac4c6239e572024cf9b05027d1aa9fc1e9f02c",
+      "train_set_sha256": "5fdde1d715ea1c4f2061c8c35dbe42f482320ec79f2546babcc5992334c2a3c9",
+      "train_size": 403,
+      "valid_size": 58,
+      "validation_set_sha256": "9299967f6a9329fb0d9248d96fbc0452004bcf359ce66abd285d7ba577afd86d"
+     },
+     "5": {
+      "test_set_sha256": "8e9f8d9a57f5b7967ba997b0efac4c6239e572024cf9b05027d1aa9fc1e9f02c",
+      "train_set_sha256": "e3032800539fbf1a0d366081b63eec3f6de7a232f836988d43409254073b122e",
+      "train_size": 397,
+      "valid_size": 64,
+      "validation_set_sha256": "e2b2cd5edd8cb4c60f7aecfba7db8f0addde1e6b978a84aefc30fc729a90fcc4"
+     }
+    },
+    "test_fraction": 0.20242214532871972,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 117,
+    "test_set_sha256": "8e9f8d9a57f5b7967ba997b0efac4c6239e572024cf9b05027d1aa9fc1e9f02c",
+    "train_val_rows": 461,
+    "train_val_set_sha256": "bf6a6c1a0c20b18912990364a4c94bcc30e23fb77b1c28f067e4d0acc91fd676"
+   },
+   "task_type": "classification",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4259591,
+    "dataset_name": "hia_hou",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "roc-auc",
+   "test": {
+    "bytes": 8149,
+    "rows": 117,
+    "sha256": "da702497c3c0a50dbdff77471517562a8813859f53f069ac5bb43126aa534351"
+   },
+   "train_val": {
+    "bytes": 29694,
+    "rows": 461,
+    "sha256": "87f35dc1767174efa245ee71644229b5073a8490988527a3fe6d2f1e7522c7db"
+   },
+   "usable": 578
+  },
+  "ld50_zhu": {
+   "checksums": {
+    "test": {
+     "bytes": 154205,
+     "rows": 1478,
+     "sha256": "60ac4ecf09150a494aa0513fb401e40e1b5cbd8a29013cb1d129947ac7b4eece"
+    },
+    "train_val": {
+     "bytes": 522457,
+     "rows": 5907,
+     "sha256": "8c0e3139b5507944dcd4fd2e99e6f9b136102fc114a647731a38d123b482a62b"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 7320,
+    "overlap_fraction": 0.4646174863387978,
+    "present_in_chembl37": 3401
+   },
+   "common_evaluation_set": 7320,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 7320,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 7320,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 22,
+    "duplicates_collapsed": 16,
+    "duplicates_conflicting_dropped": 49,
+    "input_records": 7385,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 7320
+   },
+   "label_summary": {
+    "conflict_tolerance": 0.10550000000000001,
+    "max": 10.207,
+    "median": 2.366,
+    "min": -0.3429999999999999,
+    "spread": 10.55
+   },
+   "molfusion_primary_metric": "mae",
+   "name": "ld50_zhu",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 470,
+    "test_scaffolds_tdc_convention": 470,
+    "test_unique_molecules": 1466,
+    "train_val_unique_molecules": 5876
+   },
+   "raw_rows": 7385,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 22.099,
+     "successes": 7320
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 10.14,
+     "successes": 7320
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 22.429,
+     "successes": 7320
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 5.412,
+     "successes": 7320
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 23.499,
+     "successes": 7320
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 239.718,
+     "successes": 7320
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 10.958,
+     "successes": 7320
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 1925,
+    "largest_group_size": 1925,
+    "unique_scaffolds": 1675
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "0a8f76d3a22eb9497df102753d36493f260f10eaef9963675e3f3bd4f937388e",
+      "train_set_sha256": "89d1a3d09af8cbcc05f9fd02c5968acafb6a016f7db31fe715ca5451bdd8ae90",
+      "train_size": 5168,
+      "valid_size": 739,
+      "validation_set_sha256": "52679bf6694a2cb7daaedea60143fba48a171c276d8def603d6d6122ecb10417"
+     },
+     "2": {
+      "test_set_sha256": "0a8f76d3a22eb9497df102753d36493f260f10eaef9963675e3f3bd4f937388e",
+      "train_set_sha256": "ceffc390d6d7828e889d942ace7d23bb99ed774c5db3f3ee1ceb93b3e9b35f77",
+      "train_size": 5168,
+      "valid_size": 739,
+      "validation_set_sha256": "e95bf90abd52920c068e89f90c1a3a7c7997b1ecd21856b7bc7a6e4084e8d3f2"
+     },
+     "3": {
+      "test_set_sha256": "0a8f76d3a22eb9497df102753d36493f260f10eaef9963675e3f3bd4f937388e",
+      "train_set_sha256": "7ca7b1c5bf902d2e5165f501bb977717df1e833021461074e407209166b6e9f1",
+      "train_size": 3970,
+      "valid_size": 1937,
+      "validation_set_sha256": "302fd0a2c1e2e5c7558bb6907ac7983b89074781735bab00dd2a50adfa57078d"
+     },
+     "4": {
+      "test_set_sha256": "0a8f76d3a22eb9497df102753d36493f260f10eaef9963675e3f3bd4f937388e",
+      "train_set_sha256": "9eb1bbe0eefef45351599cbaca81b9f0bc6d36d3aa19a5b9f303337b219100c3",
+      "train_size": 5168,
+      "valid_size": 739,
+      "validation_set_sha256": "7f144bf9f7b9ef21df37e06586abd539575cfd95ae26d81ee1369d4ebb2b29b6"
+     },
+     "5": {
+      "test_set_sha256": "0a8f76d3a22eb9497df102753d36493f260f10eaef9963675e3f3bd4f937388e",
+      "train_set_sha256": "43c6ede8be95dba4b00455609f9162b286b5cdaec1fefb53b8b1478a64e17711",
+      "train_size": 4367,
+      "valid_size": 1540,
+      "validation_set_sha256": "e6e75f2471d47517d0d40ec40f36627b4aec7192e0ad66fb2ba6c1d8e328c90e"
+     }
+    },
+    "test_fraction": 0.2001354096140826,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 1478,
+    "test_set_sha256": "0a8f76d3a22eb9497df102753d36493f260f10eaef9963675e3f3bd4f937388e",
+    "train_val_rows": 5907,
+    "train_val_set_sha256": "93408a50a76d37883ab1eb660466d1421d50b4532690880f35bc44c37d29c3a8"
+   },
+   "task_type": "regression",
+   "tdc_category": "Tox",
+   "tdc_identity": {
+    "dataset_id": 4267146,
+    "dataset_name": "ld50_zhu",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "mae",
+   "test": {
+    "bytes": 154205,
+    "rows": 1478,
+    "sha256": "60ac4ecf09150a494aa0513fb401e40e1b5cbd8a29013cb1d129947ac7b4eece"
+   },
+   "train_val": {
+    "bytes": 522457,
+    "rows": 5907,
+    "sha256": "8c0e3139b5507944dcd4fd2e99e6f9b136102fc114a647731a38d123b482a62b"
+   },
+   "usable": 7320
+  },
+  "lipophilicity_astrazeneca": {
+   "checksums": {
+    "test": {
+     "bytes": 57467,
+     "rows": 840,
+     "sha256": "69f3870c9b6f2cec79a992a31d59d2e940962f7e2c4b27dabaed1fe1e767e2d8"
+    },
+    "train_val": {
+     "bytes": 223630,
+     "rows": 3360,
+     "sha256": "a54636f85cf31eb4c914ea15e2c3a15364b0b8b51986262ea229203637e08f31"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 4200,
+    "overlap_fraction": 0.9940476190476191,
+    "present_in_chembl37": 4175
+   },
+   "common_evaluation_set": 4200,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 4200,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 4200,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 0,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 4200,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 4200
+   },
+   "label_summary": {
+    "conflict_tolerance": 0.06,
+    "max": 4.5,
+    "median": 2.36,
+    "min": -1.5,
+    "spread": 6.0
+   },
+   "molfusion_primary_metric": "mae",
+   "name": "lipophilicity_astrazeneca",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 491,
+    "test_scaffolds_tdc_convention": 480,
+    "test_unique_molecules": 840,
+    "train_val_unique_molecules": 3360
+   },
+   "raw_rows": 4200,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 20.79,
+     "successes": 4200
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 9.965,
+     "successes": 4200
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 21.403,
+     "successes": 4200
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 5.178,
+     "successes": 4200
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 17.318,
+     "successes": 4200
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 214.002,
+     "successes": 4200
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 9.376,
+     "successes": 4200
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 5,
+    "largest_group_size": 76,
+    "unique_scaffolds": 2443
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "f514da08a9822a9ab95a69219a41244a19b6529bc609f8fce7b0996bfa13ca59",
+      "train_set_sha256": "8291f16a2c7f6fddcb68e76ca2e16efeceec9286e3720e3425d066bcda33d552",
+      "train_size": 2940,
+      "valid_size": 420,
+      "validation_set_sha256": "1201956cfa290e24b61998b0eaf22975f47aa6b393b8019b7844aeb6d16b635d"
+     },
+     "2": {
+      "test_set_sha256": "f514da08a9822a9ab95a69219a41244a19b6529bc609f8fce7b0996bfa13ca59",
+      "train_set_sha256": "1cbdd74f2914178e474e4a3bfaceac59e6799d68599d2c25c3c1c538ade06553",
+      "train_size": 2940,
+      "valid_size": 420,
+      "validation_set_sha256": "7ce0c5753ae25964fab065cc46c86acbf2048fd23fb8e01be2b4ed8b673cd4b0"
+     },
+     "3": {
+      "test_set_sha256": "f514da08a9822a9ab95a69219a41244a19b6529bc609f8fce7b0996bfa13ca59",
+      "train_set_sha256": "ad028eee982a765d814762463be3da1f6c96da6a27bf93ae87da4011bce2f96b",
+      "train_size": 2940,
+      "valid_size": 420,
+      "validation_set_sha256": "bec071793c13cff41771023a45749386ff353ac3c7bf477f025a6119136c3738"
+     },
+     "4": {
+      "test_set_sha256": "f514da08a9822a9ab95a69219a41244a19b6529bc609f8fce7b0996bfa13ca59",
+      "train_set_sha256": "e5e3f709b49c77f9cb5eec9e57321ba3631dcfdd35e1267c97c58ee81f467074",
+      "train_size": 2940,
+      "valid_size": 420,
+      "validation_set_sha256": "f437524b44d29d0995524e68189305f72b431dbeec9e3d509eeed5eaf7a0fb82"
+     },
+     "5": {
+      "test_set_sha256": "f514da08a9822a9ab95a69219a41244a19b6529bc609f8fce7b0996bfa13ca59",
+      "train_set_sha256": "ad7af419f2f7a15c16b52eeaecf9baa3aeceb9c34ef32946f07793f5a792c169",
+      "train_size": 2940,
+      "valid_size": 420,
+      "validation_set_sha256": "885dfb184f792812ae622204a5359f12ec2a565b8b8112076923d3a87be3ebf6"
+     }
+    },
+    "test_fraction": 0.2,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 840,
+    "test_set_sha256": "f514da08a9822a9ab95a69219a41244a19b6529bc609f8fce7b0996bfa13ca59",
+    "train_val_rows": 3360,
+    "train_val_set_sha256": "9cdb8ecccd07d6dc5287d60bc3d801160439dd81c9cb9e5117f1e1d8170bb6d7"
+   },
+   "task_type": "regression",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4259595,
+    "dataset_name": "lipophilicity_astrazeneca",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "mae",
+   "test": {
+    "bytes": 57467,
+    "rows": 840,
+    "sha256": "69f3870c9b6f2cec79a992a31d59d2e940962f7e2c4b27dabaed1fe1e767e2d8"
+   },
+   "train_val": {
+    "bytes": 223630,
+    "rows": 3360,
+    "sha256": "a54636f85cf31eb4c914ea15e2c3a15364b0b8b51986262ea229203637e08f31"
+   },
+   "usable": 4200
+  },
+  "pgp_broccatelli": {
+   "checksums": {
+    "test": {
+     "bytes": 22937,
+     "rows": 245,
+     "sha256": "959e448d2b8927d65ede864838c2eee5b2075d4c01ca544aeec4c90d663b4ccb"
+    },
+    "train_val": {
+     "bytes": 98234,
+     "rows": 973,
+     "sha256": "4a9183cf40c01881c6cfdeee7b68fed6dbe31348081099a323b9b76351a1dae0"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 1212,
+    "overlap_fraction": 0.5915841584158416,
+    "present_in_chembl37": 717
+   },
+   "common_evaluation_set": 1212,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 1212,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 1212,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 6,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 1218,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 1212
+   },
+   "label_summary": {
+    "counts": {
+     "0.0": 565,
+     "1.0": 647
+    },
+    "minority_fraction": 0.4661716171617162,
+    "total": 1212
+   },
+   "molfusion_primary_metric": "auroc",
+   "name": "pgp_broccatelli",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 138,
+    "test_scaffolds_tdc_convention": 136,
+    "test_unique_molecules": 245,
+    "train_val_unique_molecules": 967
+   },
+   "raw_rows": 1218,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 6.135,
+     "successes": 1212
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 2.367,
+     "successes": 1212
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 8.041,
+     "successes": 1212
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 1.469,
+     "successes": 1212
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 4.949,
+     "successes": 1212
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 61.741,
+     "successes": 1212
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 2.574,
+     "successes": 1212
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 19,
+    "largest_group_size": 66,
+    "unique_scaffolds": 712
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "fa4d73ed1c8a8a3cb33dd4dad56512aaa3c8bf8479f733059e7b6a8f6ed155bf",
+      "train_set_sha256": "d384ffb755ed219a7254b64ed132e7641da38d299181f7f3e599754ba9e36b3f",
+      "train_size": 851,
+      "valid_size": 122,
+      "validation_set_sha256": "86a4dd9cd527f9ffa82f643a52fa1b9f96910f1e9088f2733248fb1cab96a28c"
+     },
+     "2": {
+      "test_set_sha256": "fa4d73ed1c8a8a3cb33dd4dad56512aaa3c8bf8479f733059e7b6a8f6ed155bf",
+      "train_set_sha256": "995ab7c11365a5de3413fd48547e29666e7b5dff1e9b1fa6920b6ed8a65d4b26",
+      "train_size": 851,
+      "valid_size": 122,
+      "validation_set_sha256": "5f1da17262197656cd8e55f65ea403a6de17a1ec11652a0d6d0ebe41b848ae6f"
+     },
+     "3": {
+      "test_set_sha256": "fa4d73ed1c8a8a3cb33dd4dad56512aaa3c8bf8479f733059e7b6a8f6ed155bf",
+      "train_set_sha256": "3087a9da513dff0d164c2548896493061547ff5f56699cbb15e713c61da1e7ec",
+      "train_size": 851,
+      "valid_size": 122,
+      "validation_set_sha256": "6cc7d560d6007cd81425dce6c70237eb7d65648aff14e359f0c7d31665294a76"
+     },
+     "4": {
+      "test_set_sha256": "fa4d73ed1c8a8a3cb33dd4dad56512aaa3c8bf8479f733059e7b6a8f6ed155bf",
+      "train_set_sha256": "7e1b1d6677c03f08e35728c3904cfa59e110f6bd7dc9ac043155eff09bb863a3",
+      "train_size": 851,
+      "valid_size": 122,
+      "validation_set_sha256": "38a46760c534fb2fe5e9907c846cd854aef38b4aec2ada489935dec97b1edcb5"
+     },
+     "5": {
+      "test_set_sha256": "fa4d73ed1c8a8a3cb33dd4dad56512aaa3c8bf8479f733059e7b6a8f6ed155bf",
+      "train_set_sha256": "dda73ed6f1b51e62b2cf90d462d9bbfe3dae1687c1d93e965b4fdc258eb87f6e",
+      "train_size": 851,
+      "valid_size": 122,
+      "validation_set_sha256": "a9b3db0cb94941f49e50fdb65948a486716539b75ea74b5403e4a4f2f7530053"
+     }
+    },
+    "test_fraction": 0.20114942528735633,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 245,
+    "test_set_sha256": "fa4d73ed1c8a8a3cb33dd4dad56512aaa3c8bf8479f733059e7b6a8f6ed155bf",
+    "train_val_rows": 973,
+    "train_val_set_sha256": "c785680bdcf08ee21e5be3a04252c32dd9d88529516d0c0f2582362c7c16c922"
+   },
+   "task_type": "classification",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4259597,
+    "dataset_name": "pgp_broccatelli",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "roc-auc",
+   "test": {
+    "bytes": 22937,
+    "rows": 245,
+    "sha256": "959e448d2b8927d65ede864838c2eee5b2075d4c01ca544aeec4c90d663b4ccb"
+   },
+   "train_val": {
+    "bytes": 98234,
+    "rows": 973,
+    "sha256": "4a9183cf40c01881c6cfdeee7b68fed6dbe31348081099a323b9b76351a1dae0"
+   },
+   "usable": 1212
+  },
+  "ppbr_az": {
+   "checksums": {
+    "test": {
+     "bytes": 41047,
+     "rows": 559,
+     "sha256": "c3a0acbca0053a0d7aa8b6ed01e9873abeddde88fa1340c1edfb63d9cf728f42"
+    },
+    "train_val": {
+     "bytes": 161449,
+     "rows": 2231,
+     "sha256": "edc4416f46b0e463b3c5f26b10e0ac2ba013db53813ac9546c4780bbb5f81720"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 1276,
+    "overlap_fraction": 0.9945141065830722,
+    "present_in_chembl37": 1269
+   },
+   "common_evaluation_set": 1276,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 1276,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 1276,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 521,
+    "duplicates_collapsed": 202,
+    "duplicates_conflicting_dropped": 1312,
+    "input_records": 2790,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 1276
+   },
+   "label_summary": {
+    "conflict_tolerance": 0.8877000000000002,
+    "max": 99.95,
+    "median": 95.82,
+    "min": 11.18,
+    "spread": 88.77000000000001
+   },
+   "molfusion_primary_metric": "mae",
+   "name": "ppbr_az",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 225,
+    "test_scaffolds_tdc_convention": 222,
+    "test_unique_molecules": 343,
+    "train_val_unique_molecules": 1454
+   },
+   "raw_rows": 2790,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 6.793,
+     "successes": 1276
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 3.282,
+     "successes": 1276
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 7.234,
+     "successes": 1276
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 2.944,
+     "successes": 1276
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 6.109,
+     "successes": 1276
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 67.761,
+     "successes": 1276
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 3.372,
+     "successes": 1276
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 3,
+    "largest_group_size": 30,
+    "unique_scaffolds": 858
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "66bb29043f244375879c6aec7ab98a0a50f11eb95edffef2e983c05065739f6d",
+      "train_set_sha256": "22f5f2e09009baffa6602893bb0ab2befee8201920ce6a8166dd16e65f841395",
+      "train_size": 1952,
+      "valid_size": 279,
+      "validation_set_sha256": "b3df3b3922c8155e895fbd55e8bcd068058df0be6d2ac880207cafa5d7ae7685"
+     },
+     "2": {
+      "test_set_sha256": "66bb29043f244375879c6aec7ab98a0a50f11eb95edffef2e983c05065739f6d",
+      "train_set_sha256": "7e97bcd39494df1b0c8fc8a00f6b94fe09315589a0ff99d79a31ff2b10bbb1e4",
+      "train_size": 1952,
+      "valid_size": 279,
+      "validation_set_sha256": "3af9dc29e00315561d7504f3254a402b6ccff47850d147ccb95cda907b279b6b"
+     },
+     "3": {
+      "test_set_sha256": "66bb29043f244375879c6aec7ab98a0a50f11eb95edffef2e983c05065739f6d",
+      "train_set_sha256": "193779993799989c3de0a52c6e50ac6794f710c3a8f158cb8b4a6e21b6f94360",
+      "train_size": 1952,
+      "valid_size": 279,
+      "validation_set_sha256": "fdbecf965b04cd89d0c7895e6eedff19c0ba19d9f467614d464308cd588571f1"
+     },
+     "4": {
+      "test_set_sha256": "66bb29043f244375879c6aec7ab98a0a50f11eb95edffef2e983c05065739f6d",
+      "train_set_sha256": "0c824b72ee753d99e3e6e9165a59e7d0b1379922bcd36061fda41e030bbff4e7",
+      "train_size": 1952,
+      "valid_size": 279,
+      "validation_set_sha256": "890cdd4368b2f103b69541bd540198fe7879b493e5aa14131b1332f4134fbacc"
+     },
+     "5": {
+      "test_set_sha256": "66bb29043f244375879c6aec7ab98a0a50f11eb95edffef2e983c05065739f6d",
+      "train_set_sha256": "07435cc6d748049b433cfda092d33baefeb78a0d9929d8b4269e1350525e8d16",
+      "train_size": 1952,
+      "valid_size": 279,
+      "validation_set_sha256": "dd122abf2eaf022b8e00edc8a07177517591192ad1ed0cee59a041d1ee14c5b3"
+     }
+    },
+    "test_fraction": 0.2003584229390681,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 559,
+    "test_set_sha256": "66bb29043f244375879c6aec7ab98a0a50f11eb95edffef2e983c05065739f6d",
+    "train_val_rows": 2231,
+    "train_val_set_sha256": "3cf9fb9bc92f4cdda6c05fe1c78972d11f7bcb0cd7f994c1096cd1add274664f"
+   },
+   "task_type": "regression",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 6413140,
+    "dataset_name": "ppbr_az",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "mae",
+   "test": {
+    "bytes": 41047,
+    "rows": 559,
+    "sha256": "c3a0acbca0053a0d7aa8b6ed01e9873abeddde88fa1340c1edfb63d9cf728f42"
+   },
+   "train_val": {
+    "bytes": 161449,
+    "rows": 2231,
+    "sha256": "edc4416f46b0e463b3c5f26b10e0ac2ba013db53813ac9546c4780bbb5f81720"
+   },
+   "usable": 1276
+  },
+  "solubility_aqsoldb": {
+   "checksums": {
+    "test": {
+     "bytes": 187298,
+     "rows": 1997,
+     "sha256": "fee80f90068029cb0e3e72a99182a6fcd04cdef67378912e33090d01777a3dd1"
+    },
+    "train_val": {
+     "bytes": 630017,
+     "rows": 7985,
+     "sha256": "a58cdd38ad361d5c58fe1c68acaec186ff06eaceee6d504a7c5a23218306cc2e"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 9980,
+    "overlap_fraction": 0.4557114228456914,
+    "present_in_chembl37": 4548
+   },
+   "common_evaluation_set": 9980,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 9980,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 9980,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 0,
+    "duplicates_collapsed": 0,
+    "duplicates_conflicting_dropped": 0,
+    "input_records": 9982,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 2,
+    "usable": 9980
+   },
+   "label_summary": {
+    "conflict_tolerance": 0.15309581620100002,
+    "max": 2.1376816201,
+    "median": -2.6183,
+    "min": -13.1719,
+    "spread": 15.309581620100001
+   },
+   "molfusion_primary_metric": "mae",
+   "name": "solubility_aqsoldb",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 649,
+    "test_scaffolds_tdc_convention": 621,
+    "test_unique_molecules": 1995,
+    "train_val_unique_molecules": 7985
+   },
+   "raw_rows": 9982,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 33.039,
+     "successes": 9980
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 15.635,
+     "successes": 9980
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 33.502,
+     "successes": 9980
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 7.82,
+     "successes": 9980
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 33.298,
+     "successes": 9980
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 397.798,
+     "successes": 9980
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 17.378,
+     "successes": 9980
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 2940,
+    "largest_group_size": 2940,
+    "unique_scaffolds": 2056
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "71bcb5db37a6411cc0b1601e3364435daa8e2160981763bf853328a862c2b9e8",
+      "train_set_sha256": "97c7d25efcd4e37751b131ce16d367ada320d6f5d009f8ae9cc12edb80e720f9",
+      "train_size": 6986,
+      "valid_size": 999,
+      "validation_set_sha256": "d6ccaa18fc203134086692d19e7d9e3c387bfcf81d23bd5f74c98c171d56073e"
+     },
+     "2": {
+      "test_set_sha256": "71bcb5db37a6411cc0b1601e3364435daa8e2160981763bf853328a862c2b9e8",
+      "train_set_sha256": "7012529f34e1c247a21ee725f5af26246ea679490c4df3c36636a2ebaa0340d1",
+      "train_size": 6986,
+      "valid_size": 999,
+      "validation_set_sha256": "3ac8a485acd12fa30747f8f997937e5e8274b0d1ccba512616932d0c0925ba59"
+     },
+     "3": {
+      "test_set_sha256": "71bcb5db37a6411cc0b1601e3364435daa8e2160981763bf853328a862c2b9e8",
+      "train_set_sha256": "d2b072d72a67861c9374a49eef501865254be12b87df7b221bc2677a6aa2d6c8",
+      "train_size": 6986,
+      "valid_size": 999,
+      "validation_set_sha256": "9bf7c33a27710941dabc7b20d2529a26c60b49853d50a3e4000c0cf1c4dc5535"
+     },
+     "4": {
+      "test_set_sha256": "71bcb5db37a6411cc0b1601e3364435daa8e2160981763bf853328a862c2b9e8",
+      "train_set_sha256": "3100eb687e7b35e69ce9fed6ebebac853eaaf1a27a5a23e2033968160e7b1823",
+      "train_size": 6986,
+      "valid_size": 999,
+      "validation_set_sha256": "67e7ded5f16b710b5d0d39a655b8a66162e1d87c3d8452a565a6d452e4246696"
+     },
+     "5": {
+      "test_set_sha256": "71bcb5db37a6411cc0b1601e3364435daa8e2160981763bf853328a862c2b9e8",
+      "train_set_sha256": "d889f0ec8985303c305473eb72ffc3465979afab3792b1bf190edad46c68c11f",
+      "train_size": 5045,
+      "valid_size": 2940,
+      "validation_set_sha256": "d87f345df04b0c02f176b124d8dd183db34901f0a3a4a0f1b6f015cc7d356ce0"
+     }
+    },
+    "test_fraction": 0.20006010819475056,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 1997,
+    "test_set_sha256": "71bcb5db37a6411cc0b1601e3364435daa8e2160981763bf853328a862c2b9e8",
+    "train_val_rows": 7985,
+    "train_val_set_sha256": "d36f7e81e62629dee9ded77a48e6519ab338edfc2fc61733c121ffe71a01a6b0"
+   },
+   "task_type": "regression",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4259610,
+    "dataset_name": "solubility_aqsoldb",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "mae",
+   "test": {
+    "bytes": 187298,
+    "rows": 1997,
+    "sha256": "fee80f90068029cb0e3e72a99182a6fcd04cdef67378912e33090d01777a3dd1"
+   },
+   "train_val": {
+    "bytes": 630017,
+    "rows": 7985,
+    "sha256": "a58cdd38ad361d5c58fe1c68acaec186ff06eaceee6d504a7c5a23218306cc2e"
+   },
+   "usable": 9980
+  },
+  "vdss_lombardo": {
+   "checksums": {
+    "test": {
+     "bytes": 16167,
+     "rows": 226,
+     "sha256": "de60a8bf6752ec6795f836708da1eeb6e9b5b97cdde0776d8c7f279cb5020740"
+    },
+    "train_val": {
+     "bytes": 69288,
+     "rows": 904,
+     "sha256": "943bef20ab9ce2387399f947850e2743b09eccf9cc03bdc1b48cf336a8b1631e"
+    }
+   },
+   "chembl37_exposure": {
+    "benchmark_molecules": 1109,
+    "overlap_fraction": 0.2344454463480613,
+    "present_in_chembl37": 260
+   },
+   "common_evaluation_set": 1109,
+   "exclusion_reasons": [],
+   "feature_accounting": {
+    "common_evaluation_set": 1109,
+    "exceeds_alert_threshold": false,
+    "input_molecules": 1109,
+    "lost_fraction": 0.0,
+    "lost_to_intersection": 0,
+    "per_representation_failures": {
+     "avalon_1024": 0,
+     "erg_reduced_graph_315": 0,
+     "maccs_keys_167": 0,
+     "morgan_ecfp4_1024": 0,
+     "rdkit_fragment_descriptors": 0,
+     "rdkit_physchem_descriptors": 0,
+     "smiles_tfidf_4096": 0
+    },
+    "representations": 7
+   },
+   "included": true,
+   "ingestion": {
+    "conflicting_molecule_count": 2,
+    "duplicates_collapsed": 17,
+    "duplicates_conflicting_dropped": 4,
+    "input_records": 1130,
+    "missing_label_dropped": 0,
+    "rdkit_invalid": 0,
+    "usable": 1109
+   },
+   "label_summary": {
+    "conflict_tolerance": 6.9999,
+    "max": 700.0,
+    "median": 0.95,
+    "min": 0.01,
+    "spread": 699.99
+   },
+   "molfusion_primary_metric": "mae",
+   "name": "vdss_lombardo",
+   "official_overlap": {
+    "canonical_molecule_overlap": 0,
+    "scaffold_overlap_molfusion_convention": 0,
+    "scaffold_overlap_tdc_convention": 0,
+    "test_scaffolds_molfusion_convention": 153,
+    "test_scaffolds_tdc_convention": 153,
+    "test_unique_molecules": 221,
+    "train_val_unique_molecules": 890
+   },
+   "raw_rows": 1130,
+   "representation_availability": {
+    "avalon_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 7.959,
+     "successes": 1109
+    },
+    "erg_reduced_graph_315": {
+     "dimension": 315,
+     "failures": 0,
+     "seconds": 2.576,
+     "successes": 1109
+    },
+    "maccs_keys_167": {
+     "dimension": 167,
+     "failures": 0,
+     "seconds": 6.978,
+     "successes": 1109
+    },
+    "morgan_ecfp4_1024": {
+     "dimension": 1024,
+     "failures": 0,
+     "seconds": 1.487,
+     "successes": 1109
+    },
+    "rdkit_fragment_descriptors": {
+     "dimension": 85,
+     "failures": 0,
+     "seconds": 4.744,
+     "successes": 1109
+    },
+    "rdkit_physchem_descriptors": {
+     "dimension": 217,
+     "failures": 0,
+     "seconds": 77.31,
+     "successes": 1109
+    },
+    "smiles_tfidf_4096": {
+     "dimension": 4096,
+     "failures": 0,
+     "seconds": 2.508,
+     "successes": 1109
+    }
+   },
+   "scaffolds": {
+    "acyclic_group_size": 38,
+    "largest_group_size": 84,
+    "unique_scaffolds": 777
+   },
+   "split_identity": {
+    "seeds": {
+     "1": {
+      "test_set_sha256": "04e16e8f1e7b198b87b85a1a0c76093873adcafa759dc5215168e3fee418e49f",
+      "train_set_sha256": "49c99c92865f8e7f4bdf76faf6003c6e0390bbfa443190e9c2dc4727c5150a21",
+      "train_size": 791,
+      "valid_size": 113,
+      "validation_set_sha256": "e3ef44fd49a561964f9ddcff41d8dcce92a29891c332debabe99711c1c476a92"
+     },
+     "2": {
+      "test_set_sha256": "04e16e8f1e7b198b87b85a1a0c76093873adcafa759dc5215168e3fee418e49f",
+      "train_set_sha256": "d9203e2c7503c30740ea11b495cea961476cdc0ef3f941d47c368a32e61b0d46",
+      "train_size": 791,
+      "valid_size": 113,
+      "validation_set_sha256": "05e7c787f21382482130a601279ae0eaebc0ce939e9d3baae3a27cc33488ee37"
+     },
+     "3": {
+      "test_set_sha256": "04e16e8f1e7b198b87b85a1a0c76093873adcafa759dc5215168e3fee418e49f",
+      "train_set_sha256": "1f101a4b4c3a2bb89b4f167262a674b3467cebeb66195ca3685188d3e527e3ad",
+      "train_size": 791,
+      "valid_size": 113,
+      "validation_set_sha256": "219aa9389f06d7cc180c52fb8f7691a2a889f8446ff1a17accb3dc652d13702f"
+     },
+     "4": {
+      "test_set_sha256": "04e16e8f1e7b198b87b85a1a0c76093873adcafa759dc5215168e3fee418e49f",
+      "train_set_sha256": "8af353a901a0c28c79cc55f4bf961897e8bc808eda5c21ee31c33d7520a3cf90",
+      "train_size": 791,
+      "valid_size": 113,
+      "validation_set_sha256": "8dab756f4565a06ae939194a603e3dc2f9383c8fc14544fd4d57c03fd9ef63fd"
+     },
+     "5": {
+      "test_set_sha256": "04e16e8f1e7b198b87b85a1a0c76093873adcafa759dc5215168e3fee418e49f",
+      "train_set_sha256": "9aef25ed1be7a6cab7560c828d9227d443d0663a766df9de0e8e926de9c2a8b1",
+      "train_size": 791,
+      "valid_size": 113,
+      "validation_set_sha256": "6b3566dc9dfeeb911e7dfd2b942564a0f5ff0b4e169357af691984f4c5efdd5a"
+     }
+    },
+    "test_fraction": 0.2,
+    "test_identity_invariant_across_seeds": true,
+    "test_rows": 226,
+    "test_set_sha256": "04e16e8f1e7b198b87b85a1a0c76093873adcafa759dc5215168e3fee418e49f",
+    "train_val_rows": 904,
+    "train_val_set_sha256": "56e0aba6778bc6baf19074b4fba8d324722cfa1d5e6c6c6d7547fa735ec1e691"
+   },
+   "task_type": "regression",
+   "tdc_category": "ADME",
+   "tdc_identity": {
+    "dataset_id": 4267387,
+    "dataset_name": "vdss_lombardo",
+    "split_method": "scaffold"
+   },
+   "tdc_official_metric": "spearman",
+   "test": {
+    "bytes": 16167,
+    "rows": 226,
+    "sha256": "de60a8bf6752ec6795f836708da1eeb6e9b5b97cdde0776d8c7f279cb5020740"
+   },
+   "train_val": {
+    "bytes": 69288,
+    "rows": 904,
+    "sha256": "943bef20ab9ce2387399f947850e2743b09eccf9cc03bdc1b48cf336a8b1631e"
+   },
+   "usable": 1109
+  }
+ },
+ "environment": {
+  "molfusion_git_commit": "84c5185b2aaad160114c0344b85f4e780ce246ac",
+  "molfusion_git_working_tree_clean": false,
+  "numpy": "2.4.6",
+  "python": "3.11.15",
+  "rdkit": "2026.03.5"
+ },
+ "evaluation_tracks": {
+  "molfusion_scaffold": {
+   "cleaning": "full Phase 6A policy: canonicalize, collapse agreeing duplicates, drop conflicting groups",
+   "definition": "Track A2 is MolFusion's own repeated-scaffold-split analysis: five independent 70/10/20 Bemis-Murcko splits, seeds 0-4, drawn over the cleaned molecule universe with the full duplicate and conflict policy applied. It answers a question A1 cannot -- whether a representation's ranking survives a different scaffold partition, or is an artefact of the one partition TDC happened to publish. It is NOT comparable with TDC leaderboard numbers and must never be labelled or reported as official TDC results.",
+   "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "split_strategy": "bemis_murcko_scaffold",
+   "status": "supplementary",
+   "test_is_fixed": false
+  },
+  "tdc_official": {
+   "cleaning": "none; official rows consumed exactly as shipped",
+   "definition": "Track A1 reproduces TDC's official ADMET protocol: the shipped held-out test set, unchanged and identical at every seed, with train and validation drawn from train_val.csv at fractions 0.875/0.125 using TDC's own scaffold splitter, over five runs. Its purpose is comparability with published TDC leaderboard numbers, so nothing about the official partitions is modified -- including duplicate molecules that TDC's rows contain, because removing them would mean scoring on a different test set than every published number was computed on.",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "split_strategy": "tdc_official_fixed_test",
+   "status": "primary",
+   "test_is_fixed": true,
+   "train_val_fractions": [
+    0.875,
+    0.125,
+    0.0
+   ]
+  }
+ },
+ "excluded_endpoints": {},
+ "included_endpoint_count": 22,
+ "official_split_semantics": {
+  "scaffold_includes_chirality": false,
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "split_method": "scaffold",
+  "test_identity_invariant_across_seeds": true,
+  "test_set": "shipped file; get()/__next__() take no seed",
+  "train_val_fractions": [
+   0.875,
+   0.125,
+   0.0
+  ],
+  "train_valid": "get_train_valid_split(seed) splits train_val only"
+ },
+ "protocol_version": "6A.1",
+ "release_identity_sha256": "10bda5f006901c076c8d60b90fa3f48bb48f5bea70a43b8d6bfd1802c25435e3",
+ "release_name": "TDC-ADMET-2026-09",
+ "serialization_contract": {
+  "byte_order_mark": false,
+  "encoding": "utf-8",
+  "fields": [
+   "Drug_ID",
+   "Drug",
+   "Y"
+  ],
+  "final_newline": true,
+  "float_format": "repr() shortest round-trip form",
+  "line_terminator": "LF",
+  "quoting": "QUOTE_MINIMAL",
+  "row_order": "source order preserved",
+  "serialization_id": "molfusion_frozen_csv_v1"
+ },
+ "source": {
+  "acquisition": "single download; audits read frozen files only",
+  "group": "admet_group",
+  "pytdc_version": "1.0.0",
+  "suite": "Therapeutics Data Commons ADMET benchmark group"
+ }
+}
