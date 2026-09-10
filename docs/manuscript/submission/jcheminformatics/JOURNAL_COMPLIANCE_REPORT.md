@@ -1,7 +1,7 @@
 # Journal compliance report — *Journal of Cheminformatics*, Research article
 
-Checked **2026-09-05** against current journal sources, not against
-recollection.
+Checked **2026-09-05**, re-verified **2026-09-11** (Phase 6C.7), against
+current journal sources rather than recollection.
 
 Status key: **PASS** · **FAIL** · **AUTHOR INPUT REQUIRED** ·
 **ACTION BEFORE SUBMISSION** · **NOT APPLICABLE**
@@ -17,15 +17,24 @@ Status key: **PASS** · **FAIL** · **AUTHOR INPUT REQUIRED** ·
 | Official citation style | same repository, `journal-of-cheminformatics.csl` (+ `springer-basic-brackets.csl` parent) | numeric bracketed reference style, eISSN 1758-2946 |
 | Journal submission guidelines | `https://jcheminf.biomedcentral.com/submission-guidelines` → redirects to `https://link.springer.com/journal/13321/submission-guidelines` | graphical abstract dimensions; data availability requirement |
 
-**Discrepancy recorded.** The BMC-hosted guideline pages now 301-redirect to
-Springer Link, and the Springer Link pages require a cookie/authorisation
-handshake that could not be completed non-interactively. The
-journal-maintained Markdown template repository was therefore used as the
-primary structural authority. It is the journal's own artifact, is current
-(updated January 2026), and is more specific than the general guideline
-pages for the questions that matter here. **The authors should confirm
-length limits and any submission-system-specific requirements on the live
-Springer page before submitting.**
+**Discrepancy recorded, and re-confirmed in Phase 6C.7.** The BMC-hosted
+guideline pages 301-redirect to Springer Link, and the Springer Link pages
+return a 303 to an interactive authorisation handshake that cannot be
+completed non-interactively. This was retried on 2026-09-11 with the same
+result.
+
+The journal-maintained Markdown template repository was therefore used as
+the primary structural authority. It is the journal's own artifact, is
+current (updated January 2026), and is more specific than the general
+guideline pages for the questions that matter here.
+
+Every requirement below is labelled with its provenance — **verified from
+the journal-owned template repository**, or **HUMAN PRE-SUBMISSION CHECK
+REQUIRED** where only the live page can settle it. The two are never
+treated as equivalent, and no limit was invented to fill a gap. **The
+authors should confirm figure limits, length guidance and any
+submission-system-specific requirements on the live Springer page before
+submitting.**
 
 ---
 
@@ -52,7 +61,7 @@ Springer page before submitting.**
 
 | Requirement | Source | Status | Artifact | Remaining action |
 | --- | --- | --- | --- | --- |
-| Journal CSL style (numeric, bracketed) | `journal-of-cheminformatics.csl` | **PASS** | CSL vendored; `article.md` declares it | apply via pandoc |
+| Journal CSL style (numeric, bracketed) | `journal-of-cheminformatics.csl` | **PASS** | applied; 48 citation markers renumbered by order of appearance, 25 entries rendered | — |
 | BibTeX bibliography | template | **PASS** — 25 entries | `bibliography.bib` | — |
 | Citations as keys, renumbered by the style | template | **PASS** — 48 `@key` citations, 0 hard-coded numbers | `article.md` | — |
 | CiTO annotation supported | template + filters | **NOT APPLICABLE** — permitted, not required; plain citations used | filters vendored if wanted | optional |
@@ -66,14 +75,14 @@ Springer page before submitting.**
 | Vector format acceptable | template uses standard image embedding; SVG accepted for graphical abstract | **PASS** — all figures are SVG | `figures/*.svg` | confirm the submission system accepts SVG, else export to EPS/TIFF |
 | Underlying data available | journal reproducibility policy | **PASS** | `figures/figure_0*_data.csv` | — |
 | Figures embedded in the manuscript file | submission system | **ACTION BEFORE SUBMISSION** | — | embed via pandoc or upload separately |
-| Exact resolution/dimension limits | Springer page (not retrievable non-interactively) | **ACTION BEFORE SUBMISSION** | — | confirm on the live guidelines page |
+| Exact resolution/dimension limits | Springer page | **HUMAN PRE-SUBMISSION CHECK REQUIRED** | — | live page re-attempted 2026-09-11 and still returns a 303 to an interactive Springer authorisation handshake; no limit was invented |
 
 ### Supplementary material
 
 | Requirement | Source | Status | Artifact | Remaining action |
 | --- | --- | --- | --- | --- |
 | Supplementary information provided | journal policy | **PASS** | `supplementary/` (MD, DOCX, PDF) | — |
-| Supplementary tables captioned | project standard | **PASS** — S1–S11 | SI document | export S1–S9 data files |
+| Supplementary tables captioned | project standard | **PASS** — S1–S11 | SI document | **PASS** — all eleven exported as CSV with a hash manifest |
 | Supplementary figure captioned | project standard | **PASS** — S1 | SI document; `figures/` | — |
 
 ### Reproducibility and availability
@@ -126,8 +135,8 @@ deserves; merging or tagging before submission is recommended.
 
 | Requirement | Source | Status | Remaining action |
 | --- | --- | --- | --- |
-| DOCX for journal submission | template README: "the Word version for journal submission" | **PASS** | — |
-| PDF for preprint/review | template README | **PASS**, plain-text typeset | regenerate via pandoc for typeset quality |
+| DOCX for journal submission | template README: "the Word version for journal submission" | **PASS** | `MolFusion_JCheminformatics_Manuscript_FINAL.docx`, built through the journal CSL and CiTO filters |
+| PDF for preprint/review | template README | **PASS** | `MolFusion_JCheminformatics_Manuscript_FINAL.pdf`, 35 pages, embedded fonts with ToUnicode |
 | Pandoc ≥ 2.12 build | template Makefile | **ACTION BEFORE SUBMISSION** | pandoc is not installed in this environment |
 
 ---
@@ -136,11 +145,31 @@ deserves; merging or tagging before submission is recommended.
 
 | Status | Count |
 | --- | --- |
-| PASS | 27 |
+| PASS | 33 |
 | AUTHOR INPUT REQUIRED | 8 |
-| ACTION BEFORE SUBMISSION | 6 |
+| HUMAN PRE-SUBMISSION CHECK REQUIRED | 2 |
+| ACTION BEFORE SUBMISSION | 2 |
 | NOT APPLICABLE | 3 |
 | **FAIL** | **0** |
+
+### Items verified only from the template repository
+
+These come from the journal's own Research-article template, which is
+authoritative for structure but is not the live submission-system
+specification:
+
+- section order, structured abstract and its 350-word limit
+- keyword placement
+- declarations subsection list
+- graphical-abstract dimensions
+- reproducibility policy wording
+
+### Items requiring a human pre-submission check
+
+- **figure resolution, dimension and file-size limits** — the template
+  specifies these only for the graphical abstract
+- **main-text length guidance and supplementary-file count limits** — no
+  limit is stated in the template, and none was invented
 
 No requirement is failed. Every outstanding item is either a fact only the
 authors can supply, or a mechanical step (install pandoc, merge or tag,

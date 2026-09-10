@@ -62,11 +62,24 @@ def _bib_authors(authors: list[str]) -> str:
     return " and ".join(authors)
 
 
+#: BibTeX comment and control characters that must be escaped inside a
+#: field. The SELFIES title contains "100%", and an unescaped % starts a
+#: BibTeX comment -- which silently swallowed the rest of that entry's title
+#: until the rendered bibliography was read back.
+_BIBTEX_ESCAPES = (("%", r"\%"), ("&", r"\&"), ("#", r"\#"), ("$", r"\$"))
+
+
+def _bib_escape(text: str) -> str:
+    for source, target in _BIBTEX_ESCAPES:
+        text = text.replace(source, target)
+    return text
+
+
 def bibtex_entry(entry: dict[str, Any]) -> str:
     kind = {"book": "book", "software": "misc"}.get(entry["type"], "article")
     fields: list[tuple[str, str]] = [
         ("author", _bib_authors(entry["authors"])),
-        ("title", "{" + entry["title"] + "}"),
+        ("title", "{" + _bib_escape(entry["title"]) + "}"),
     ]
     container = entry.get("container")
     if container and container != "Software":
@@ -84,6 +97,18 @@ def bibtex_entry(entry: dict[str, Any]) -> str:
         fields.append(("url", entry["url"]))
     if entry.get("arxiv"):
         fields.append(("note", f"arXiv:{entry['arxiv']}"))
+    if kind == "misc" and entry.get("doi"):
+        # The journal CSL emits no DOI for any non-article CSL type -- note,
+        # url, @software and @techreport were all probed and none rendered
+        # one. Re-typing the entry as @article would make RDKit look like a
+        # journal paper, which it is not, so the identifier is carried in the
+        # title field instead: unusual, but accurate and actually visible.
+        fields[1] = ("title", "{" + _bib_escape(entry["title"]) + ". "
+                     + (f"Version {entry['software_version']}. "
+                        if entry.get("software_version") else "")
+                     + f"doi:{entry['doi']}}}")
+        if not entry.get("year"):
+            fields.append(("year", "n.d."))
     body = ",\n  ".join(f"{k} = {{{v}}}" for k, v in fields)
     return f"@{kind}{{{entry['key']},\n  {body}\n}}\n"
 
